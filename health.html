@@ -1,0 +1,1089 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Concordia Nova Health — Doctor and Patient Health Network</title>
+  <!-- Tailwind CDN (minimal) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- dayjs for date handling -->
+  <script src="https://cdn.jsdelivr.net/npm/dayjs@1/dayjs.min.js"></script>
+  <style>
+    /* Improved neon glow effect: more intense shadow and light animation */
+    .neon {
+      text-shadow: 0 0 4px rgba(255,255,255,0.8), 0 0 8px rgba(99,102,241,0.7), 0 0 12px rgba(236,72,153,0.5), 0 0 16px rgba(59,130,246,0.4);
+      animation: neonGlow 2s ease-in-out infinite alternate;
+    }
+    @keyframes neonGlow {
+      from { text-shadow: 0 0 4px rgba(255,255,255,0.8), 0 0 8px rgba(99,102,241,0.7), 0 0 12px rgba(236,72,153,0.5); }
+      to { text-shadow: 0 0 6px rgba(255,255,255,1), 0 0 12px rgba(99,102,241,1), 0 0 18px rgba(236,72,153,0.7); }
+    }
+    /* Improved moving gradient background: smoother transitions */
+    body {
+      background: linear-gradient(135deg, rgba(59,130,246,0.1), rgba(236,72,153,0.05), rgba(34,197,94,0.03), rgba(245,158,11,0.02));
+      background-size: 600% 600%;
+      animation: gradientBG 30s ease infinite;
+    }
+    @keyframes gradientBG {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    /* Falling rain drops effect: not canvas-based, simple CSS drop animation */
+    .rain {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: -1;
+      opacity: 0.3; /* Adjusted transparency */
+    }
+    .rain::before {
+      content: '';
+      position: absolute;
+      top: -10px;
+      left: 10%;
+      width: 2px;
+      height: 20px;
+      background: rgba(255,255,255,0.5);
+      animation: rainDrop 1s linear infinite;
+    }
+    .rain::after {
+      content: '';
+      position: absolute;
+      top: -10px;
+      left: 30%;
+      width: 2px;
+      height: 15px;
+      background: rgba(255,255,255,0.5);
+      animation: rainDrop 1.2s linear infinite 0.3s;
+    }
+    /* Can be duplicated for more drops, but limited for performance */
+    .rain span:nth-child(odd)::before {
+      left: 50%;
+      animation-delay: 0.5s;
+      height: 25px;
+    }
+    .rain span:nth-child(even)::after {
+      left: 70%;
+      animation-delay: 0.7s;
+      height: 18px;
+    }
+    @keyframes rainDrop {
+      0% { transform: translateY(0); opacity: 1; }
+      100% { transform: translateY(100vh); opacity: 0; }
+    }
+    /* Comfort on small screens */
+    .scroll-y { overflow-y: auto; max-height: 60vh; }
+    /* Additional styles: For categories */
+    .category-btn {
+      background-color: rgba(99,102,241,0.2);
+      border: 1px solid rgba(99,102,241,0.5);
+      transition: all 0.3s;
+    }
+    .category-btn:hover {
+      background-color: rgba(99,102,241,0.4);
+    }
+    .active-category {
+      background-color: rgba(236,72,153,0.4) !important;
+      border-color: rgba(236,72,153,0.7) !important;
+    }
+    /* Problem and solution cards */
+    .problem-card {
+      background: rgba(255, 255, 255, 0.8);
+      border-left: 4px solid #ef4444;
+    }
+    .solution-card {
+      background: rgba(255, 255, 255, 0.8);
+      border-left: 4px solid #10b981;
+      margin-left: 1rem;
+    }
+    .dark .problem-card, .dark .solution-card {
+      background: rgba(31, 41, 55, 0.8);
+    }
+  </style>
+</head>
+<body class="min-h-screen text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-900 transition-colors">
+  <!-- Falling rain effect -->
+  <div class="rain">
+    <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+    <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+    <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+    <!-- Add more spans for more drops -->
+  </div>
+  <!-- DISCLAIMER -->
+  <div class="p-3 text-sm bg-yellow-50 dark:bg-yellow-900/20 border-l-4 border-yellow-400 dark:border-yellow-700">
+    <strong>Warning:</strong> This application is not intended for medical diagnosis, treatment, or advice. For health matters, please consult your doctor. Concordia Nova Health facilitates information sharing between doctors and patients but does not accept medical responsibility.
+  </div>
+  <!-- Mini Profile -->
+  <div class="mini-profile" id="miniProfile" aria-live="polite" style="display:none;">
+    <div class="top">
+      <img id="miniAvatar" src="https://via.placeholder.com/64" alt="Profile Picture">
+      <div class="info">
+        <strong id="miniName">Loading...</strong>
+        <div><span id="miniUsername" class="username"></span></div>
+        <small id="miniBio" class="bio">Loading bio...</small>
+      </div>
+      <a href="profile.html" style="margin-left:auto">Edit Profile</a>
+      <button id="logoutBtn">Logout</button>
+    </div>
+    <div class="stats">
+      <span><strong id="miniFollowing">0</strong> Following</span>
+      <span><strong id="miniFollowers">0</strong> Followers</span>
+    </div>
+  </div>
+  <!-- Header and top menu: User type selection, login/logout, settings -->
+  <header class="p-4 flex items-center justify-between bg-gray-100 dark:bg-gray-800 shadow">
+    <h1 class="text-2xl font-bold neon">Concordia Nova Health — Doctor and Patient Health Network</h1>
+    <div class="flex items-center gap-3">
+      <select id="userType" class="p-2 rounded border" aria-label="User Type">
+        <option value="hasta">Patient</option>
+        <option value="doktor">Doctor</option>
+      </select>
+      <input id="username" class="p-2 rounded border" placeholder="Username" aria-label="Username" />
+      <button id="loginBtn" class="px-3 py-1 rounded bg-blue-500 text-white text-sm">Login/Register</button>
+      <button id="logoutBtn" class="px-3 py-1 rounded bg-red-500 text-white text-sm hidden">Logout</button>
+      <label class="flex items-center gap-2 text-sm">
+        <input id="darkToggle" type="checkbox" class="h-4 w-4" aria-label="Dark mode" />
+        Dark Mode
+      </label>
+      <button id="profileBtn" class="px-3 py-1 rounded border text-sm" aria-label="Profile Settings">Profile</button>
+      <button id="reportBtn" class="px-3 py-1 rounded border text-sm" aria-label="Reports">Reports</button>
+      <button id="exportBtn" class="px-3 py-1 rounded border text-sm" aria-label="Export Data">Export</button>
+      <input id="importFile" type="file" accept=".json" class="hidden" />
+      <button id="importBtn" class="px-3 py-1 rounded border text-sm" aria-label="Import Data">Import</button>
+      <button id="clearBtn" class="px-3 py-1 rounded border text-sm text-red-600" aria-label="Delete All Data">Delete All</button>
+    </div>
+  </header>
+  <main class="p-4 grid gap-4 md:grid-cols-3">
+    <!-- Left column: Categories and Specialty Selection -->
+    <section class="md:col-span-1 bg-white/80 dark:bg-gray-800/60 rounded-lg p-4 shadow" aria-labelledby="categoriesTitle">
+      <h2 id="categoriesTitle" class="font-semibold text-lg">Health Categories</h2>
+      <div class="mt-3 grid gap-2">
+        <button class="category-btn w-full py-2 px-4 rounded text-left" data-category="cardiology">Cardiology</button>
+        <button class="category-btn w-full py-2 px-4 rounded text-left" data-category="dermatology">Dermatology</button>
+        <button class="category-btn w-full py-2 px-4 rounded text-left" data-category="neurology">Neurology</button>
+        <button class="category-btn w-full py-2 px-4 rounded text-left" data-category="pediatrics">Pediatrics</button>
+        <button class="category-btn w-full py-2 px-4 rounded text-left" data-category="psychiatry">Psychiatry</button>
+        <button class="category-btn w-full py-2 px-4 rounded text-left" data-category="general">General Health</button>
+        <button class="category-btn w-full py-2 px-4 rounded text-left" data-category="other">Other</button>
+      </div>
+      <hr class="my-4" />
+      <div id="doctorSpecialtySection" class="hidden">
+        <h3 class="font-semibold">Select Your Specialties</h3>
+        <form id="specialtyForm" class="mt-2 grid gap-2">
+          <select id="specialtySelect" multiple class="p-2 rounded border h-32" aria-label="Specialties">
+            <option value="cardiology">Cardiology</option>
+            <option value="dermatology">Dermatology</option>
+            <option value="neurology">Neurology</option>
+            <option value="pediatrics">Pediatrics</option>
+            <option value="psychiatry">Psychiatry</option>
+            <option value="general">General Health</option>
+            <option value="other">Other</option>
+          </select>
+          <button type="submit" class="py-2 rounded bg-indigo-600 text-white">Save</button>
+        </form>
+      </div>
+      <div id="patientProblemSection" class="mt-4">
+        <button id="createProblemBtn" class="w-full py-2 rounded bg-green-600 text-white">Create New Problem</button>
+      </div>
+    </section>
+    <!-- Middle column: Problems and Solutions (Main Content) -->
+    <section class="md:col-span-1 bg-white/80 dark:bg-gray-800/60 rounded-lg p-4 shadow scroll-y" aria-labelledby="problemsTitle">
+      <h2 id="problemsTitle" class="font-semibold text-lg">Problems in Selected Category</h2>
+      <div id="problemsList" class="mt-3 space-y-4"></div>
+      <div id="noProblemsMsg" class="mt-3 text-center text-gray-500 hidden">No problems in this category yet. Create one!</div>
+    </section>
+    <!-- Right column: Doctor Profiles, Statistics, and Charts -->
+    <section class="md:col-span-1 bg-white/80 dark:bg-gray-800/60 rounded-lg p-4 shadow" aria-labelledby="doctorsTitle">
+      <h2 id="doctorsTitle" class="font-semibold text-lg">Expert Doctors</h2>
+      <div id="doctorsList" class="mt-3 space-y-3 scroll-y max-h-40"></div>
+      <hr class="my-4" />
+      <h3 class="font-semibold">System Statistics</h3>
+      <div class="mt-3 grid gap-3">
+        <div class="flex items-center justify-between bg-blue-50 dark:bg-blue-900/20 p-3 rounded">
+          <div class="text-sm">Total Problems</div>
+          <div id="totalProblems" class="text-2xl font-bold">—</div>
+        </div>
+        <div class="flex items-center justify-between bg-green-50 dark:bg-green-900/20 p-3 rounded">
+          <div class="text-sm">Solved Problems</div>
+          <div id="solvedProblems" class="text-2xl font-bold">—</div>
+        </div>
+        <div class="flex items-center justify-between bg-pink-50 dark:bg-pink-900/20 p-3 rounded">
+          <div class="text-sm">Active Doctors</div>
+          <div id="activeDoctors" class="text-2xl font-bold">—</div>
+        </div>
+      </div>
+      <div class="mt-4">
+        <canvas id="statsChart" aria-label="System Statistics Chart" role="img" height="200"></canvas>
+      </div>
+    </section>
+    <!-- Bottom section: User Interactions and Lists -->
+    <section class="md:col-span-3 bg-white/80 dark:bg-gray-800/60 rounded-lg p-4 shadow">
+      <div class="grid md:grid-cols-2 gap-4">
+        <div>
+          <h3 class="font-semibold">My Problems</h3>
+          <div id="myProblemsList" class="scroll-y mt-2 p-2 rounded border bg-white/50 dark:bg-gray-800/50"></div>
+        </div>
+        <div id="mySolutionsSection" class="hidden">
+          <h3 class="font-semibold">My Solutions</h3>
+          <div id="mySolutionsList" class="scroll-y mt-2 p-2 rounded border bg-white/50 dark:bg-gray-800/50"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+  <!-- Modals -->
+  <!-- Profile Modal -->
+  <div id="profileModal" class="fixed inset-0 bg-black/40 hidden flex items-center justify-center" aria-hidden="true">
+    <div class="bg-white dark:bg-gray-800 rounded p-4 w-11/12 md:w-1/2">
+      <h3 class="font-semibold">Profile Settings</h3>
+      <form id="profileForm" class="mt-2 grid gap-2">
+        <label>Username</label>
+        <input id="profileUsername" class="p-2 rounded border" disabled />
+        <label>Birthdate</label>
+        <input id="profileBirthdate" type="date" class="p-2 rounded border" />
+        <label>Gender</label>
+        <select id="profileGender" class="p-2 rounded border">
+          <option value="male">Male</option>
+          <option value="female">Female</option>
+          <option value="other">Other</option>
+        </select>
+        <div id="doctorProfileFields" class="hidden">
+          <label>Specialties</label>
+          <select id="profileSpecialties" multiple class="p-2 rounded border h-32">
+            <option value="cardiology">Cardiology</option>
+            <option value="dermatology">Dermatology</option>
+            <option value="neurology">Neurology</option>
+            <option value="pediatrics">Pediatrics</option>
+            <option value="psychiatry">Psychiatry</option>
+            <option value="general">General Health</option>
+            <option value="other">Other</option>
+          </select>
+          <label>Biography</label>
+          <textarea id="profileBio" rows="4" class="p-2 rounded border"></textarea>
+        </div>
+        <div class="text-right">
+          <button type="submit" class="px-3 py-2 rounded bg-green-600 text-white">Save</button>
+          <button id="closeProfile" type="button" class="px-3 py-2 rounded border">Close</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  <!-- Problem Creation Modal -->
+  <div id="problemModal" class="fixed inset-0 bg-black/40 hidden flex items-center justify-center" aria-hidden="true">
+    <div class="bg-white dark:bg-gray-800 rounded p-4 w-11/12 md:w-1/2">
+      <h3 class="font-semibold">Create New Problem</h3>
+      <form id="problemForm" class="mt-2 grid gap-2">
+        <label>Category</label>
+        <select id="problemCategory" class="p-2 rounded border">
+          <option value="cardiology">Cardiology</option>
+          <option value="dermatology">Dermatology</option>
+          <option value="neurology">Neurology</option>
+          <option value="pediatrics">Pediatrics</option>
+          <option value="psychiatry">Psychiatry</option>
+          <option value="general">General Health</option>
+          <option value="other">Other</option>
+        </select>
+        <label>Problem Title</label>
+        <input id="problemTitle" class="p-2 rounded border" placeholder="Ex: Chest Pain" />
+        <label>Description</label>
+        <textarea id="problemDescription" rows="4" class="p-2 rounded border" placeholder="Detailed description..."></textarea>
+        <label>Symptoms (comma-separated)</label>
+        <input id="problemSymptoms" class="p-2 rounded border" placeholder="Ex: pain, fatigue" />
+        <div class="text-right">
+          <button type="submit" class="px-3 py-2 rounded bg-green-600 text-white">Create</button>
+          <button id="closeProblem" type="button" class="px-3 py-2 rounded border">Close</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  <!-- Solution Addition Modal -->
+  <div id="solutionModal" class="fixed inset-0 bg-black/40 hidden flex items-center justify-center" aria-hidden="true">
+    <div class="bg-white dark:bg-gray-800 rounded p-4 w-11/12 md:w-1/2">
+      <h3 class="font-semibold">Add Solution/Advice</h3>
+      <form id="solutionForm" class="mt-2 grid gap-2">
+        <input id="solutionProblemId" type="hidden" />
+        <label>Advice Title</label>
+        <input id="solutionTitle" class="p-2 rounded border" placeholder="Ex: Home Treatment" />
+        <label>Detailed Advice</label>
+        <textarea id="solutionDescription" rows="4" class="p-2 rounded border" placeholder="Detailed advice..."></textarea>
+        <label>Additional Resources (links, comma-separated)</label>
+        <input id="solutionResources" class="p-2 rounded border" placeholder="Ex: https://example.com" />
+        <div class="text-right">
+          <button type="submit" class="px-3 py-2 rounded bg-indigo-600 text-white">Add</button>
+          <button id="closeSolution" type="button" class="px-3 py-2 rounded border">Close</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  <!-- Report Modal -->
+  <div id="reportModal" class="fixed inset-0 bg-black/40 hidden flex items-center justify-center" aria-hidden="true">
+    <div class="bg-white dark:bg-gray-800 rounded p-4 w-11/12 md:w-2/3">
+      <h3 class="font-semibold">System Reports</h3>
+      <div id="reportContent" class="mt-2 p-2 rounded border bg-white/50 dark:bg-gray-800/50 scroll-y max-h-96"></div>
+      <div class="text-right mt-3">
+        <button id="closeReport" class="px-3 py-2 rounded border">Close</button>
+      </div>
+    </div>
+  </div>
+  <!-- LOGIN MODAL -->
+  <div class="fixed inset-0 bg-black/40 hidden flex items-center justify-center" id="loginModal" aria-hidden="true">
+    <div class="bg-white dark:bg-gray-800 rounded p-4 w-11/12 md:w-1/2">
+      <h3 class="font-semibold">Login</h3>
+      <form id="loginForm" class="mt-2 grid gap-2">
+        <input id="loginEmail" class="p-2 rounded border" placeholder="Email" />
+        <input id="loginPassword" type="password" class="p-2 rounded border" placeholder="Password" />
+        <div class="text-right">
+          <button type="submit" class="px-3 py-2 rounded bg-green-600 text-white">Login</button>
+          <button id="closeLogin" type="button" class="px-3 py-2 rounded border">Close</button>
+        </div>
+      </form>
+      <p class="text-center mt-2"><a href="#" id="switchToRegister">Register</a></p>
+    </div>
+  </div>
+  <!-- REGISTER MODAL -->
+  <div class="fixed inset-0 bg-black/40 hidden flex items-center justify-center" id="registerModal" aria-hidden="true">
+    <div class="bg-white dark:bg-gray-800 rounded p-4 w-11/12 md:w-1/2">
+      <h3 class="font-semibold">Register</h3>
+      <form id="registerForm" class="mt-2 grid gap-2">
+        <input id="registerEmail" class="p-2 rounded border" placeholder="Email" />
+        <input id="registerPassword" type="password" class="p-2 rounded border" placeholder="Password" />
+        <input id="registerUsername" class="p-2 rounded border" placeholder="Username" />
+        <select id="registerType" class="p-2 rounded border">
+          <option value="hasta">Patient</option>
+          <option value="doktor">Doctor</option>
+        </select>
+        <div class="text-right">
+          <button type="submit" class="px-3 py-2 rounded bg-green-600 text-white">Register</button>
+          <button id="closeRegister" type="button" class="px-3 py-2 rounded border">Close</button>
+        </div>
+      </form>
+      <p class="text-center mt-2"><a href="#" id="switchToLogin">Login</a></p>
+    </div>
+  </div>
+  <!-- Simple toast area -->
+  <div id="toast" class="fixed bottom-4 right-4 bg-gray-800 text-white p-3 rounded hidden"></div>
+  <script type="module">
+  import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+  const SUPABASE_URL = 'https://shkttorkfcnvkrwnkixf.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNoa3R0b3JrZmNudmtyd25raXhmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY2NzY2ODAsImV4cCI6MjA3MjI1MjY4MH0.GgDA8tSgQoMhCt_BYZU3mCkKaErUs_SQVNeWdCGQOgI';
+  const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  /**************************************************************************
+   * Concordia Nova Health — Doctor and Patient Health Network (single-file)
+   * - Interactive system between doctors and patients
+   * - Problems by categories, solutions by doctors
+   * - Not a forum or social media: Categorical, specialty-based matching
+   * - User, problem, solution management with local storage
+   * - Charts: System statistics
+   * - Improvements: Specialty selection, problem solving, reporting
+   * - Special feature: Doctors earn points with solutions, best solutions highlighted
+   * - New: Supabase integration for profile fetching, separate doctor profile creation
+   **************************************************************************/
+  /* ================
+     Data SCHEMA
+     users: [{id, username, type('patient'|'doctor'), birthdate, gender, specialties:[] (for doctor), points:0}]
+     problems: [{id, userId, category, title, description, symptoms:[], dateISO, solved:false, solutions:[]}]
+     solutions: [{id, problemId, userId, title, description, resources:[], dateISO, votes:0}]
+  */
+  const COLLECTIONS = ['users', 'problems', 'solutions'];
+  // Simple helper: unique id generator
+  function uid(prefix='id') {
+    return prefix + '_' + Math.random().toString(36).slice(2,9) + Date.now().toString(36).slice(-4);
+  }
+  // Simple toast
+  const toastEl = document.getElementById('toast');
+  function showToast(msg, timeout=3000) {
+    toastEl.innerText = msg;
+    toastEl.classList.remove('hidden');
+    setTimeout(()=> toastEl.classList.add('hidden'), timeout);
+  }
+  /* =========================
+     IndexedDB wrapper + fallback localStorage
+     ========================= */
+  const DB_NAME = 'healnet_db_v1';
+  const DB_VERSION = 1;
+  const idbAvailable = !!window.indexedDB;
+  function openIDB() {
+    return new Promise((resolve, reject) => {
+      if (!idbAvailable) return reject('IndexedDB not available');
+      const req = indexedDB.open(DB_NAME, DB_VERSION);
+      req.onupgradeneeded = (ev) => {
+        const db = ev.target.result;
+        COLLECTIONS.forEach(col => {
+          if (!db.objectStoreNames.contains(col)) {
+            db.createObjectStore(col, { keyPath: 'id' });
+          }
+        });
+      };
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = () => reject(req.error);
+    });
+  }
+  async function dbGetAll(collection) {
+    if (!idbAvailable) {
+      const raw = localStorage.getItem(collection);
+      return raw ? JSON.parse(raw) : [];
+    }
+    const db = await openIDB();
+    return new Promise((res, rej) => {
+      const tx = db.transaction(collection, 'readonly');
+      const store = tx.objectStore(collection);
+      const allReq = store.getAll();
+      allReq.onsuccess = () => res(allReq.result);
+      allReq.onerror = () => rej(allReq.error);
+    });
+  }
+  async function dbPut(collection, item) {
+    if (!idbAvailable) {
+      const arr = await dbGetAll(collection);
+      const idx = arr.findIndex(x => x.id === item.id);
+      if (idx >= 0) arr[idx] = item; else arr.push(item);
+      localStorage.setItem(collection, JSON.stringify(arr));
+      return item;
+    }
+    const db = await openIDB();
+    return new Promise((res, rej) => {
+      const tx = db.transaction(collection, 'readwrite');
+      const store = tx.objectStore(collection);
+      const req = store.put(item);
+      req.onsuccess = () => res(item);
+      req.onerror = () => rej(req.error);
+    });
+  }
+  async function dbDelete(collection, id) {
+    if (!idbAvailable) {
+      const arr = await dbGetAll(collection);
+      const newArr = arr.filter(x=>x.id!==id);
+      localStorage.setItem(collection, JSON.stringify(newArr));
+      return true;
+    }
+    const db = await openIDB();
+    return new Promise((res, rej) => {
+      const tx = db.transaction(collection, 'readwrite');
+      const store = tx.objectStore(collection);
+      const req = store.delete(id);
+      req.onsuccess = ()=>res(true);
+      req.onerror = ()=>rej(req.error);
+    });
+  }
+  async function dbClearAll() {
+    for (const col of COLLECTIONS) {
+      await dbClear(col);
+    }
+  }
+  async function dbClear(collection) {
+    if (!idbAvailable) {
+      localStorage.removeItem(collection);
+      return true;
+    }
+    const db = await openIDB();
+    return new Promise((res, rej) => {
+      const tx = db.transaction(collection, 'readwrite');
+      const store = tx.objectStore(collection);
+      const req = store.clear();
+      req.onsuccess = ()=>res(true);
+      req.onerror = ()=>rej(req.error);
+    });
+  }
+  /* ================
+     Demo Data
+     ================ */
+  const demoUsers = [
+    { id: uid('user'), username: 'patient1', type: 'hasta', birthdate: '1990-01-01', gender: 'male', specialties: [], points: 0 },
+    { id: uid('user'), username: 'doctor1', type: 'doktor', birthdate: '1980-01-01', gender: 'female', specialties: ['cardiology', 'general'], points: 10 }
+  ];
+  const demoProblems = [
+    { id: uid('prob'), userId: demoUsers[0].id, category: 'cardiology', title: 'Chest Pain', description: 'Lately, I feel pain in my chest.', symptoms: ['pain', 'shortness of breath'], dateISO: dayjs().toISOString(), solved: false, solutions: [] }
+  ];
+  const demoSolutions = [
+    { id: uid('sol'), problemId: demoProblems[0].id, userId: demoUsers[1].id, title: 'Rest Recommendation', description: 'Rest and see a doctor.', resources: ['https://example.com'], dateISO: dayjs().toISOString(), votes: 5 }
+  ];
+  async function seedDemoData() {
+    let users = await dbGetAll('users');
+    if (users.length === 0) {
+      for (const u of demoUsers) await dbPut('users', u);
+    }
+    let problems = await dbGetAll('problems');
+    if (problems.length === 0) {
+      for (const p of demoProblems) await dbPut('problems', p);
+    }
+    let solutions = await dbGetAll('solutions');
+    if (solutions.length === 0) {
+      for (const s of demoSolutions) await dbPut('solutions', s);
+    }
+  }
+  /* ============================
+     UI Elements and Event Handlers
+     ============================ */
+  // DOM Elements
+  const userTypeSelect = document.getElementById('userType');
+  const usernameInput = document.getElementById('username');
+  const loginBtn = document.getElementById('loginBtn');
+  const logoutBtn = document.getElementById('logoutBtn');
+  const profileBtn = document.getElementById('profileBtn');
+  const reportBtn = document.getElementById('reportBtn');
+  const exportBtn = document.getElementById('exportBtn');
+  const importBtn = document.getElementById('importBtn');
+  const importFile = document.getElementById('importFile');
+  const clearBtn = document.getElementById('clearBtn');
+  const darkToggle = document.getElementById('darkToggle');
+  const categoryBtns = document.querySelectorAll('.category-btn');
+  const doctorSpecialtySection = document.getElementById('doctorSpecialtySection');
+  const specialtyForm = document.getElementById('specialtyForm');
+  const specialtySelect = document.getElementById('specialtySelect');
+  const patientProblemSection = document.getElementById('patientProblemSection');
+  const createProblemBtn = document.getElementById('createProblemBtn');
+  const problemsList = document.getElementById('problemsList');
+  const noProblemsMsg = document.getElementById('noProblemsMsg');
+  const doctorsList = document.getElementById('doctorsList');
+  const totalProblemsEl = document.getElementById('totalProblems');
+  const solvedProblemsEl = document.getElementById('solvedProblems');
+  const activeDoctorsEl = document.getElementById('activeDoctors');
+  const myProblemsList = document.getElementById('myProblemsList');
+  const mySolutionsSection = document.getElementById('mySolutionsSection');
+  const mySolutionsList = document.getElementById('mySolutionsList');
+  const profileModal = document.getElementById('profileModal');
+  const profileForm = document.getElementById('profileForm');
+  const profileUsername = document.getElementById('profileUsername');
+  const profileBirthdate = document.getElementById('profileBirthdate');
+  const profileGender = document.getElementById('profileGender');
+  const doctorProfileFields = document.getElementById('doctorProfileFields');
+  const profileSpecialties = document.getElementById('profileSpecialties');
+  const profileBio = document.getElementById('profileBio');
+  const closeProfile = document.getElementById('closeProfile');
+  const problemModal = document.getElementById('problemModal');
+  const problemForm = document.getElementById('problemForm');
+  const problemCategory = document.getElementById('problemCategory');
+  const problemTitle = document.getElementById('problemTitle');
+  const problemDescription = document.getElementById('problemDescription');
+  const problemSymptoms = document.getElementById('problemSymptoms');
+  const closeProblem = document.getElementById('closeProblem');
+  const solutionModal = document.getElementById('solutionModal');
+  const solutionForm = document.getElementById('solutionForm');
+  const solutionProblemId = document.getElementById('solutionProblemId');
+  const solutionTitle = document.getElementById('solutionTitle');
+  const solutionDescription = document.getElementById('solutionDescription');
+  const solutionResources = document.getElementById('solutionResources');
+  const closeSolution = document.getElementById('closeSolution');
+  const reportModal = document.getElementById('reportModal');
+  const reportContent = document.getElementById('reportContent');
+  const closeReport = document.getElementById('closeReport');
+  const loginModal = document.getElementById('loginModal');
+  const loginForm = document.getElementById('loginForm');
+  const loginEmail = document.getElementById('loginEmail');
+  const loginPassword = document.getElementById('loginPassword');
+  const closeLogin = document.getElementById('closeLogin');
+  const switchToRegister = document.getElementById('switchToRegister');
+  const registerModal = document.getElementById('registerModal');
+  const registerForm = document.getElementById('registerForm');
+  const registerEmail = document.getElementById('registerEmail');
+  const registerPassword = document.getElementById('registerPassword');
+  const registerUsername = document.getElementById('registerUsername');
+  const registerType = document.getElementById('registerType');
+  const closeRegister = document.getElementById('closeRegister');
+  const switchToLogin = document.getElementById('switchToLogin');
+  let currentUser = null;
+  let selectedCategory = null;
+  // Dark Mode
+  darkToggle.addEventListener('change', () => {
+    document.documentElement.classList.toggle('dark', darkToggle.checked);
+    localStorage.setItem('healnet_dark', darkToggle.checked ? '1' : '0');
+  });
+  // Login/Register
+  loginBtn.addEventListener('click', () => loginModal.classList.remove('hidden'));
+  closeLogin.addEventListener('click', () => loginModal.classList.add('hidden'));
+  loginForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = loginEmail.value.trim();
+    const password = loginPassword.value.trim();
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) return showToast('Login error: ' + error.message);
+    currentUser = data.user;
+    localStorage.setItem('healnet_currentUserId', currentUser.id);
+    showToast('Logged in');
+    loginModal.classList.add('hidden');
+    loadProfile();
+    toggleUserInterface();
+    await refreshAll();
+  });
+  switchToRegister.addEventListener('click', (e) => {
+    e.preventDefault();
+    loginModal.classList.add('hidden');
+    registerModal.classList.remove('hidden');
+  });
+  closeRegister.addEventListener('click', () => registerModal.classList.add('hidden'));
+  registerForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = registerEmail.value.trim();
+    const password = registerPassword.value.trim();
+    const username = registerUsername.value.trim();
+    const type = registerType.value;
+    const { data, error } = await supabase.auth.signUp({ email, password });
+    if (error) return showToast('Registration error: ' + error.message);
+    const user = data.user;
+    const profilePayload = { id: user.id, username, type, birthdate: '', gender: '', specialties: [], points: 0, bio: '' };
+    const { error: profileError } = await supabase.from('profiles').insert([profilePayload]);
+    if (profileError) return showToast('Profile creation error: ' + profileError.message);
+    showToast('Registered, please login');
+    registerModal.classList.add('hidden');
+  });
+  switchToLogin.addEventListener('click', (e) => {
+    e.preventDefault();
+    registerModal.classList.add('hidden');
+    loginModal.classList.remove('hidden');
+  });
+  // Logout
+  logoutBtn.addEventListener('click', async () => {
+    const { error } = await supabase.auth.signOut();
+    if (error) return showToast('Logout error');
+    currentUser = null;
+    localStorage.removeItem('healnet_currentUserId');
+    usernameInput.disabled = false;
+    userTypeSelect.disabled = false;
+    loginBtn.classList.remove('hidden');
+    logoutBtn.classList.add('hidden');
+    doctorSpecialtySection.classList.add('hidden');
+    patientProblemSection.classList.remove('hidden');
+    mySolutionsSection.classList.add('hidden');
+    document.getElementById('miniProfile').style.display = 'none';
+    showToast('Logged out');
+    refreshAll();
+  });
+  // Toggle User Interface
+  function toggleUserInterface() {
+    if (!currentUser) return;
+    if (currentUser.type === 'doktor') {
+      doctorSpecialtySection.classList.remove('hidden');
+      patientProblemSection.classList.add('hidden');
+      mySolutionsSection.classList.remove('hidden');
+    } else {
+      doctorSpecialtySection.classList.add('hidden');
+      patientProblemSection.classList.remove('hidden');
+      mySolutionsSection.classList.add('hidden');
+    }
+  }
+  // Category Selection
+  categoryBtns.forEach(btn => {
+    btn.addEventListener('click', async (e) => {
+      categoryBtns.forEach(b => b.classList.remove('active-category'));
+      e.currentTarget.classList.add('active-category');
+      selectedCategory = e.currentTarget.dataset.category;
+      await refreshProblems();
+      await refreshDoctors();
+    });
+  });
+  // Save Specialty
+  specialtyForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!currentUser || currentUser.type !== 'doktor') return;
+    currentUser.specialties = Array.from(specialtySelect.selectedOptions).map(opt => opt.value);
+    await dbPut('users', currentUser);
+    showToast('Specialties saved');
+    await refreshDoctors();
+  });
+  // Load Profile
+  async function loadProfile() {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      currentUser = user || null;
+      if (!currentUser) {
+        document.getElementById('miniProfile').style.display = 'none';
+        return;
+      }
+      const { data: profile, error } = await supabase.from('profiles').select('*').eq('id', currentUser.id).single();
+      if (error || !profile) return showToast('Profile could not be loaded');
+      currentUser = { ...currentUser, ...profile };
+      document.getElementById('miniAvatar').src = profile.avatar_url || 'https://via.placeholder.com/64';
+      document.getElementById('miniName').textContent = profile.display_name || profile.username || 'User';
+      document.getElementById('miniUsername').textContent = profile.username ? '@' + profile.username : '';
+      document.getElementById('miniBio').textContent = profile.bio || 'No bio added';
+      // Follower/following counts (assuming follows table exists)
+      const { count: following } = await supabase.from('follows').select('*', { count: 'exact', head: true }).eq('follower', currentUser.id);
+      const { count: followers } = await supabase.from('follows').select('*', { count: 'exact', head: true }).eq('following', currentUser.id);
+      document.getElementById('miniFollowing').textContent = following || 0;
+      document.getElementById('miniFollowers').textContent = followers || 0;
+      document.getElementById('miniProfile').style.display = 'block';
+      toggleUserInterface();
+    } catch (err) {
+      showToast('Profile loading error');
+    }
+  }
+  // Profile Modal
+  profileBtn.addEventListener('click', () => {
+    if (!currentUser) return showToast('Login first');
+    profileUsername.value = currentUser.username;
+    profileBirthdate.value = currentUser.birthdate || '';
+    profileGender.value = currentUser.gender || 'other';
+    if (currentUser.type === 'doktor') {
+      doctorProfileFields.classList.remove('hidden');
+      profileBio.value = currentUser.bio || '';
+      Array.from(profileSpecialties.options).forEach(opt => opt.selected = currentUser.specialties.includes(opt.value));
+    } else {
+      doctorProfileFields.classList.add('hidden');
+    }
+    profileModal.classList.remove('hidden');
+  });
+  closeProfile.addEventListener('click', () => profileModal.classList.add('hidden'));
+  profileForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    currentUser.birthdate = profileBirthdate.value;
+    currentUser.gender = profileGender.value;
+    if (currentUser.type === 'doktor') {
+      currentUser.specialties = Array.from(profileSpecialties.selectedOptions).map(opt => opt.value);
+      currentUser.bio = profileBio.value;
+    }
+    const { error } = await supabase.from('profiles').update(currentUser).eq('id', currentUser.id);
+    if (error) return showToast('Profile update error');
+    showToast('Profile updated');
+    profileModal.classList.add('hidden');
+    loadProfile();
+  });
+  // Problem Creation Modal
+  createProblemBtn.addEventListener('click', () => {
+    if (!currentUser || currentUser.type !== 'hasta') return showToast('Only patients can create problems');
+    problemCategory.value = selectedCategory || 'general';
+    problemModal.classList.remove('hidden');
+  });
+  closeProblem.addEventListener('click', () => problemModal.classList.add('hidden'));
+  problemForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const problem = {
+      id: uid('prob'),
+      userId: currentUser.id,
+      category: problemCategory.value,
+      title: problemTitle.value.trim(),
+      description: problemDescription.value.trim(),
+      symptoms: problemSymptoms.value ? problemSymptoms.value.split(',').map(s=>s.trim()).filter(Boolean) : [],
+      dateISO: dayjs().toISOString(),
+      solved: false,
+      solutions: []
+    };
+    if (!problem.title || !problem.description) return showToast('Title and description are required');
+    await dbPut('problems', problem);
+    showToast('Problem created');
+    problemForm.reset();
+    problemModal.classList.add('hidden');
+    await refreshAll();
+  });
+  // Add Solution Modal
+  closeSolution.addEventListener('click', () => solutionModal.classList.add('hidden'));
+  solutionForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!currentUser || currentUser.type !== 'doktor') return showToast('Only doctors can add solutions');
+    const solution = {
+      id: uid('sol'),
+      problemId: solutionProblemId.value,
+      userId: currentUser.id,
+      title: solutionTitle.value.trim(),
+      description: solutionDescription.value.trim(),
+      resources: solutionResources.value ? solutionResources.value.split(',').map(s=>s.trim()).filter(Boolean) : [],
+      dateISO: dayjs().toISOString(),
+      votes: 0
+    };
+    if (!solution.title || !solution.description) return showToast('Title and description are required');
+    await dbPut('solutions', solution);
+    // Add solution to problem
+    const problem = await dbGetOne('problems', solution.problemId); // Add helper function
+    if (problem) {
+      problem.solutions.push(solution.id);
+      await dbPut('problems', problem);
+    }
+    // Increase doctor points
+    currentUser.points += 5;
+    await dbPut('users', currentUser);
+    showToast('Solution added');
+    solutionForm.reset();
+    solutionModal.classList.add('hidden');
+    await refreshProblems();
+  });
+  // Helper: dbGetOne
+  async function dbGetOne(collection, id) {
+    const items = await dbGetAll(collection);
+    return items.find(item => item.id === id);
+  }
+  // Report Modal
+  reportBtn.addEventListener('click', async () => {
+    if (!currentUser) return showToast('Login');
+    const problems = await dbGetAll('problems');
+    const solutions = await dbGetAll('solutions');
+    const users = await dbGetAll('users');
+    const reportHtml = `
+      <p><strong>Total Users:</strong> ${users.length}</p>
+      <p><strong>Total Problems:</strong> ${problems.length}</p>
+      <p><strong>Solved Problems:</strong> ${problems.filter(p => p.solved).length}</p>
+      <p><strong>Total Solutions:</strong> ${solutions.length}</p>
+      <p><strong>Your Contributions:</strong> ${currentUser.type === 'hasta' ? problems.filter(p => p.userId === currentUser.id).length + ' problems' : solutions.filter(s => s.userId === currentUser.id).length + ' solutions'}</p>
+    `;
+    reportContent.innerHTML = reportHtml;
+    reportModal.classList.remove('hidden');
+  });
+  closeReport.addEventListener('click', () => reportModal.classList.add('hidden'));
+  // Export
+  exportBtn.addEventListener('click', async () => {
+    const data = {};
+    for (const col of COLLECTIONS) {
+      data[col] = await dbGetAll(col);
+    }
+    const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'healnet_data.json';
+    a.click();
+    URL.revokeObjectURL(url);
+    showToast('Data exported');
+  });
+  // Import
+  importBtn.addEventListener('click', () => importFile.click());
+  importFile.addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = async (ev) => {
+      try {
+        const data = JSON.parse(ev.target.result);
+        for (const col of COLLECTIONS) {
+          await dbClear(col);
+          for (const item of (data[col] || [])) {
+            await dbPut(col, item);
+          }
+        }
+        showToast('Data imported');
+        await refreshAll();
+      } catch (err) {
+        showToast('Import error: ' + err.message);
+      }
+    };
+    reader.readAsText(file);
+  });
+  // Delete All
+  clearBtn.addEventListener('click', async () => {
+    if (!confirm('Delete all data?')) return;
+    await dbClearAll();
+    showToast('All data deleted');
+    await refreshAll();
+  });
+  /* =======================
+     Refresh Functions
+     ======================= */
+  async function refreshAll() {
+    await refreshStats();
+    await refreshChart();
+    if (selectedCategory) {
+      await refreshProblems();
+      await refreshDoctors();
+    }
+    await refreshMyLists();
+  }
+  async function refreshStats() {
+    const problems = await dbGetAll('problems');
+    const solved = problems.filter(p => p.solved).length;
+    const users = await dbGetAll('users');
+    const doctors = users.filter(u => u.type === 'doktor').length;
+    totalProblemsEl.innerText = problems.length;
+    solvedProblemsEl.innerText = solved;
+    activeDoctorsEl.innerText = doctors;
+  }
+  let statsChartObj = null;
+  async function refreshChart() {
+    const problems = await dbGetAll('problems');
+    const solutions = await dbGetAll('solutions');
+    const labels = ['Problems', 'Solutions', 'Solved'];
+    const data = [problems.length, solutions.length, problems.filter(p => p.solved).length];
+    const ctx = document.getElementById('statsChart').getContext('2d');
+    if (statsChartObj) statsChartObj.destroy();
+    statsChartObj = new Chart(ctx, {
+      type: 'pie',
+      data: {
+        labels,
+        datasets: [{
+          data,
+          backgroundColor: ['rgba(59,130,246,0.6)', 'rgba(34,197,94,0.6)', 'rgba(245,158,11,0.6)'],
+        }]
+      },
+      options: { responsive: true, maintainAspectRatio: false }
+    });
+  }
+  async function refreshProblems() {
+    if (!selectedCategory) return;
+    const problems = (await dbGetAll('problems')).filter(p => p.category === selectedCategory).sort((a,b) => dayjs(b.dateISO).valueOf() - dayjs(a.dateISO).valueOf());
+    const solutions = await dbGetAll('solutions');
+    const users = await dbGetAll('users');
+    if (problems.length === 0) {
+      noProblemsMsg.classList.remove('hidden');
+      problemsList.innerHTML = '';
+      return;
+    }
+    noProblemsMsg.classList.add('hidden');
+    problemsList.innerHTML = problems.map(prob => {
+      const probSolutions = solutions.filter(s => s.problemId === prob.id).sort((a,b) => b.votes - a.votes);
+      return `
+        <div class="problem-card p-3 rounded shadow mb-4">
+          <div class="flex justify-between">
+            <h4 class="font-bold">${prob.title}</h4>
+            <small>${dayjs(prob.dateISO).format('YYYY-MM-DD')}</small>
+          </div>
+          <p class="text-sm mt-1">${prob.description}</p>
+          <p class="text-xs mt-1">Symptoms: ${prob.symptoms.join(', ')}</p>
+          <div class="mt-2 flex gap-2">
+            ${currentUser && currentUser.type === 'hasta' && currentUser.id === prob.userId ? `<button class="delete-prob px-2 py-1 rounded bg-red-500 text-white text-xs" data-id="${prob.id}">Delete</button>` : ''}
+            ${currentUser && currentUser.type === 'hasta' && currentUser.id === prob.userId && !prob.solved ? `<button class="solve-prob px-2 py-1 rounded bg-green-500 text-white text-xs" data-id="${prob.id}">Mark as Solved</button>` : ''}
+            ${currentUser && currentUser.type === 'doktor' && currentUser.specialties.includes(prob.category) ? `<button class="add-sol px-2 py-1 rounded bg-indigo-500 text-white text-xs" data-id="${prob.id}">Add Solution</button>` : ''}
+          </div>
+          <div class="mt-3 space-y-2">
+            ${probSolutions.map(sol => {
+              const solUser = users.find(u => u.id === sol.userId);
+              return `
+                <div class="solution-card p-2 rounded">
+                  <div class="flex justify-between">
+                    <h5 class="font-semibold text-sm">${sol.title} (by ${solUser ? solUser.username : 'Anonymous'})</h5>
+                    <small>${dayjs(sol.dateISO).format('YYYY-MM-DD')}</small>
+                  </div>
+                  <p class="text-xs">${sol.description}</p>
+                  <p class="text-xs mt-1">Resources: ${sol.resources.join(', ')}</p>
+                  <div class="flex gap-2 mt-1">
+                    <button class="vote-sol px-1 py-0.5 rounded bg-blue-500 text-white text-xs" data-id="${sol.id}" data-vote="up">+1 (${sol.votes})</button>
+                    ${currentUser && currentUser.id === sol.userId ? `<button class="delete-sol px-1 py-0.5 rounded bg-red-500 text-white text-xs" data-id="${sol.id}">Delete</button>` : ''}
+                  </div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        </div>
+      `;
+    }).join('');
+    // Event delegation
+    problemsList.querySelectorAll('.delete-prob').forEach(btn => {
+      btn.addEventListener('click', async (e) => {
+        if (!confirm('Delete problem?')) return;
+        const id = e.currentTarget.dataset.id;
+        await dbDelete('problems', id);
+        // Delete related solutions
+        const sols = await dbGetAll('solutions');
+        for (const sol of sols.filter(s => s.problemId === id)) {
+          await dbDelete('solutions', sol.id);
+        }
+        showToast('Problem deleted');
+        await refreshProblems();
+        await refreshMyLists();
+      });
+    });
+    problemsList.querySelectorAll('.solve-prob').forEach(btn => {
+      btn.addEventListener('click', async (e) => {
+        const id = e.currentTarget.dataset.id;
+        const prob = await dbGetOne('problems', id);
+        prob.solved = true;
+        await dbPut('problems', prob);
+        showToast('Problem marked as solved');
+        await refreshProblems();
+        await refreshMyLists();
+        await refreshStats();
+      });
+    });
+    problemsList.querySelectorAll('.add-sol').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        solutionProblemId.value = e.currentTarget.dataset.id;
+        solutionModal.classList.remove('hidden');
+      });
+    });
+    problemsList.querySelectorAll('.vote-sol').forEach(btn => {
+      btn.addEventListener('click', async (e) => {
+        const id = e.currentTarget.dataset.id;
+        const vote = e.currentTarget.dataset.vote === 'up' ? 1 : -1;
+        const sol = await dbGetOne('solutions', id);
+        sol.votes += vote;
+        await dbPut('solutions', sol);
+        // Update doctor points
+        const doc = await dbGetOne('users', sol.userId);
+        if (doc) {
+          doc.points += vote;
+          await dbPut('users', doc);
+        }
+        showToast('Vote given');
+        await refreshProblems();
+      });
+    });
+    problemsList.querySelectorAll('.delete-sol').forEach(btn => {
+      btn.addEventListener('click', async (e) => {
+        if (!confirm('Delete solution?')) return;
+        const id = e.currentTarget.dataset.id;
+        await dbDelete('solutions', id);
+        // Remove from problem
+        const sol = await dbGetOne('solutions', id);
+        if (sol) {
+          const prob = await dbGetOne('problems', sol.problemId);
+          if (prob) {
+            prob.solutions = prob.solutions.filter(s => s !== id);
+            await dbPut('problems', prob);
+          }
+        }
+        showToast('Solution deleted');
+        await refreshProblems();
+        await refreshMyLists();
+      });
+    });
+  }
+  async function refreshDoctors() {
+    if (!selectedCategory) return;
+    const users = (await dbGetAll('users')).filter(u => u.type === 'doktor' && u.specialties.includes(selectedCategory)).sort((a,b) => b.points - a.points);
+    doctorsList.innerHTML = users.map(doc => `
+      <div class="p-2 border-b flex justify-between">
+        <div>
+          <strong>${doc.username}</strong> <small>(${doc.specialties.join(', ')})</small>
+        </div>
+        <div class="text-sm">Points: ${doc.points}</div>
+      </div>
+    `).join('');
+  }
+  async function refreshMyLists() {
+    if (!currentUser) {
+      myProblemsList.innerHTML = '';
+      mySolutionsList.innerHTML = '';
+      return;
+    }
+    if (currentUser.type === 'hasta') {
+      const problems = (await dbGetAll('problems')).filter(p => p.userId === currentUser.id).sort((a,b) => dayjs(b.dateISO).valueOf() - dayjs(a.dateISO).valueOf());
+      myProblemsList.innerHTML = problems.map(prob => `
+        <div class="p-2 border-b">
+          <div class="flex justify-between"><strong>${prob.title}</strong><small>${prob.category}</small></div>
+          <div class="text-sm">${prob.solved ? 'Solved' : 'Pending'}</div>
+        </div>
+      `).join('');
+    } else {
+      const solutions = (await dbGetAll('solutions')).filter(s => s.userId === currentUser.id).sort((a,b) => dayjs(b.dateISO).valueOf() - dayjs(a.dateISO).valueOf());
+      const problems = await dbGetAll('problems');
+      mySolutionsList.innerHTML = solutions.map(sol => {
+        const prob = problems.find(p => p.id === sol.problemId);
+        return `
+          <div class="p-2 border-b">
+            <div class="flex justify-between"><strong>${sol.title}</strong><small>${prob ? prob.category : 'Unknown'}</small></div>
+            <div class="text-sm">Votes: ${sol.votes}</div>
+          </div>
+        `;
+      }).join('');
+    }
+  }
+  // Initialization
+  (async () => {
+    await seedDemoData();
+    const dark = localStorage.getItem('healnet_dark') === '1';
+    darkToggle.checked = dark;
+    document.documentElement.classList.toggle('dark', dark);
+    const savedUserId = localStorage.getItem('healnet_currentUserId');
+    if (savedUserId) {
+      const { data: { user } } = await supabase.auth.getUser();
+      currentUser = user;
+      if (currentUser) {
+        await loadProfile();
+      }
+    }
+    await refreshAll();
+  })();
+  </script>
+</body>
+</html>

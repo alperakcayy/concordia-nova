@@ -1,0 +1,1017 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HealApp — Gaming & Mental Wellbeing</title>
+<meta name="description" content="HealApp Gaming section — game play time, mood tracking, achievements, mini games, user library, info sections and live stream system with health-focused gaming panel.">
+<style>
+/* ==========================
+   RESET & ROOT
+========================== */
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#05060a;
+  --bg-soft:#0b0f1a;
+  --card:#0e1426;
+  --card-soft:#121a33;
+  --neon:#4dfcff;
+  --neon2:#7cff6b;
+  --neon3:#b66bff;
+  --danger:#ff5c7a;
+  --warning:#ffd36b;
+  --text:#e8ebff;
+  --muted:#9aa3d1;
+  --radius:18px;
+  --blur:14px;
+}
+html,body{height:100%;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:radial-gradient(1200px 600px at 10% -10%,#0b1440,transparent),radial-gradient(800px 500px at 90% 10%,#2a0b40,transparent),var(--bg);color:var(--text);overflow-x:hidden}
+
+/* ==========================
+   BACKGROUND ANIMATION
+========================== */
+.bg-anim{
+  position:fixed;inset:0;z-index:-1;pointer-events:none;filter:blur(0.2px)
+}
+.bg-anim::before,.bg-anim::after{
+  content:"";position:absolute;inset:-20%;background:
+  radial-gradient(closest-side at 20% 30%,rgba(77,252,255,.12),transparent 60%),
+  radial-gradient(closest-side at 80% 70%,rgba(182,107,255,.12),transparent 60%),
+  radial-gradient(closest-side at 50% 50%,rgba(124,255,107,.10),transparent 60%);
+  animation:float 18s linear infinite
+}
+.bg-anim::after{animation-duration:26s;mix-blend-mode:screen}
+@keyframes float{0%{transform:translateY(0)}50%{transform:translateY(-6%)}100%{transform:translateY(0)}}
+
+/* ==========================
+   LAYOUT
+========================== */
+.app{max-width:1400px;margin:0 auto;padding:24px}
+.header{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;flex-wrap:wrap}
+.brand{display:flex;gap:14px;align-items:center}
+.logo{width:44px;height:44px;border-radius:14px;background:linear-gradient(135deg,var(--neon),var(--neon3));box-shadow:0 0 30px rgba(77,252,255,.35)}
+.brand h1{font-size:22px;letter-spacing:.3px}
+.brand span{color:var(--muted);font-size:12px}
+.nav{display:flex;gap:10px;flex-wrap:wrap}
+.nav button{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:var(--text);padding:10px 14px;border-radius:14px;cursor:pointer;backdrop-filter:blur(var(--blur))}
+.nav button.active{outline:2px solid var(--neon)}
+
+/* ==========================
+   GRID LAYOUT
+========================== */
+.grid{display:grid;grid-template-columns:280px 1fr;gap:22px}
+@media(max-width:1024px){.grid{grid-template-columns:1fr}}
+
+/* ==========================
+   SIDEBAR
+========================== */
+.sidebar{background:linear-gradient(180deg,rgba(18,26,51,.7),rgba(10,14,30,.7));border:1px solid rgba(255,255,255,.08);border-radius:var(--radius);padding:16px;backdrop-filter:blur(var(--blur))}
+.profile{display:flex;gap:12px;align-items:center;margin-bottom:16px}
+.avatar{width:54px;height:54px;border-radius:50%;background:linear-gradient(135deg,var(--neon2),var(--neon));box-shadow:0 0 24px rgba(124,255,107,.35)}
+.profile h3{font-size:16px}
+.profile p{font-size:12px;color:var(--muted)}
+.side-section{margin-top:14px}
+.side-section h4{font-size:12px;color:var(--muted);margin-bottom:8px}
+.side-list{display:flex;flex-direction:column;gap:8px}
+.side-item{padding:10px;border-radius:12px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08)}
+
+/* ==========================
+   CONTENT
+========================== */
+.content{display:grid;grid-template-columns:1fr 360px;gap:22px}
+@media(max-width:1200px){.content{grid-template-columns:1fr}}
+.card{background:linear-gradient(180deg,rgba(18,26,51,.7),rgba(10,14,30,.7));border:1px solid rgba(255,255,255,.08);border-radius:var(--radius);padding:16px;backdrop-filter:blur(var(--blur))}
+.card h2{font-size:18px;margin-bottom:12px}
+.card p{font-size:13px;color:var(--muted);margin-bottom:10px}
+
+/* ==========================
+   STATS
+========================== */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+@media(max-width:900px){.stats{grid-template-columns:repeat(2,1fr)}}
+.stat{padding:14px;border-radius:14px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1)}
+.stat h3{font-size:14px;color:var(--muted)}
+.stat strong{font-size:22px}
+
+/* ==========================
+   GAME LIST
+========================== */
+.games{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;margin-top:10px}
+.game{padding:14px;border-radius:16px;background:linear-gradient(180deg,rgba(18,26,51,.8),rgba(10,14,30,.8));border:1px solid rgba(255,255,255,.1);transition:.25s;cursor:pointer}
+.game:hover{transform:translateY(-3px);box-shadow:0 12px 30px rgba(0,0,0,.35)}
+.game h4{font-size:15px}
+.game small{color:var(--muted);display:block;margin-top:4px}
+
+/* ==========================
+   TIMER
+========================== */
+.timer{display:flex;gap:12px;align-items:center;margin-top:12px;flex-wrap:wrap}
+.timer button{padding:10px 14px;border-radius:14px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.06);color:var(--text);cursor:pointer}
+.timer-display{font-size:26px;letter-spacing:1px;background:rgba(255,255,255,.05);padding:8px 12px;border-radius:12px}
+
+/* ==========================
+   MOOD
+========================== */
+.moods{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+.mood{padding:10px 12px;border-radius:14px;border:1px solid rgba(255,255,255,.12);cursor:pointer;background:rgba(255,255,255,.05);transition:.2s}
+.mood:hover{transform:scale(1.05)}
+.mood.active{outline:2px solid var(--neon2);transform:scale(1.05)}
+
+/* ==========================
+   ACHIEVEMENTS
+========================== */
+.ach{display:flex;flex-direction:column;gap:10px}
+.badge{display:flex;gap:10px;align-items:center;padding:10px;border-radius:14px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);transition:.2s}
+.badge:hover{background:rgba(255,255,255,.08)}
+.badge i{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,var(--neon3),var(--neon));display:inline-flex;align-items:center;justify-content:center;font-size:18px}
+
+/* ==========================
+   MINI GAME
+========================== */
+.mini{display:grid;grid-template-columns:1fr 1fr;gap:10px;align-items:center}
+.mini button{padding:16px;border-radius:16px;font-size:18px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.06);color:var(--text);cursor:pointer;transition:.2s}
+.mini button:hover{background:rgba(255,255,255,.1)}
+.mini-score{font-size:22px;text-align:center}
+
+/* ==========================
+   LIBRARY SECTION
+========================== */
+.library-form{margin-top:16px;display:flex;flex-direction:column;gap:12px}
+.library-input{width:100%;padding:10px;border-radius:12px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);color:var(--text)}
+.library-textarea{height:120px;resize:vertical}
+.library-submit{padding:12px;border-radius:14px;background:linear-gradient(135deg,var(--neon),var(--neon2));color:#000;cursor:pointer;font-weight:bold;border:none;transition:.2s}
+.library-submit:hover{transform:scale(1.02)}
+.library-list{margin-top:20px;display:flex;flex-direction:column;gap:14px}
+.library-entry{padding:14px;border-radius:16px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1)}
+.library-entry h4{font-size:15px;margin-bottom:6px}
+.library-entry p{font-size:13px;color:var(--muted)}
+.library-entry small{color:var(--neon3);display:block;margin-top:8px}
+
+/* ==========================
+   INFO SECTIONS
+========================== */
+.info-sections{margin-top:20px;display:flex;flex-direction:column;gap:16px}
+.info-section{padding:14px;border-radius:16px;background:linear-gradient(180deg,rgba(18,26,51,.8),rgba(10,14,30,.8));border:1px solid rgba(255,255,255,.1)}
+.info-section h3{font-size:16px;margin-bottom:8px}
+.info-section p{font-size:13px;line-height:1.5}
+.info-section ul{list-style-type:disc;padding-left:20px}
+.info-section li{margin-bottom:6px}
+
+/* ==========================
+   LIVE STREAM
+========================== */
+.live-stream{margin-top:20px;display:flex;flex-direction:column;gap:12px}
+.live-button{padding:12px;border-radius:14px;background:linear-gradient(135deg,var(--danger),var(--neon3));color:#fff;cursor:pointer;font-weight:bold;border:none;transition:.2s;text-align:center}
+.live-button:hover{transform:scale(1.02)}
+.live-status{padding:10px;border-radius:12px;background:rgba(255,255,255,.05);text-align:center;font-size:14px}
+.live-chat{margin-top:12px;display:flex;flex-direction:column;gap:8px}
+.chat-message{padding:8px 12px;border-radius:12px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08)}
+.chat-input{display:flex;gap:8px}
+.chat-input input{flex:1;padding:8px;border-radius:12px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);color:var(--text)}
+.chat-input button{padding:8px 12px;border-radius:12px;background:var(--neon);color:#000;cursor:pointer;border:none}
+
+/* ==========================
+   FOOTER
+========================== */
+.footer{margin-top:22px;text-align:center;color:var(--muted);font-size:12px;padding:12px 0;border-top:1px solid rgba(255,255,255,.08)}
+
+/* ==========================
+   ADDITIONAL STYLES FOR MOBILE
+========================== */
+@media(max-width:768px){
+  .app{padding:16px}
+  .header{flex-direction:column;gap:16px}
+  .nav{justify-content:center}
+  .content{gap:16px}
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .games{grid-template-columns:1fr}
+  .mini{grid-template-columns:1fr}
+  .library-form{gap:10px}
+  .info-sections{gap:12px}
+  .live-stream{gap:10px}
+}
+
+/* ==========================
+   ANIMATIONS
+========================== */
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.card{animation:fadeIn 0.5s ease-out}
+.game{animation:fadeIn 0.6s ease-out}
+.badge{animation:fadeIn 0.7s ease-out}
+
+/* ==========================
+   BUTTON VARIANTS
+========================== */
+.btn-primary{background:linear-gradient(135deg,var(--neon),var(--neon2));color:#000}
+.btn-secondary{background:linear-gradient(135deg,var(--neon3),var(--danger));color:#fff}
+.btn-outline{border:1px solid var(--neon);background:transparent;color:var(--neon)}
+
+/* ==========================
+   FORM ELEMENTS
+========================== */
+input,textarea{outline:none;transition:.2s}
+input:focus,textarea:focus{border-color:var(--neon);box-shadow:0 0 8px rgba(77,252,255,.3)}
+
+/* ==========================
+   SCROLLBAR
+========================== */
+::-webkit-scrollbar{width:8px}
+::-webkit-scrollbar-track{background:var(--bg-soft)}
+::-webkit-scrollbar-thumb{background:var(--neon);border-radius:4px}
+::-webkit-scrollbar-thumb:hover{background:var(--neon2)}
+
+/* ==========================
+   TYPOGRAPHY VARIANTS
+========================== */
+h1{font-size:28px;font-weight:700;letter-spacing:0.5px}
+h2{font-size:20px;font-weight:600;margin-bottom:14px}
+h3{font-size:16px;font-weight:500;margin-bottom:8px}
+h4{font-size:14px;font-weight:500}
+p{line-height:1.6}
+small{font-size:11px}
+
+/* ==========================
+   UTILITY CLASSES
+========================== */
+.flex-center{display:flex;align-items:center;justify-content:center}
+.flex-column{flex-direction:column}
+.gap-8{gap:8px}
+.gap-16{gap:16px}
+.mt-8{margin-top:8px}
+.mt-16{margin-top:16px}
+.mb-8{margin-bottom:8px}
+.mb-16{margin-bottom:16px}
+.p-8{padding:8px}
+.p-16{padding:16px}
+.rounded-12{border-radius:12px}
+.shadow-soft{box-shadow:0 4px 12px rgba(0,0,0,.2)}
+.text-center{text-align:center}
+.text-muted{color:var(--muted)}
+.text-neon{color:var(--neon)}
+.bg-soft{background:var(--bg-soft)}
+.border-soft{border:1px solid rgba(255,255,255,.08)}
+
+/* ==========================
+   EXTENDED STYLES FOR LIBRARY
+========================== */
+.library-entry .author{color:var(--neon2);font-size:12px;margin-top:4px}
+.library-entry .date{color:var(--muted);font-size:11px}
+.library-search{margin-bottom:12px;display:flex;gap:8px}
+.library-search input{flex:1}
+.library-search button{padding:8px 12px}
+
+/* ==========================
+   EXTENDED STYLES FOR INFO
+========================== */
+.info-section.expanded{max-height:none}
+.info-toggle{cursor:pointer;color:var(--neon);font-size:12px;margin-top:8px;display:block}
+
+/* ==========================
+   EXTENDED STYLES FOR LIVE
+========================== */
+.live-viewer-count{color:var(--warning);font-size:12px;margin-top:4px}
+.live-duration{color:var(--muted);font-size:12px}
+.chat-message .user{color:var(--neon3);font-weight:bold}
+.chat-message .time{color:var(--muted);font-size:10px;margin-left:8px}
+
+/* ==========================
+   PLACEHOLDERS
+========================== */
+::placeholder{color:var(--muted);opacity:0.7}
+
+/* ==========================
+   FOCUS STATES
+========================== */
+button:focus{outline:2px solid var(--neon);outline-offset:2px}
+
+/* ==========================
+   HOVER EFFECTS
+========================== */
+.nav button:hover{background:rgba(255,255,255,.1)}
+.stat:hover{transform:translateY(-2px)}
+.info-section:hover{box-shadow:0 0 12px rgba(77,252,255,.1)}
+
+/* ==========================
+   TRANSITIONS
+========================== */
+* {transition:background 0.2s, transform 0.2s, box-shadow 0.2s}
+
+/* ==========================
+   MEDIA QUERIES EXTENDED
+========================== */
+@media(max-width:480px){
+  .brand h1{font-size:18px}
+  .nav button{padding:8px 12px;font-size:12px}
+  .timer-display{font-size:20px}
+  .mood{padding:8px 10px;font-size:12px}
+  .badge i{width:28px;height:28px;font-size:14px}
+  .library-textarea{height:100px}
+  .info-section p{font-size:12px}
+  .live-button{padding:10px}
+}
+
+/* ==========================
+   ACCESSIBILITY
+========================== */
+[role="button"]{cursor:pointer}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0}
+
+/* ==========================
+   DARK MODE ENHANCEMENTS
+========================== */
+body{--shadow-color:rgba(0,0,0,0.4)}
+.card{box-shadow:0 2px 8px var(--shadow-color)}
+
+/* ==========================
+   MORE UTILITIES
+========================== */
+.overflow-hidden{overflow:hidden}
+.position-relative{position:relative}
+.display-none{display:none}
+.display-block{display:block}
+.flex-wrap{flex-wrap:wrap}
+.justify-between{justify-content:space-between}
+.align-start{align-items:flex-start}
+.width-full{width:100%}
+.height-auto{height:auto}
+
+/* ==========================
+   GRID VARIANTS
+========================== */
+.grid-2{grid-template-columns:repeat(2,1fr)}
+.grid-3{grid-template-columns:repeat(3,1fr)}
+@media(max-width:600px){.grid-2,.grid-3{grid-template-columns:1fr}}
+
+/* ==========================
+   LIST STYLES
+========================== */
+ul.disc{list-style-type:disc}
+ul.circle{list-style-type:circle}
+li{margin-bottom:8px}
+
+/* ==========================
+   TABLE STYLES (FOR FUTURE)
+========================== */
+.table{width:100%;border-collapse:collapse}
+.table th,.table td{padding:8px;border:1px solid var(--border-soft);text-align:left}
+.table th{background:var(--bg-soft)}
+
+/* ==========================
+   ALERTS
+========================== */
+.alert{padding:12px;border-radius:12px;margin-bottom:12px}
+.alert-success{background:rgba(124,255,107,.2);border:1px solid var(--neon2);color:var(--neon2)}
+.alert-error{background:rgba(255,92,122,.2);border:1px solid var(--danger);color:var(--danger)}
+
+/* ==========================
+   MODALS (SIMPLE)
+========================== */
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.8);display:none;align-items:center;justify-content:center;z-index:100}
+.modal-content{background:var(--card);padding:20px;border-radius:16px;max-width:400px;width:90%}
+.modal-close{float:right;cursor:pointer;color:var(--muted)}
+.modal.active{display:flex}
+
+/* ==========================
+   TOOLTIPS
+========================== */
+.tooltip{position:relative}
+.tooltip:hover::after{content:attr(data-tooltip);position:absolute;bottom:100%;left:50%;transform:translateX(-50%);background:var(--bg-soft);padding:4px 8px;border-radius:8px;color:var(--text);font-size:12px;white-space:nowrap}
+
+/* ==========================
+   PROGRESS BARS
+========================== */
+.progress{height:8px;background:var(--bg-soft);border-radius:4px;overflow:hidden;margin-top:8px}
+.progress-bar{height:100%;background:linear-gradient(90deg,var(--neon),var(--neon2));transition:width 0.3s}
+
+/* ==========================
+   ACCORDIONS
+========================== */
+.accordion-header{cursor:pointer;padding:12px;background:var(--card-soft);border-radius:12px;margin-bottom:8px}
+.accordion-content{display:none;padding:12px;background:var(--bg-soft);border-radius:12px}
+.accordion.active .accordion-content{display:block}
+
+/* ==========================
+   CAROUSEL (SIMPLE)
+========================== */
+.carousel{position:relative;overflow:hidden}
+.carousel-items{display:flex;transition:transform 0.5s}
+.carousel-item{min-width:100%;text-align:center}
+.carousel-btn{position:absolute;top:50%;transform:translateY(-50%);background:var(--neon);color:#000;padding:8px;cursor:pointer}
+.carousel-btn.prev{left:10px}
+.carousel-btn.next{right:10px}
+
+/* ==========================
+   TABS INNER
+========================== */
+.inner-tabs{display:flex;gap:8px;margin-bottom:12px}
+.inner-tab{padding:8px 12px;border-radius:12px;cursor:pointer;background:var(--bg-soft)}
+.inner-tab.active{background:var(--neon);color:#000}
+
+/* ==========================
+   PAGINATION
+========================== */
+.pagination{display:flex;gap:8px;justify-content:center;margin-top:16px}
+.page-btn{padding:8px 12px;border-radius:8px;background:var(--bg-soft);cursor:pointer}
+.page-btn.active{background:var(--neon);color:#000}
+
+/* ==========================
+   SEARCH BAR
+========================== */
+.search-bar{display:flex;gap:8px;margin-bottom:16px}
+.search-bar input{flex:1;padding:10px;border-radius:12px;border:var(--border-soft);background:var(--bg-soft)}
+.search-bar button{padding:10px;background:var(--neon);color:#000;border:none;border-radius:12px;cursor:pointer}
+
+/* ==========================
+   USER PROFILE EXTENDED
+========================== */
+.profile-extended{display:flex;gap:16px;align-items:center;margin-bottom:16px}
+.profile-bio{font-size:13px;color:var(--muted);margin-top:8px}
+.profile-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.profile-stat{padding:8px;text-align:center;background:var(--bg-soft);border-radius:12px}
+
+/* ==========================
+   FRIENDS LIST
+========================== */
+.friends-list{display:flex;flex-direction:column;gap:12px}
+.friend-item{display:flex;gap:12px;align-items:center;padding:12px;background:var(--bg-soft);border-radius:12px}
+.friend-avatar{width:40px;height:40px;border-radius:50%;background:var(--neon)}
+.friend-name{font-size:14px}
+.friend-status{color:var(--muted);font-size:12px}
+
+/* ==========================
+   NOTIFICATIONS
+========================== */
+.notifications{display:flex;flex-direction:column;gap:8px}
+.notification{padding:10px;background:var(--card-soft);border-radius:12px;border:var(--border-soft)}
+.notification.unread{background:var(--neon2);color:#000}
+
+/* ==========================
+   SETTINGS
+========================== */
+.settings-section{margin-top:16px}
+.setting-item{display:flex;justify-content:space-between;align-items:center;padding:12px;border-bottom:1px solid var(--border-soft)}
+.setting-toggle{width:40px;height:20px;background:var(--bg-soft);border-radius:20px;position:relative;cursor:pointer}
+.setting-toggle::after{content:'';position:absolute;top:2px;left:2px;width:16px;height:16px;background:var(--text);border-radius:50%;transition:left 0.2s}
+.setting-toggle.active{background:var(--neon)}
+.setting-toggle.active::after{left:22px;background:#000}
+
+/* ==========================
+   LEADERBOARD
+========================== */
+.leaderboard{display:flex;flex-direction:column;gap:12px}
+.leader-item{display:flex;gap:12px;align-items:center;padding:12px;background:var(--bg-soft);border-radius:12px}
+.leader-rank{width:30px;text-align:center;font-weight:bold}
+.leader-name{flex:1}
+.leader-score{color:var(--neon);font-weight:bold}
+
+/* ==========================
+   EVENT CALENDAR
+========================== */
+.calendar{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;text-align:center}
+.calendar-header{font-weight:bold;margin-bottom:8px}
+.calendar-day{padding:8px;background:var(--bg-soft);border-radius:8px}
+.calendar-day.event{background:var(--neon);color:#000}
+
+/* ==========================
+   POLLS
+========================== */
+.poll-question{font-size:16px;margin-bottom:12px}
+.poll-options{display:flex;flex-direction:column;gap:8px}
+.poll-option{padding:10px;background:var(--bg-soft);border-radius:12px;cursor:pointer}
+.poll-option.selected{background:var(--neon);color:#000}
+.poll-results{display:none;margin-top:12px}
+.poll-bar{width:0;height:8px;background:var(--neon);border-radius:4px;transition:width 0.5s}
+
+/* ==========================
+   GALLERY
+========================== */
+.gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+.gallery-item{border-radius:12px;overflow:hidden;cursor:pointer}
+.gallery-item img{width:100%;height:auto;display:block}
+
+/* ==========================
+   VIDEO PLAYER PLACEHOLDER
+========================== */
+.video-placeholder{background:var(--bg-soft);height:200px;display:flex;align-items:center;justify-content:center;border-radius:16px}
+.video-placeholder::before{content:'Video Will Play Here';color:var(--muted)}
+
+/* ==========================
+   AUDIO CONTROLS
+========================== */
+.audio-controls{display:flex;gap:8px;align-items:center}
+.audio-btn{padding:8px;background:var(--neon);color:#000;border-radius:50%;cursor:pointer}
+
+/* ==========================
+   FILE UPLOAD
+========================== */
+.file-upload{padding:12px;background:var(--bg-soft);border-radius:12px;text-align:center;cursor:pointer}
+.file-upload input{display:none}
+
+/* ==========================
+   SOCIAL SHARE
+========================== */
+.social-share{display:flex;gap:12px;justify-content:center}
+.social-btn{width:40px;height:40px;background:var(--neon);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#000}
+
+/* ==========================
+   EXTENDED FOOTER
+========================== */
+.footer-links{display:flex;gap:16px;justify-content:center;margin-bottom:8px}
+.footer-link{color:var(--muted);text-decoration:none;font-size:12px}
+.footer-link:hover{color:var(--neon)}
+</style>
+</head>
+<body>
+<div class="bg-anim"></div>
+<div class="app">
+  <header class="header">
+    <div class="brand">
+      <div class="logo"></div>
+      <div>
+        <h1>HealApp — Gaming</h1>
+        <span>Health-focused gaming panel, user library and live stream</span>
+      </div>
+    </div>
+    <nav class="nav">
+      <button class="active" data-tab="dashboard">Dashboard</button>
+      <button data-tab="games">Games</button>
+      <button data-tab="stats">Stats</button>
+      <button data-tab="mini">Mini Game</button>
+      <button data-tab="library">Library</button>
+      <button data-tab="info">Info Sections</button>
+      <button data-tab="live">Live Stream</button>
+    </nav>
+  </header>
+
+  <div class="grid">
+    <aside class="sidebar">
+      <div class="profile">
+        <div class="avatar"></div>
+        <div>
+          <h3>Player Name</h3>
+          <p>Balanced Gaming Mode Active</p>
+        </div>
+      </div>
+      <div class="side-section">
+        <h4>Quick Info</h4>
+        <div class="side-list">
+          <div class="side-item">Daily Limit: 2 Hours</div>
+          <div class="side-item">Break Reminder: On</div>
+          <div class="side-item">Health Mode: Active</div>
+          <div class="side-item">Library Entries: 5</div>
+          <div class="side-item">Live Stream Time: 0 min</div>
+        </div>
+      </div>
+      <div class="side-section mt-16">
+        <h4>Quick Access</h4>
+        <div class="side-list">
+          <div class="side-item" onclick="openModal('settings')">Settings</div>
+          <div class="side-item" onclick="openModal('friends')">Friends</div>
+          <div class="side-item" onclick="openModal('notifications')">Notifications</div>
+        </div>
+      </div>
+    </aside>
+
+    <main class="content">
+      <section class="card" id="dashboard">
+        <h2>General Dashboard</h2>
+        <div class="stats">
+          <div class="stat"><h3>Played Today</h3><strong id="playedToday">00:00</strong></div>
+          <div class="stat"><h3>This Week</h3><strong>6h 20m</strong></div>
+          <div class="stat"><h3>Mood</h3><strong id="moodText">🙂</strong></div>
+          <div class="stat"><h3>Level</h3><strong>12</strong></div>
+        </div>
+
+        <h3 class="mt-16">Game Time</h3>
+        <div class="timer">
+          <div class="timer-display" id="timer">00:00</div>
+          <button onclick="startTimer()">Start</button>
+          <button onclick="pauseTimer()">Pause</button>
+          <button onclick="resetTimer()">Reset</button>
+        </div>
+
+        <h3 class="mt-16">Select Mood</h3>
+        <div class="moods">
+          <div class="mood" onclick="setMood('😄')">😄 Happy</div>
+          <div class="mood" onclick="setMood('🙂')">🙂 Normal</div>
+          <div class="mood" onclick="setMood('😐')">😐 Tired</div>
+          <div class="mood" onclick="setMood('😟')">😟 Stressed</div>
+          <div class="mood" onclick="setMood('😠')">😠 Angry</div>
+          <div class="mood" onclick="setMood('😢')">😢 Sad</div>
+        </div>
+
+        <div class="progress mt-8">
+          <div class="progress-bar" id="dailyProgress" style="width:0%"></div>
+        </div>
+        <p class="text-center text-muted">Daily Limit Progress</p>
+      </section>
+
+      <aside class="card">
+        <h2>Achievements</h2>
+        <div class="ach">
+          <div class="badge"><i>⭐</i><div><strong>First Game</strong><p>Played 10 min</p></div></div>
+          <div class="badge"><i>⏱</i><div><strong>Balanced</strong><p>Didn't exceed 2 hours</p></div></div>
+          <div class="badge"><i>🧠</i><div><strong>Awareness</strong><p>Entered mood</p></div></div>
+          <div class="badge"><i>📚</i><div><strong>Library Contribution</strong><p>Added your first entry</p></div></div>
+          <div class="badge"><i>🎥</i><div><strong>Live Streamer</strong><p>Started first stream</p></div></div>
+        </div>
+
+        <h2 class="mt-16">Leaderboard</h2>
+        <div class="leaderboard">
+          <div class="leader-item"><span class="leader-rank">1</span><span class="leader-name">Player1</span><span class="leader-score">1200</span></div>
+          <div class="leader-item"><span class="leader-rank">2</span><span class="leader-name">Player2</span><span class="leader-score">950</span></div>
+          <div class="leader-item"><span class="leader-rank">3</span><span class="leader-name">You</span><span class="leader-score">800</span></div>
+        </div>
+      </aside>
+
+      <section class="card display-none" id="games">
+        <h2>Game Library</h2>
+        <p>Games recommended by users and health-focused.</p>
+        <div class="games">
+          <div class="game"><h4>Strategy Game</h4><small>Ideal for brain exercise</small></div>
+          <div class="game"><h4>Puzzle Adventure</h4><small>Increases focus and attention</small></div>
+          <div class="game"><h4>Action Simulation</h4><small>Play with limited time</small></div>
+          <div class="game"><h4>Relaxing World</h4><small>Stress reducing effects</small></div>
+          <div class="game"><h4>Adventure Exploration</h4><small>Encourages creativity</small></div>
+          <div class="game"><h4>Sports Simulation</h4><small>Moving game experience</small></div>
+        </div>
+      </section>
+
+      <section class="card display-none" id="stats">
+        <h2>Detailed Statistics</h2>
+        <p>Weekly game time, mood trends and more.</p>
+        <div class="stats grid-3 mt-16">
+          <div class="stat"><h3>Average Time</h3><strong>1h 45m</strong></div>
+          <div class="stat"><h3>Best Day</h3><strong>Monday</strong></div>
+          <div class="stat"><h3>Total Achievements</h3><strong>15</strong></div>
+        </div>
+        <div class="accordion mt-16">
+          <div class="accordion-header" onclick="toggleAccordion(this)">Weekly Analysis</div>
+          <div class="accordion-content">
+            <p>You played balanced this week, congrats!</p>
+          </div>
+        </div>
+        <div class="accordion">
+          <div class="accordion-header" onclick="toggleAccordion(this)">Monthly Trend</div>
+          <div class="accordion-content">
+            <p>Your mood is improving.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="card display-none" id="mini">
+        <h2>Mini Game</h2>
+        <p>Simple mini games for quick reflex and fun.</p>
+        <div class="mini">
+          <button onclick="miniClick()">Click!</button>
+          <div class="mini-score" id="miniScore">Score: 0</div>
+        </div>
+        <div class="mini mt-16">
+          <button onclick="startMemoryGame()">Start Memory Game</button>
+          <div id="memoryScore">Score: 0</div>
+        </div>
+        <div id="memoryBoard" class="display-none grid-3 gap-8 mt-16"></div>
+      </section>
+
+      <section class="card display-none" id="library">
+        <h2>User Created Game Library</h2>
+        <p>Add or read info, reviews and tips about games.</p>
+        <form class="library-form" onsubmit="addLibraryEntry(event)">
+          <input class="library-input" id="libTitle" placeholder="Game Title" required>
+          <textarea class="library-textarea library-input" id="libContent" placeholder="Write Info / Review" required></textarea>
+          <button class="library-submit" type="submit">Add</button>
+        </form>
+        <div class="library-search mt-16">
+          <input id="libSearch" placeholder="Search...">
+          <button onclick="searchLibrary()">Search</button>
+        </div>
+        <div class="library-list" id="libraryList"></div>
+        <div class="pagination" id="libPagination"></div>
+      </section>
+
+      <section class="card display-none" id="info">
+        <h2>Info Sections</h2>
+        <p>Detailed information about games and mental health.</p>
+        <div class="info-sections">
+          <div class="info-section">
+            <h3>Game Addiction</h3>
+            <p>Game addiction symptoms: Prolonged gaming, social isolation, sleep disorders.</p>
+            <ul class="disc">
+              <li>Set daily limits.</li>
+              <li>Take breaks.</li>
+              <li>Get professional help.</li>
+            </ul>
+            <span class="info-toggle" onclick="toggleInfo(this)">More...</span>
+            <div class="display-none">
+              <p>Additional info: According to WHO, gaming disorder is recognized as a disease.</p>
+            </div>
+          </div>
+          <div class="info-section">
+            <h3>Healthy Gaming Tips</h3>
+            <p>Ergonomic sitting, eye resting, balanced nutrition.</p>
+            <ul class="disc">
+              <li>Apply the 20-20-20 rule.</li>
+              <li>Don't forget hydration.</li>
+              <li>Exercise.</li>
+            </ul>
+            <span class="info-toggle" onclick="toggleInfo(this)">More...</span>
+            <div class="display-none">
+              <p>Additional info: Regular breaks increase efficiency.</p>
+            </div>
+          </div>
+          <div class="info-section">
+            <h3>Game Types and Benefits</h3>
+            <p>Puzzle games develop cognitive skills.</p>
+            <ul class="disc">
+              <li>Strategy: Decision making.</li>
+              <li>Action: Reflex.</li>
+              <li>Relaxing: Stress reduction.</li>
+            </ul>
+            <span class="info-toggle" onclick="toggleInfo(this)">More...</span>
+            <div class="display-none">
+              <p>Additional info: According to research, games can reduce depression.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="card display-none" id="live">
+        <h2>Live Stream System</h2>
+        <p>Players can start live streams, chat.</p>
+        <div class="live-stream">
+          <button class="live-button" onclick="startLiveStream()">Start Live Stream</button>
+          <div class="live-status" id="liveStatus">Stream Off</div>
+          <div class="video-placeholder" id="liveVideo">Live Stream Area</div>
+          <div class="flex-center gap-16 mt-8">
+            <span class="live-viewer-count">Viewer: 0</span>
+            <span class="live-duration">Duration: 00:00</span>
+          </div>
+          <div class="live-chat" id="liveChat"></div>
+          <div class="chat-input mt-12">
+            <input id="chatMsg" placeholder="Write message...">
+            <button onclick="sendChatMessage()">Send</button>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <div class="footer">
+    <div class="footer-links">
+      <a class="footer-link" href="#">Privacy</a>
+      <a class="footer-link" href="#">Terms</a>
+      <a class="footer-link" href="#">Contact</a>
+    </div>
+    © 2026 HealApp Gaming Module — Demo Version
+  </div>
+</div>
+
+<!-- Modals -->
+<div class="modal" id="settingsModal">
+  <div class="modal-content">
+    <span class="modal-close" onclick="closeModal('settings')">×</span>
+    <h2>Settings</h2>
+    <div class="settings-section">
+      <div class="setting-item">Daily Limit<span class="setting-toggle" onclick="toggleSetting(this)"></span></div>
+      <div class="setting-item">Notifications<span class="setting-toggle active" onclick="toggleSetting(this)"></span></div>
+      <div class="setting-item">Dark Mode<span class="setting-toggle" onclick="toggleSetting(this)"></span></div>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="friendsModal">
+  <div class="modal-content">
+    <span class="modal-close" onclick="closeModal('friends')">×</span>
+    <h2>Friends</h2>
+    <div class="friends-list">
+      <div class="friend-item"><div class="friend-avatar"></div><div><span class="friend-name">Friend1</span><p class="friend-status">Online</p></div></div>
+      <div class="friend-item"><div class="friend-avatar"></div><div><span class="friend-name">Friend2</span><p class="friend-status">Offline</p></div></div>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="notificationsModal">
+  <div class="modal-content">
+    <span class="modal-close" onclick="closeModal('notifications')">×</span>
+    <h2>Notifications</h2>
+    <div class="notifications">
+      <div class="notification unread">New achievement unlocked!</div>
+      <div class="notification">Your friend started a stream.</div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ==========================
+   TAB SYSTEM
+========================== */
+const tabs = document.querySelectorAll('.nav button');
+const sections = {
+  dashboard: document.getElementById('dashboard'),
+  games: document.getElementById('games'),
+  stats: document.getElementById('stats'),
+  mini: document.getElementById('mini'),
+  library: document.getElementById('library'),
+  info: document.getElementById('info'),
+  live: document.getElementById('live')
+};
+tabs.forEach(b => b.addEventListener('click', () => {
+  tabs.forEach(x => x.classList.remove('active'));
+  b.classList.add('active');
+  Object.values(sections).forEach(s => s.classList.add('display-none'));
+  sections[b.dataset.tab].classList.remove('display-none');
+}));
+
+/* ==========================
+   TIMER LOGIC
+========================== */
+let timerInterval = null;
+let seconds = 0;
+function updateTimer() {
+  const m = String(Math.floor(seconds / 60)).padStart(2, '0');
+  const s = String(seconds % 60).padStart(2, '0');
+  document.getElementById('timer').textContent = `${m}:${s}`;
+  document.getElementById('playedToday').textContent = `${m}:${s}`;
+  const progress = (seconds / (2 * 3600)) * 100; // 2 hours limit
+  document.getElementById('dailyProgress').style.width = `${Math.min(progress, 100)}%`;
+}
+function startTimer() { if (timerInterval) return; timerInterval = setInterval(() => { seconds++; updateTimer(); }, 1000); }
+function pauseTimer() { clearInterval(timerInterval); timerInterval = null; }
+function resetTimer() { pauseTimer(); seconds = 0; updateTimer(); }
+
+/* ==========================
+   MOOD
+========================== */
+function setMood(m) {
+  document.getElementById('moodText').textContent = m;
+  document.querySelectorAll('.mood').forEach(x => x.classList.remove('active'));
+  event.target.classList.add('active');
+}
+
+/* ==========================
+   MINI GAME
+========================== */
+let score = 0;
+function miniClick() { score++; document.getElementById('miniScore').textContent = 'Score: ' + score; }
+
+/* ==========================
+   MEMORY GAME
+========================== */
+let memoryScore = 0;
+function startMemoryGame() {
+  const board = document.getElementById('memoryBoard');
+  board.classList.remove('display-none');
+  board.innerHTML = '';
+  const cards = ['A', 'A', 'B', 'B', 'C', 'C'];
+  cards.sort(() => Math.random() - 0.5);
+  cards.forEach(c => {
+    const card = document.createElement('div');
+    card.textContent = '?';
+    card.dataset.value = c;
+    card.onclick = flipCard;
+    board.appendChild(card);
+  });
+  memoryScore = 0;
+  document.getElementById('memoryScore').textContent = 'Score: 0';
+}
+let flipped = [];
+function flipCard() {
+  if (flipped.length < 2 && this.textContent === '?') {
+    this.textContent = this.dataset.value;
+    flipped.push(this);
+    if (flipped.length === 2) {
+      setTimeout(() => {
+        if (flipped[0].dataset.value === flipped[1].dataset.value) {
+          memoryScore += 10;
+          document.getElementById('memoryScore').textContent = 'Score: ' + memoryScore;
+        } else {
+          flipped.forEach(f => f.textContent = '?');
+        }
+        flipped = [];
+      }, 1000);
+    }
+  }
+}
+
+/* ==========================
+   LIBRARY LOGIC
+========================== */
+let libraryEntries = [];
+let currentPage = 1;
+const entriesPerPage = 5;
+function addLibraryEntry(e) {
+  e.preventDefault();
+  const title = document.getElementById('libTitle').value;
+  const content = document.getElementById('libContent').value;
+  if (title && content) {
+    libraryEntries.push({ title, content, author: 'Player', date: new Date().toLocaleString() });
+    document.getElementById('libTitle').value = '';
+    document.getElementById('libContent').value = '';
+    renderLibrary();
+  }
+}
+function renderLibrary(filtered = libraryEntries) {
+  const list = document.getElementById('libraryList');
+  list.innerHTML = '';
+  const start = (currentPage - 1) * entriesPerPage;
+  const end = start + entriesPerPage;
+  filtered.slice(start, end).forEach(entry => {
+    const div = document.createElement('div');
+    div.className = 'library-entry';
+    div.innerHTML = `<h4>${entry.title}</h4><p>${entry.content}</p><small class="author">${entry.author}</small><small class="date">${entry.date}</small>`;
+    list.appendChild(div);
+  });
+  renderPagination(filtered.length);
+}
+function renderPagination(total) {
+  const pages = Math.ceil(total / entriesPerPage);
+  const pag = document.getElementById('libPagination');
+  pag.innerHTML = '';
+  for (let i = 1; i <= pages; i++) {
+    const btn = document.createElement('div');
+    btn.className = 'page-btn' + (i === currentPage ? ' active' : '');
+    btn.textContent = i;
+    btn.onclick = () => { currentPage = i; renderLibrary(); };
+    pag.appendChild(btn);
+  }
+}
+function searchLibrary() {
+  const query = document.getElementById('libSearch').value.toLowerCase();
+  const filtered = libraryEntries.filter(e => e.title.toLowerCase().includes(query) || e.content.toLowerCase().includes(query));
+  currentPage = 1;
+  renderLibrary(filtered);
+}
+
+/* ==========================
+   INFO TOGGLE
+========================== */
+function toggleInfo(el) {
+  const content = el.nextElementSibling;
+  content.classList.toggle('display-none');
+  el.textContent = content.classList.contains('display-none') ? 'More...' : 'Less...';
+}
+
+/* ==========================
+   LIVE STREAM LOGIC
+========================== */
+let liveInterval = null;
+let liveSeconds = 0;
+let viewers = 0;
+function startLiveStream() {
+  if (liveInterval) return;
+  document.getElementById('liveStatus').textContent = 'Stream Active';
+  document.getElementById('liveVideo').textContent = 'Live Stream Simulation';
+  liveInterval = setInterval(() => {
+    liveSeconds++;
+    const m = String(Math.floor(liveSeconds / 60)).padStart(2, '0');
+    const s = String(liveSeconds % 60).padStart(2, '0');
+    document.querySelector('.live-duration').textContent = `Duration: ${m}:${s}`;
+    viewers = Math.floor(Math.random() * 10);
+    document.querySelector('.live-viewer-count').textContent = `Viewer: ${viewers}`;
+  }, 1000);
+}
+function sendChatMessage() {
+  const msg = document.getElementById('chatMsg').value;
+  if (msg) {
+    const chat = document.getElementById('liveChat');
+    const div = document.createElement('div');
+    div.className = 'chat-message';
+    div.innerHTML = `<span class="user">You:</span> ${msg} <span class="time">${new Date().toLocaleTimeString()}</span>`;
+    chat.appendChild(div);
+    document.getElementById('chatMsg').value = '';
+    chat.scrollTop = chat.scrollHeight;
+  }
+}
+
+/* ==========================
+   ACCORDION
+========================== */
+function toggleAccordion(el) {
+  el.parentElement.classList.toggle('active');
+}
+
+/* ==========================
+   MODALS
+========================== */
+function openModal(type) {
+  document.getElementById(type + 'Modal').classList.add('active');
+}
+function closeModal(type) {
+  document.getElementById(type + 'Modal').classList.remove('active');
+}
+
+/* ==========================
+   SETTINGS TOGGLE
+========================== */
+function toggleSetting(el) {
+  el.classList.toggle('active');
+}
+
+/* ==========================
+   INITIAL RENDER
+========================== */
+renderLibrary();
+</script>
+</body>
+</html>

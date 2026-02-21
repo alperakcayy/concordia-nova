@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign Up / Log In - Concordia Nova</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      font-family: Arial, sans-serif;
+      background: url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1950&q=80') no-repeat center center fixed;
+      background-size: cover;
+      color: #fff;
+    }
+
+    .container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100%;
+    }
+
+    .box {
+      background: rgba(0,0,0,0.6);
+      padding: 30px;
+      border-radius: 12px;
+      width: 320px;
+      text-align: center;
+    }
+
+    .box h2 {
+      margin-bottom: 20px;
+    }
+
+    .box label {
+      display: block;
+      margin-top: 10px;
+      font-weight: bold;
+      text-align: left;
+    }
+
+    .box input {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+      border-radius: 6px;
+      border: none;
+      background: rgba(255,255,255,0.08);
+      color: #fff;
+    }
+
+    .box button {
+      width: 100%;
+      margin-top: 20px;
+      padding: 10px;
+      border: none;
+      border-radius: 8px;
+      background: #1DA1F2;
+      color: #fff;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .box button:hover {
+      background: #0d8ddb;
+    }
+
+    .toggle-btn {
+      margin-top: 15px;
+      background: transparent;
+      border: 1px solid #fff;
+      color: #fff;
+      cursor: pointer;
+    }
+
+    .toggle-btn:hover {
+      background: rgba(255,255,255,0.12);
+    }
+
+    .muted { color:#ccc; font-size:13px; margin-top:8px; }
+  </style>
+</head>
+<body>
+<div class="container">
+  <!-- Sign Up Box -->
+  <div class="box" id="registerBox">
+    <h2>Sign Up</h2>
+
+    <label for="fullName">Full Name</label>
+    <input type="text" id="fullName" placeholder="Full Name">
+
+    <label for="username">Username</label>
+    <input type="text" id="username" placeholder="Username">
+
+    <label for="email">Email</label>
+    <input type="email" id="email" placeholder="Email">
+
+    <label for="password">Password</label>
+    <input type="password" id="password" placeholder="Password">
+
+    <button id="registerBtn" type="button">Sign Up</button>
+    <button class="toggle-btn" id="toLoginBtn" type="button">Already have an account? Log In</button>
+
+    <div class="muted" style="margin-top:10px;">After creating your account, you can complete your profile information.</div>
+  </div>
+
+  <!-- Log In Box -->
+  <div class="box" id="loginBox" style="display:none;">
+    <h2>Log In</h2>
+
+    <label for="loginEmail">Email</label>
+    <input type="email" id="loginEmail" placeholder="Email">
+
+    <label for="loginPassword">Password</label>
+    <input type="password" id="loginPassword" placeholder="Password">
+
+    <button id="loginBtn" type="button">Log In</button>
+    <button class="toggle-btn" id="toRegisterBtn" type="button">Don't have an account? Sign Up</button>
+
+    <div class="muted" style="margin-top:10px;">If you forget your password, you can request a password reset email.</div>
+  </div>
+</div>
+
+<!-- Supabase client + authentication logic -->
+<script type="module">
+  import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+
+  // Supabase connection details
+  const SUPABASE_URL = 'https://shkttorkfcnvkrwnkixf.supabase.co'; 
+  // <-- Replace with your own <project>.supabase.co URL
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNoa3R0b3JrZmNudmtyd25raXhmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY2NzY2ODAsImV4cCI6MjA3MjI1MjY4MH0.GgDA8tSgQoMhCt_BYZU3mCkKaErUs_SQVNeWdCGQOgI'; 
+  // <-- Dashboard → Settings → API → anon public key
+  // =========================================================
+
+  const USE_PLACEHOLDER_KEY = !SUPABASE_ANON_KEY || SUPABASE_ANON_KEY.includes('PASTE_YOUR_ANON_KEY_HERE');
+
+  if (USE_PLACEHOLDER_KEY) {
+    console.warn('[Concordia Nova] Supabase anon key is missing or still a placeholder. Falling back to localStorage mock mode.');
+  }
+
+  const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  function showAlert(msg) {
+    try { alert(msg); } catch (e) { console.log(msg); }
+  }
+
+  // DOM elements
+  const registerBox   = document.getElementById('registerBox');
+  const loginBox      = document.getElementById('loginBox');
+  const toLoginBtn    = document.getElementById('toLoginBtn');
+  const toRegisterBtn = document.getElementById('toRegisterBtn');
+
+  const registerBtn = document.getElementById('registerBtn');
+  const loginBtn    = document.getElementById('loginBtn');
+
+  // Toggle between sign-up and login forms
+  toLoginBtn.addEventListener('click', toggleBox);
+  toRegisterBtn.addEventListener('click', toggleBox);
+
+  function toggleBox() {
+    const isRegisterVisible = registerBox.style.display !== 'none';
+    registerBox.style.display = isRegisterVisible ? 'none' : 'block';
+    loginBox.style.display    = isRegisterVisible ? 'block' : 'none';
+  }
+
+  // ────────────────────────────────────────────────
+  // Authentication Functions
+  // ────────────────────────────────────────────────
+
+  async function registerUser() {
+    const fullName = document.getElementById('fullName').value.trim();
+    const username = document.getElementById('username').value.trim();
+    const email    = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value.trim();
+
+    if (!fullName || !username || !email || !password) {
+      showAlert('Please fill in all fields!');
+      return;
+    }
+
+    if (USE_PLACEHOLDER_KEY) {
+      // Development fallback: localStorage mock
+      const user = { 
+        displayName: fullName, 
+        username, 
+        email, 
+        password, 
+        profilePic: '', 
+        bio: '' 
+      };
+      localStorage.setItem('registeredUser', JSON.stringify(user));
+      localStorage.setItem('loggedInUser', JSON.stringify(user));
+      showAlert('Registration successful (local mock). Redirecting to profile...');
+      window.location.href = 'profile.html';
+      return;
+    }
+
+    registerBtn.disabled = true;
+    registerBtn.textContent = 'Signing up...';
+
+    try {
+      // 1) Create auth user
+      const { data: signData, error: signError } = await supabase.auth.signUp({
+        email,
+        password
+      });
+
+      if (signError) {
+        console.error('Sign-up error:', signError);
+        showAlert('Registration failed: ' + (signError.message || JSON.stringify(signError)));
+        return;
+      }
+
+      const userId = signData?.user?.id;
+      if (!userId) {
+        showAlert('Registration failed: Could not create user.');
+        return;
+      }
+
+      // 2) Create profile entry (optional but recommended)
+      const profileData = {
+        id: userId,
+        username,
+        display_name: fullName,
+        avatar_url: null,
+        bio: null
+      };
+
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .insert([profileData]);
+
+      if (profileError) {
+        console.warn('Profile creation warning:', profileError);
+      }
+
+      showAlert('Registration successful. Please check your email if email confirmation is required.');
+      window.location.href = 'profile.html';
+
+    } catch (err) {
+      console.error('Registration error:', err);
+      showAlert('An error occurred during registration: ' + (err.message || err));
+    } finally {
+      registerBtn.disabled = false;
+      registerBtn.textContent = 'Sign Up';
+    }
+  }
+
+  async function loginUser() {
+    const email    = document.getElementById('loginEmail').value.trim();
+    const password = document.getElementById('loginPassword').value.trim();
+
+    if (!email || !password) {
+      showAlert('Please enter your email and password.');
+      return;
+    }
+
+    if (USE_PLACEHOLDER_KEY) {
+      const storedUser = JSON.parse(localStorage.getItem('registeredUser'));
+      if (!storedUser) {
+        showAlert('No registered user found. Please sign up first.');
+        toggleBox();
+        return;
+      }
+      if (email === storedUser.email && password === storedUser.password) {
+        localStorage.setItem('loggedInUser', JSON.stringify(storedUser));
+        showAlert('Login successful (local mock). Redirecting to profile...');
+        window.location.href = 'profile.html';
+        return;
+      } else {
+        showAlert('Incorrect email or password!');
+        return;
+      }
+    }
+
+    loginBtn.disabled = true;
+    loginBtn.textContent = 'Logging in...';
+
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password
+      });
+
+      if (error) {
+        console.error('Login error:', error);
+        showAlert('Login failed: ' + (error.message || JSON.stringify(error)));
+        return;
+      }
+
+      showAlert('Login successful. Redirecting to profile...');
+      window.location.href = 'profile.html';
+
+    } catch (err) {
+      console.error('Login error:', err);
+      showAlert('An error occurred during login: ' + (err.message || err));
+    } finally {
+      loginBtn.disabled = false;
+      loginBtn.textContent = 'Log In';
+    }
+  }
+
+  // Simple password reset (you can call this from a "Forgot password?" link if you add one)
+  async function sendPasswordReset() {
+    const email = document.getElementById('loginEmail').value.trim();
+    if (!email) {
+      showAlert('Please enter your email to reset your password.');
+      return;
+    }
+    if (USE_PLACEHOLDER_KEY) {
+      showAlert('Password reset (mock): Email cannot be sent in local mode.');
+      return;
+    }
+
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: window.location.origin + '/login.html'  // adjust if your login page has different name
+    });
+
+    if (error) {
+      showAlert('Password reset error: ' + error.message);
+    } else {
+      showAlert('Password reset email sent. Check your inbox.');
+    }
+  }
+
+  // Event listeners
+  registerBtn.addEventListener('click', registerUser);
+  loginBtn.addEventListener('click', loginUser);
+
+  // Check auth state on page load
+  (async function initializeAuth() {
+    if (USE_PLACEHOLDER_KEY) {
+      if (localStorage.getItem('loggedInUser')) {
+        window.location.href = 'profile.html';
+      }
+      return;
+    }
+
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        window.location.href = 'profile.html';
+      }
+
+      supabase.auth.onAuthStateChange((event) => {
+        if (event === 'SIGNED_IN') {
+          window.location.href = 'profile.html';
+        }
+      });
+    } catch (err) {
+      console.error('Auth initialization error:', err);
+    }
+  })();
+
+  /* 
+   IMPORTANT NOTES:
+   • Make sure the "profiles" table exists in your Supabase project.
+   • Example SQL to create it (run in Supabase → SQL Editor):
+
+     CREATE TABLE IF NOT EXISTS profiles (
+       id          uuid PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+       username    text UNIQUE,
+       display_name text,
+       avatar_url  text,
+       bio         text
+     );
+
+   • You might also want Row Level Security (RLS) policies on the profiles table.
+  */
+</script>
+</body>
+</html>

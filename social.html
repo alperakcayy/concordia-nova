@@ -1,0 +1,3245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
+  <title>Concordia Nova — Home</title>
+
+  <!-- Google Fonts + Font Awesome icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+  <style>
+    :root {
+      --glass: rgba(0,0,0,.8);
+      --card: #101010;
+      --muted: #cfcfcf;
+      --accent: #1da1f2;
+      --danger: #e0245e;
+      --yellow: #ffc107;
+      --bottom-bar-height: 64px;
+      --safe-area-top: 0px;
+      --safe-area-bottom: 0px;
+      --transition: .18s ease;
+    }
+
+    @supports (padding: env(safe-area-inset-top)) {
+      :root {
+        --safe-area-top: env(safe-area-inset-top);
+        --safe-area-bottom: env(safe-area-inset-bottom);
+      }
+    }
+
+    :root {
+      --bottom-bar-height: calc(64px + var(--safe-area-bottom));
+    }
+
+    * { box-sizing: border-box; }
+    html, body { height: 100%; overflow-x: hidden; }
+    body {
+      margin: 0;
+      color: #fff;
+      font-family: 'Poppins', sans-serif;
+      background: url('https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?auto=format&fit=crop&w=1950&q=80') center/cover fixed no-repeat;
+      padding-bottom: var(--bottom-bar-height);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      -webkit-tap-highlight-color: transparent; /* Remove tap highlight on mobile */
+    }
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      align-items: center;
+      padding: calc(8px + var(--safe-area-top)) 10px 8px 10px;
+      background: rgba(0,0,0,.75);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid rgba(255,255,255,.12);
+      flex-wrap: wrap;
+    }
+    nav a {
+      color: #fff;
+      text-decoration: none;
+      font-weight: 600;
+      padding: 6px 8px;
+      border-radius: 6px;
+      position: relative;
+      font-size: 13px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+      flex: 0 1 auto;
+      min-width: 0;
+      transition: var(--transition);
+    }
+    nav a:hover { background: rgba(255,255,255,.05); }
+    .search-wrapper {
+      position: relative;
+      flex: 0 0 auto;
+      width: 260px;
+      max-width: 40vw;
+      min-width: 140px;
+      margin-left: 6px;
+      margin-right: 6px;
+    }
+    .search-input {
+      width: 100%;
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.08);
+      background: rgba(0,0,0,.45);
+      color: #fff;
+      outline: none;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      transition: var(--transition);
+    }
+    .search-input:focus { 
+      box-shadow: 0 4px 20px rgba(0,0,0,.4);
+      border-color: var(--accent);
+    }
+    .search-results {
+      position: absolute;
+      left: 0;
+      right: auto;
+      top: calc(100% + 6px);
+      width: 100%;
+      background: rgba(0,0,0,.98);
+      border: 1px solid rgba(255,255,255,.06);
+      border-radius: 10px;
+      max-height: 220px;
+      overflow: auto;
+      -webkit-overflow-scrolling: touch;
+      box-shadow: 0 12px 36px rgba(0,0,0,.6);
+      z-index: 99999;
+      padding: 6px;
+      display: none;
+    }
+    .search-item {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      padding: 8px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .search-item:hover, .search-item.selected { background: rgba(255,255,255,.03); }
+    .search-item .s-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      object-fit: cover;
+      background: #222;
+      border: 1px solid rgba(255,255,255,.06);
+      flex-shrink: 0;
+    }
+    .search-item .s-meta { display: flex; flex-direction: column; flex: 1; min-width: 0; }
+    .s-name { font-weight: 600; font-size: 13px; color: #fff; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .s-username { font-size: 12px; color: #bdbdbd; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .notif-badge {
+      position: absolute;
+      top: 0px;
+      right: 0px;
+      min-width: 16px;
+      height: 16px;
+      line-height: 16px;
+      background: var(--danger);
+      color: #fff;
+      font-size: 10px;
+      border-radius: 999px;
+      text-align: center;
+      padding: 0 4px;
+      transform: translate(50%, -30%);
+      font-weight: 700;
+      z-index: 10;
+    }
+    .container {
+      width: min(760px, 96vw);
+      margin: 14px auto;
+      background: var(--glass);
+      padding: 16px;
+      border-radius: 12px;
+      box-shadow: 0 8px 24px rgba(0,0,0,.32);
+    }
+    h2 { margin: 0 0 10px; font-size: 18px; }
+    .muted { color: var(--muted); font-size: 13px; }
+    input[type="text"], input[type="password"], input[type="date"], textarea, input[type="file"] {
+      width: 100%;
+      padding: 10px;
+      margin-top: 8px;
+      border: none;
+      border-radius: 8px;
+      background: #111;
+      color: #fff;
+      font-size: 14px;
+    }
+    textarea { min-height: 80px; resize: vertical; }
+    button {
+      width: 100%;
+      margin-top: 8px;
+      padding: 10px;
+      border: none;
+      border-radius: 8px;
+      background: var(--accent);
+      color: #fff;
+      font-weight: 700;
+      cursor: pointer;
+      transition: var(--transition);
+      font-size: 14px;
+    }
+    button:hover:not(:disabled) { background: color-mix(in srgb, var(--accent) 90%, black); }
+    button:disabled { opacity: 0.6; cursor: not-allowed; }
+    .tweet-box { background: #000; border-radius: 12px; padding: 12px; }
+    .tweet-actions { display: flex; gap: 8px; margin-top: 8px; }
+    .record-btn, .file-btn { background: var(--accent); padding: 8px; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: var(--transition); }
+    .file-btn { background: var(--yellow); color: #000; }
+    .record-btn.recording { background: var(--danger); animation: pulse 1s infinite; }
+    @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
+    .divider { height: 1px; background: rgba(255,255,255,.06); margin: 12px 0; }
+    .feed { display: flex; flex-direction: column; gap: 12px; }
+    .tweet {
+      background: var(--card);
+      border: 1px solid rgba(255,255,255,.06);
+      border-radius: 10px;
+      padding: 12px;
+      transition: var(--transition);
+    }
+    .tweet:hover { box-shadow: 0 4px 12px rgba(0,0,0,.2); }
+    .founder-tweet {
+      border-left: 4px solid var(--yellow);
+      background: rgba(255, 215, 0, 0.05);
+    }
+    .avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      object-fit: cover;
+      background: #222;
+      border: 1px solid rgba(255,255,255,.08);
+      flex-shrink: 0;
+    }
+    .actions {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      margin-top: 8px;
+      flex-wrap: wrap;
+    }
+    .action {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: #ddd;
+      cursor: pointer;
+      font-size: 13px;
+      padding: 6px 8px;
+      border-radius: 6px;
+      transition: var(--transition);
+      white-space: nowrap;
+    }
+    .action:hover { background: rgba(255,255,255,.04); }
+    .action.quote-btn {
+      color: var(--accent);
+    }
+    .comment-item {
+      color: #d0d0d0;
+      font-size: 13px;
+      margin-top: 6px;
+      background: rgba(255,255,255,.04);
+      padding: 8px;
+      border-radius: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+    .center-muted { text-align: center; color: #bbb; margin: 8px 0; font-size: 13px; }
+    #settingsMenu {
+      display: none;
+      position: fixed;
+      background: rgba(0,0,0,.95);
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 8px;
+      z-index: 2001;
+      min-width: 150px;
+      width: 150px;
+      padding: 6px 8px;
+      box-shadow: 0 12px 36px rgba(0,0,0,.6);
+    }
+    #settingsMenu a {
+      display: block;
+      padding: 8px 10px;
+      color: #fff;
+      text-decoration: none;
+      font-size: 13px;
+      border-radius: 6px;
+      transition: var(--transition);
+    }
+    #settingsMenu a:hover { background: rgba(255,255,255,.03); }
+    #languageList { display: none; }
+    #languageList a { padding-left: 20px; }
+    .bottom-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      height: var(--bottom-bar-height);
+      padding: 6px 0;
+      background: rgba(0,0,0,.9);
+      backdrop-filter: blur(6px);
+      border-top: 1px solid rgba(255,255,255,.06);
+      z-index: 2000;
+      pointer-events: auto;
+    }
+    .bottom-bar a {
+      color: #fff;
+      font-size: 14px;
+      text-align: center;
+      flex: 1;
+      text-decoration: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      padding: 8px 4px;
+      min-width: 0;
+      position: relative;
+      transition: var(--transition);
+      touch-action: manipulation;
+      cursor: pointer;
+      -webkit-user-select: none;
+      user-select: none;
+      pointer-events: auto;
+    }
+    .bottom-bar a:hover { background: rgba(255,255,255,.05); }
+    .bottom-bar a i { font-size: 16px; line-height: 1; }
+    .bottom-bar a span { font-size: 12px; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .bottom-bar .notif-badge {
+      position: absolute;
+      top: -6px;
+      right: -6px;
+      transform: none;
+      min-width: 14px;
+      height: 14px;
+      font-size: 9px;
+      line-height: 14px;
+      background: var(--danger);
+      color: #fff;
+      border-radius: 50%;
+      z-index: 10;
+      font-weight: 700;
+    }
+    .refresh-indicator {
+      position: absolute;
+      top: -50px;
+      left: 0;
+      width: 100%;
+      height: 50px;
+      background: rgba(0,0,0,0.8);
+      color: #fff;
+      text-align: center;
+      line-height: 50px;
+      font-size: 14px;
+      transition: transform 0.2s;
+      z-index: 999;
+    }
+    #feedPage {
+      position: relative;
+      transition: transform 0.2s;
+    }
+    .quoted-tweet {
+      margin-top: 10px;
+      padding: 8px;
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 8px;
+      background: rgba(0,0,0,.5);
+    }
+    .quoted-tweet header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+    .quoted-tweet .name {
+      font-size: 14px;
+      font-weight: 600;
+    }
+    .quoted-tweet .uname {
+      font-size: 12px;
+      color: #bbb;
+    }
+    .quoted-tweet p {
+      font-size: 13px;
+      margin: 0;
+      word-wrap: break-word;
+    }
+    .quoted-tweet img {
+      max-width: 100%;
+      border-radius: 6px;
+      margin-top: 6px;
+      height: auto;
+    }
+    .quoted-tweet audio, .quoted-tweet video {
+      width: 100%;
+      max-width: 300px;
+      border-radius: 6px;
+      margin-top: 6px;
+    }
+    .quote-preview {
+      margin-top: 10px;
+      display: none;
+    }
+    /* Modal Styles */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 10000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.8);
+      backdrop-filter: blur(4px);
+    }
+    .modal-content {
+      background-color: var(--card);
+      margin: 5% auto;
+      padding: 20px;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 500px;
+      max-height: 80vh;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      position: relative;
+      border: 1px solid rgba(255,255,255,.06);
+    }
+    .close-modal {
+      position: absolute;
+      right: 15px;
+      top: 10px;
+      color: #aaa;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+      background: none;
+      border: none;
+      z-index: 1;
+      transition: var(--transition);
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .close-modal:hover {
+      color: var(--danger);
+    }
+    .modal-tweet {
+      margin-bottom: 20px;
+    }
+    .modal-actions {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      margin-top: 10px;
+      flex-wrap: wrap;
+    }
+    .modal-comments {
+      margin-top: 20px;
+    }
+    .modal-comment-form {
+      margin-top: 15px;
+      display: flex;
+      gap: 10px;
+    }
+    .modal-comment-form input {
+      flex: 1;
+      padding: 8px;
+      border: none;
+      border-radius: 6px;
+      background: #111;
+      color: #fff;
+    }
+    .modal-comment-form button {
+      width: auto;
+      padding: 8px 12px;
+    }
+    .follow-btn {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 12px;
+      cursor: pointer;
+      transition: var(--transition);
+      white-space: nowrap;
+    }
+    .follow-btn:hover { background: color-mix(in srgb, var(--accent) 90%, black); }
+    .delete-comment-btn {
+      background: none;
+      border: none;
+      color: var(--danger);
+      cursor: pointer;
+      font-size: 14px;
+      transition: var(--transition);
+    }
+    .delete-comment-btn:hover { color: #ff6b9d; }
+    .media-preview {
+      margin-top: 8px;
+      max-width: 100%;
+      position: relative;
+      overflow: hidden;
+      border-radius: 12px;
+    }
+    .media-preview img, .media-preview video {
+      max-width: 100%;
+      height: auto;
+      display: block;
+      border-radius: 12px;
+      touch-action: manipulation;
+    }
+    .media-preview video {
+      max-height: 400px;
+      object-fit: cover;
+    }
+    /* Video player controls */
+    .video-wrapper { 
+      position: relative; 
+      width: 100%; 
+      max-width: 100%; 
+      border-radius: 8px; 
+      overflow: hidden;
+      touch-action: manipulation;
+    }
+    .video-progress { 
+      width: 100%; 
+      height: 4px; 
+      margin-top: 4px; 
+      accent-color: var(--accent); 
+      -webkit-appearance: none; 
+      appearance: none; 
+      cursor: pointer;
+      display: none;
+    }
+    .video-overlay { 
+      position: absolute; 
+      top: 0; 
+      left: 0; 
+      width: 100%; 
+      height: 100%; 
+      background: rgba(0,0,0,0.3); 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      opacity: 1; 
+      transition: opacity 0.3s; 
+      pointer-events: none; 
+      border-radius: 8px; 
+    }
+    .video-overlay.playing { 
+      opacity: 0; 
+      pointer-events: none; 
+    }
+    .play-btn { 
+      background: rgba(255,255,255,0.9); 
+      border: none; 
+      border-radius: 50%; 
+      width: 48px; 
+      height: 48px; 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      cursor: pointer; 
+      pointer-events: all; 
+      font-size: 20px; 
+      color: #000; 
+      transition: transform 0.2s; 
+      touch-action: manipulation;
+    }
+    .play-btn:hover { 
+      transform: scale(1.1); 
+    }
+    .play-btn i { 
+      margin-left: 2px; 
+    }
+    .media-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 24px;
+      opacity: 0;
+      transition: opacity 0.3s;
+      pointer-events: none;
+    }
+    .media-preview:hover .media-overlay,
+    .media-preview:active .media-overlay {
+      opacity: 1;
+    }
+    /* Founder badge styling */
+    .founder-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      color: var(--yellow);
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .founder-badge i {
+      color: var(--yellow);
+      font-size: 14px;
+    }
+    .name .founder-badge {
+      margin-left: 6px;
+    }
+    /* Responsive adjustments */
+    @media (max-width: 900px) {
+      .search-wrapper { width: 200px; }
+      nav { justify-content: space-between; padding: calc(8px + var(--safe-area-top)) 8px 8px 8px; gap: 4px; }
+      nav a { font-size: 12px; padding: 4px 6px; }
+    }
+    @media (max-width: 600px) {
+      :root { --bottom-bar-height: calc(56px + var(--safe-area-bottom)); }
+      nav { gap: 6px; padding: calc(6px + var(--safe-area-top)) 6px 6px 6px; justify-content: space-between; align-items: center; flex-wrap: nowrap; }
+      nav a { font-size: 12px; padding: 4px 6px; flex: 0 0 auto; }
+      .search-wrapper { width: 140px; max-width: 35vw; min-width: 100px; order: 3; margin: 0; }
+      .container { margin: 10px auto; padding: 12px; width: min(760px, 95vw); }
+      .tweet-box textarea { min-height: 60px; }
+      .bottom-bar a span { font-size: 11px; }
+      .bottom-bar a i { font-size: 14px; }
+      body { padding-bottom: var(--bottom-bar-height); text-size-adjust: 100%; }
+      #settingsMenu { min-width: 130px; width: 130px; padding: 6px; font-size: 13px; }
+      .bottom-bar { padding: 4px 0; }
+      .actions { gap: 8px; }
+      .action { font-size: 12px; padding: 4px 6px; }
+      .comment-item { flex-direction: column; align-items: flex-start; gap: 4px; }
+      .comment-item button { align-self: flex-end; margin-left: auto; }
+      .quoted-tweet p, .tweet p { line-height: 1.4; }
+      img { max-width: 100%; height: auto; }
+      .modal-content {
+        width: 95%;
+        margin: 10% auto;
+        padding: 15px;
+      }
+      .modal-actions { justify-content: flex-start; }
+      .modal-comment-form { flex-direction: column; }
+      .modal-comment-form button { width: 100%; }
+      .media-preview video { max-height: 300px; }
+      .play-btn { width: 40px; height: 40px; font-size: 16px; }
+      .video-progress { height: 3px; }
+      .bottom-bar a { padding: 6px 4px; }
+    }
+    @media (max-width: 480px) {
+      nav a { min-width: auto; gap: 4px; }
+      .container { padding: 10px; margin: 8px auto; }
+      .search-wrapper { width: 120px; min-width: 80px; }
+      .search-input { font-size: 12px; padding: 6px 10px; }
+      .tweet { padding: 10px; }
+      .avatar { width: 36px; height: 36px; }
+      h2 { font-size: 16px; }
+      .actions { gap: 6px; }
+      .action { font-size: 11px; padding: 4px 6px; gap: 4px; }
+      .bottom-bar a { font-size: 12px; }
+      .bottom-bar a i { font-size: 14px; }
+      .bottom-bar a span { font-size: 10px; }
+      .media-preview video { max-height: 250px; }
+      .waveform-player { gap: 10px; padding: 10px; }
+      .wf-left { min-width: 60px; gap: 6px; }
+      .wf-play-btn { width: 40px; height: 40px; font-size: 16px; }
+      .wf-time { font-size: 12px; }
+      .wf-canvas-wrap { height: 50px; }
+      .wf-canvas { height: 50px; }
+      .play-btn { width: 36px; height: 36px; font-size: 14px; }
+      .video-progress { height: 2px; }
+      .bottom-bar a { padding: 6px 2px; }
+    }
+    @media (max-width: 400px) {
+      nav { padding: calc(4px + var(--safe-area-top)) 4px 4px 4px; }
+      nav a { font-size: 11px; padding: 3px 5px; }
+      .search-wrapper { width: 100px; min-width: 70px; }
+      .container { padding: 8px; margin: 6px auto; width: 98vw; }
+      .tweet-box { padding: 10px; }
+      .tweet-actions { gap: 6px; }
+      .record-btn, .file-btn { width: 36px; height: 36px; padding: 6px; }
+      .actions { flex-wrap: nowrap; overflow-x: auto; }
+      .action { font-size: 10px; padding: 3px 5px; }
+      .bottom-bar a span { display: none; } /* Hide text on very small screens, show icons only */
+      .bottom-bar a i { font-size: 18px; }
+      .modal-content { padding: 12px; }
+      .modal-comment-form input { font-size: 12px; }
+      .play-btn { width: 32px; height: 32px; font-size: 12px; }
+      .video-progress { height: 2px; }
+      .bottom-bar a { padding: 8px 2px; }
+    }
+    /* Waveform player styling - closer to modern audio players */
+    .waveform-player {
+      display: flex;
+      gap: 14px;
+      align-items: center;
+      background: rgba(6,6,6,0.75);
+      padding: 12px;
+      border-radius: 14px;
+      width: 100%;
+      box-sizing: border-box;
+      border: 1px solid rgba(255,255,255,0.03);
+      box-shadow: 0 8px 30px rgba(0,0,0,0.45);
+    }
+    .wf-left { display: flex; flex-direction: column; align-items: center; gap: 8px; min-width: 78px; }
+    .wf-play-btn {
+      width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center;
+      background: rgba(0,0,0,0.35); border: 1px solid rgba(255,255,255,0.05);
+      cursor: pointer; font-size: 18px;
+    }
+    .wf-time { font-size: 14px; color: #d0d0d0; font-weight: 600; }
+    .wf-canvas-wrap { flex: 1; position: relative; height: 64px; display: flex; align-items: center; }
+    .wf-canvas { width: 100%; height: 64px; display: block; border-radius: 10px; background: rgba(0,0,0,0.08); }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="register.html" id="loginLink"><i class="fa-solid fa-right-to-bracket"></i><span>Sign In</span></a>
+    <a href="register.html" id="registerLink"><i class="fa-solid fa-user-plus"></i><span>Sign Up</span></a>
+    <a href="index.html" id="homeLink"><i class="fa-solid fa-house"></i><span>Home</span></a>
+    <a href="profile.html" id="profileLink"><i class="fa-solid fa-user"></i><span>Profile</span></a>
+    <a href="index.html"><i class="fa-solid fa-home"></i><span>Back to Hub</span></a>
+    <div class="search-wrapper" id="searchWrapper">
+      <input id="searchInput" class="search-input" type="search" placeholder="Search users..." aria-label="Search users" autocomplete="off" />
+      <div id="searchResults" class="search-results" role="listbox" aria-label="Search results"></div>
+    </div>
+
+    <div id="settingsMenu">
+      <a href="account.html" id="accountLink">Account</a>
+      <a href="iletisim.html" id="contactLink">Contact</a>
+      <a href="about.html">About</a>
+    </div>
+  </nav>
+
+  <div id="refreshIndicator" class="refresh-indicator">Pull to refresh...</div>
+
+  <section id="feedPage" class="container">
+    <h2 id="feedTitle">Home</h2>
+
+    <div class="tweet-box">
+      <textarea id="tweetInput" placeholder="What's happening?" rows="3"></textarea>
+      <div class="tweet-actions">
+        <button id="recordBtn" class="record-btn" title="Record Voice"><i class="fa-solid fa-microphone"></i></button>
+        <input type="file" id="fileInput" accept="image/*,video/*" style="display: none;">
+        <button id="fileBtn" class="file-btn" title="Add Media"><i class="fa-solid fa-image"></i></button>
+      </div>
+      <div id="quotePreview" class="quote-preview"></div>
+      <div id="mediaPreview" class="media-preview"></div>
+      <div id="upload-status" style="margin-top:10px; font-weight:bold; color:green;"></div>
+      <button id="tweetBtn" type="button">Concordia</button>
+      <button id="cancelQuoteBtn" type="button" style="display: none; background: var(--danger); margin-top: 4px;">Cancel Quote</button>
+    </div>
+
+    <div class="divider"></div>
+
+    <div id="feed" class="feed"></div>
+    <p id="loadingMore" class="center-muted" style="display:none;">Loading...</p>
+    <p id="noMore" class="center-muted" style="display:none;">No more tweets to show.</p>
+  </section>
+
+  <!-- Tweet Detail Modal -->
+  <div id="tweetModal" class="modal">
+    <div class="modal-content">
+      <button class="close-modal" id="closeModal" aria-label="Close">&times;</button>
+      <div id="modalTweetContent"></div>
+    </div>
+  </div>
+
+  <div class="bottom-bar" role="navigation" aria-label="Bottom navigation">
+    <a href="notifications.html" id="notificationsLink" title="Notifications">
+      <i class="fa-solid fa-bell" aria-hidden="true"></i>
+      <span>Notifications</span>
+      <span id="notifCount" class="notif-badge" style="display:none">0</span>
+    </a>
+    <a href="explore.html" id="exploreLink" title="Explore">
+      <i class="fa-solid fa-compass" aria-hidden="true"></i>
+      <span>Explore</span>
+    </a>
+    <a href="messages.html" id="messagesLink" title="Messages">
+      <i class="fa-solid fa-envelope" aria-hidden="true"></i>
+      <span>Messages</span>
+    </a>
+    <a href="#" id="settingsLink" title="Settings">
+      <i class="fa-solid fa-gear" aria-hidden="true"></i>
+      <span>Settings</span>
+    </a>
+  </div>
+
+  <script type="module">
+    import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+
+    // Supabase connection config
+    const SUPABASE_URL = 'https://shkttorkfcnvkrwnkixf.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNoa3R0b3JrZmNudmtyd25raXhmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY2NzY2ODAsImV4cCI6MjA3MjI1MjY4MH0.GgDA8tSgQoMhCt_BYZU3mCkKaErUs_SQVNeWdCGQOgI';
+
+    const USE_PLACEHOLDER_KEY = !SUPABASE_ANON_KEY || SUPABASE_ANON_KEY.includes('PASTE_YOUR_ANON_KEY_HERE');
+    if (USE_PLACEHOLDER_KEY) {
+      console.warn('Supabase anon key is missing or still placeholder. Please update SUPABASE_ANON_KEY.');
+    }
+
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    window.supabase = supabase; // for debugging
+
+    /* ====== GLOBAL VARIABLES ====== */
+    let currentUser = null;
+    let currentUserData = null;
+    const PAGE_SIZE = 8;
+    let feedRendered = 0;
+    let isLoading = false;
+    let reachedEnd = false;
+    let realtimeChannel = null;
+    let realtimeNotifChannel = null;
+    let quotedTweetId = null; // ID of the tweet being quoted
+    let currentLang = localStorage.getItem('appLang') || 'en';
+    let mediaRecorder = null;
+    let recordedChunks = [];
+    let isRecording = false;
+    let selectedFile = null; // currently selected file
+    let mediaType = null; // 'audio', 'image', 'video'
+
+    // Note: translations object can be kept if multi-language support is desired later
+    // For now we default to English and remove data-i18n attributes
+
+    function setLanguage(lang) {
+      localStorage.setItem('appLang', lang);
+      document.documentElement.lang = lang;
+      currentLang = lang;
+      location.reload(); // simple reload for now
+    }
+
+    function updateNavAuth() {
+      const loginLink = document.getElementById('loginLink');
+      const registerLink = document.getElementById('registerLink');
+      if (currentUser) {
+        if (loginLink) loginLink.style.display = 'none';
+        if (registerLink) registerLink.style.display = 'none';
+      } else {
+        if (loginLink) loginLink.style.display = 'inline-flex';
+        if (registerLink) registerLink.style.display = 'inline-flex';
+      }
+    }
+
+    /* ====== HELPER FUNCTIONS ====== */
+    function fmtTime(ts) {
+      if (!ts) return '';
+      try { return new Date(ts).toLocaleString(); } catch { return String(ts); }
+    }
+
+    function escapeHTML(str) { 
+      if (!str) return '';
+      return (str || '').replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[m]); 
+    }
+
+    function debounce(fn, delay = 200) { 
+      let t; 
+      return (...a) => { 
+        clearTimeout(t); 
+        t = setTimeout(() => fn(...a), delay); 
+      } 
+    }
+
+    function showError(label, err) { 
+      console.error(label, err); 
+      try { 
+        alert(label + ': ' + ((err && (err.message || err.error)) || JSON.stringify(err))); 
+      } catch (e) {} 
+    }
+
+    function fallbackAvatar(username) {
+      const c = (username || 'U')[0].toUpperCase();
+      const svg = encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' width='80' height='80'><rect width='100%' height='100%' fill='#222'/><text x='50%' y='56%' font-family='Arial' font-size='38' fill='#fff' text-anchor='middle' dominant-baseline='middle'>${c}</text></svg>`);
+      return `data:image/svg+xml;charset=utf-8,${svg}`;
+    }
+
+    function linkHashtags(text) {
+      return escapeHTML(text).replace(/#(\w+)/g, '<a href="hashtag.html?tag=$1" style="color: var(--accent); text-decoration: none;">#$1</a>');
+    }
+
+    function getMediaType(file) {
+      if (!file || !file.type) return null;
+      const type = file.type;
+      if (type.startsWith('audio/')) return 'audio';
+      if (type.startsWith('image/')) return 'image';
+      if (type.startsWith('video/')) return 'video';
+      return null;
+    }
+
+    // Generate video thumbnail (standalone function)
+    async function generateVideoThumbnail(videoUrl, maxWidth = 300) {
+      return new Promise((resolve, reject) => {
+        const video = document.createElement('video');
+        video.src = videoUrl;
+        video.muted = true;
+        video.preload = 'metadata';
+        video.crossOrigin = 'anonymous'; // for CORS
+
+        video.addEventListener('loadedmetadata', () => {
+          video.currentTime = Math.min(1, video.duration * 0.1); // take thumbnail from first ~10%        video.addEventListener('seeked', () => {
+          const canvas = document.createElement('canvas');
+          const ctx = canvas.getContext('2d');
+          const thumbWidth = Math.min(maxWidth, video.videoWidth / 2);
+          const thumbHeight = (video.videoHeight / video.videoWidth) * thumbWidth;
+          canvas.width = thumbWidth;
+          canvas.height = thumbHeight;
+          ctx.drawImage(video, 0, 0, thumbWidth, thumbHeight);
+          const thumbnailUrl = canvas.toDataURL('image/jpeg', 0.8);
+          video.remove();
+          resolve(thumbnailUrl);
+        });
+
+        video.addEventListener('error', (e) => {
+          video.remove();
+          reject(new Error('Could not generate video thumbnail: ' + e.message));
+        });
+
+        video.load();
+      });
+    }
+
+    // Video preview and player function (updated: always generate thumbnail)
+    async function createVideoPreview(container, srcObj, isPlayable = true) {
+      const wrapper = document.createElement('div');
+      wrapper.className = 'video-wrapper media-preview';
+      container.appendChild(wrapper);
+
+      let videoSrc;
+      const isBlob = srcObj instanceof File || srcObj instanceof Blob;
+      if (isBlob) {
+        videoSrc = URL.createObjectURL(srcObj);
+      } else {
+        videoSrc = srcObj;
+      }
+
+      const video = document.createElement('video');
+      video.src = videoSrc;
+      video.muted = true;
+      video.preload = 'metadata';
+      video.style.display = 'none';
+      wrapper.appendChild(video);
+
+      // Always generate thumbnail
+      try {
+        const thumbnailUrl = await generateVideoThumbnail(videoSrc);
+        const img = document.createElement('img');
+        img.src = thumbnailUrl;
+        img.alt = 'Video Thumbnail';
+        img.style.width = '100%';
+        img.style.height = 'auto';
+        img.style.borderRadius = '8px';
+        img.style.display = 'block';
+        wrapper.appendChild(img);
+
+        if (isBlob && videoSrc.startsWith('blob:')) {
+          URL.revokeObjectURL(videoSrc);
+        }
+      } catch (err) {
+        console.error('Thumbnail generation error:', err);
+        // Fallback placeholder image
+        const img = document.createElement('img');
+        img.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjE2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjMjIyIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxOCIgZmlsbD0iI2ZmZiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSI+VmlkZW8gUHJldmlldzwvdGV4dD48L3N2Zz4=';
+        img.style.width = '100%';
+        img.style.height = 'auto';
+        img.style.borderRadius = '8px';
+        img.style.display = 'block';
+        wrapper.appendChild(img);
+      }
+
+      video.addEventListener('loadedmetadata', () => {
+        video.currentTime = 0;
+      });
+
+      if (isPlayable) {
+        // Overlay with play button
+        const overlay = document.createElement('div');
+        overlay.className = 'video-overlay';
+        const playBtn = document.createElement('button');
+        playBtn.className = 'play-btn';
+        playBtn.innerHTML = '<i class="fa-solid fa-play"></i>';
+        overlay.appendChild(playBtn);
+        wrapper.appendChild(overlay);
+
+        // Progress bar
+        const progress = document.createElement('input');
+        progress.type = 'range';
+        progress.className = 'video-progress';
+        progress.value = 0;
+        progress.max = 100;
+        progress.style.display = 'none';
+        wrapper.appendChild(progress);
+
+        // Play function
+        function playVideo() {
+          const img = wrapper.querySelector('img');
+          if (img) img.style.display = 'none';
+          overlay.classList.add('playing');
+          video.style.display = 'block';
+          progress.style.display = 'block';
+          video.play().catch(e => console.warn('Video playback error:', e));
+        }
+
+        // Pause function
+        function pauseVideo() {
+          const img = wrapper.querySelector('img');
+          if (img) img.style.display = 'block';
+          overlay.classList.remove('playing');
+          video.style.display = 'none';
+          progress.style.display = 'none';
+          video.pause();
+        }
+
+        playBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          if (video.paused) {
+            playVideo();
+          } else {
+            pauseVideo();
+          }
+        });
+
+        video.addEventListener('timeupdate', () => {
+          if (!video.paused && video.duration) {
+            progress.value = (video.currentTime / video.duration) * 100;
+          }
+        });
+
+        video.addEventListener('ended', () => {
+          pauseVideo();
+          progress.value = 0;
+          video.currentTime = 0;
+        });
+
+        video.addEventListener('pause', () => {
+          if (video.currentTime < video.duration) {
+            pauseVideo();
+          }
+        });
+
+        // Seek on progress bar
+        progress.addEventListener('input', (e) => {
+          const pct = e.target.value / 100;
+          if (video.duration) {
+            video.currentTime = pct * video.duration;
+          }
+        });
+
+        // Toggle play/pause on wrapper click
+        wrapper.addEventListener('click', (e) => {
+          if (overlay.contains(e.target) && e.target !== playBtn) return;
+          if (video.paused) {
+            playVideo();
+          } else {
+            pauseVideo();
+          }
+        });
+      }
+
+      video.load();
+    }
+
+    async function renderMediaPreview(fileOrObj, mediaType) {
+      const preview = document.getElementById('mediaPreview');
+      preview.innerHTML = '';
+      try {
+        if (mediaType === 'audio') {
+          const playerContainer = document.createElement('div');
+          preview.appendChild(playerContainer);
+          await createWaveformPlayer(playerContainer, fileOrObj);
+        } else if (mediaType === 'image') {
+          const img = document.createElement('img');
+          img.src = URL.createObjectURL(fileOrObj);
+          img.alt = 'Preview';
+          preview.appendChild(img);
+        } else if (mediaType === 'video') {
+          createVideoPreview(preview, fileOrObj, false); // No playback in upload preview
+        }
+      } catch (err) {
+        console.error('Media preview error:', err);
+        preview.innerHTML = '<p style="color: var(--danger);">Media preview failed</p>';
+      }
+    }
+
+    // Usage example: await createWaveformPlayer(container, source, { height:64, barGap:2, barCount:160, colors:['#18c3d9','#1da1f2'], barRadius:3, barMultiplier:0.9 });
+    async function createWaveformPlayer(container, source, opts = {}) {
+      // Default options
+      const options = Object.assign({
+        height: 64,
+        barGap: 2,
+        barWidth: 1,
+        barColor: '#1da1f2',
+        placeholderColor: 'rgba(255,255,255,0.06)'
+      }, opts);
+
+      container.innerHTML = '';
+      container.classList.add('waveform-player');
+
+      const left = document.createElement('div'); 
+      left.className = 'wf-left';
+      const playBtn = document.createElement('button'); 
+      playBtn.className = 'wf-play-btn'; 
+      playBtn.type = 'button';
+      playBtn.innerHTML = '<i class="fa-solid fa-play"></i>';
+      const timeSpan = document.createElement('div'); 
+      timeSpan.className = 'wf-time'; 
+      timeSpan.textContent = '00:00';
+      left.appendChild(playBtn);
+      left.appendChild(timeSpan);
+      container.appendChild(left);
+
+      const wrap = document.createElement('div'); 
+      wrap.className = 'wf-canvas-wrap';
+      const canvas = document.createElement('canvas'); 
+      canvas.className = 'wf-canvas'; 
+      canvas.setAttribute('tabindex','0');
+      wrap.appendChild(canvas);
+      container.appendChild(wrap);
+
+      playBtn.setAttribute('aria-label','Play/Pause');
+      canvas.setAttribute('role','slider');
+      canvas.setAttribute('aria-label','Audio waveform — click to seek');
+
+      const audio = new Audio();
+      audio.preload = 'auto';
+      audio.crossOrigin = 'anonymous';
+      let objectUrl = null;
+      let audioSrc;
+
+      if (typeof source === 'string') {
+        // Handle Capacitor file URIs if available
+        if ((source.startsWith('file://') || source.startsWith('content://')) && window.Capacitor && window.Capacitor.convertFileSrc) {
+          audioSrc = await window.Capacitor.convertFileSrc(source);
+        } else {
+          audioSrc = source;
+        }
+      } else if (source instanceof Blob || source instanceof File) {
+        objectUrl = URL.createObjectURL(source);
+        audioSrc = objectUrl;
+      } else if (window.Capacitor && source.path) {
+        audioSrc = await window.Capacitor.convertFileSrc(source.path);
+      } else {
+        console.warn('Unsupported audio source', source);
+        audioSrc = null;
+      }
+      audio.src = audioSrc;
+
+      const ctx = canvas.getContext('2d');
+      let buffer = null;
+
+      function drawFullWaveform() {
+        if (!buffer) return;
+        const data = buffer.getChannelData(0);
+        const step = Math.floor(data.length / (canvas.width / (options.barWidth + options.barGap)));
+        const amp = canvas.height / 2;
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        ctx.fillStyle = options.barColor;
+        let x = 0;
+        for (let i = 0; i < data.length; i += step) {
+          const min = Math.min(...data.slice(i, i + step));
+          const max = Math.max(...data.slice(i, i + step));
+          ctx.fillRect(x, (1 + min) * amp, options.barWidth, Math.max(1, (max - min) * amp));
+          x += options.barWidth + options.barGap;
+        }
+      }
+
+      function drawWaveform(progress = 0) {
+        if (!buffer) return;
+        const data = buffer.getChannelData(0);
+        const step = Math.floor(data.length / (canvas.width / (options.barWidth + options.barGap)));
+        const amp = canvas.height / 2;
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        let x = 0;
+        const maxBars = Math.floor((canvas.width / (options.barWidth + options.barGap)) * progress);
+
+        for (let i = 0; i < maxBars * step; i += step) {
+          const min = Math.min(...data.slice(i, i + step));
+          const max = Math.max(...data.slice(i, i + step));
+          ctx.fillStyle = options.barColor;
+          ctx.fillRect(x, (1 + min) * amp, options.barWidth, Math.max(1, (max - min) * amp));
+          x += options.barWidth + options.barGap;
+        }
+      }
+
+      function resizeCanvas() {
+        const dpr = window.devicePixelRatio || 1;
+        const rect = canvas.getBoundingClientRect();
+        canvas.style.height = options.height + 'px';
+        canvas.width = Math.max(300, Math.floor(rect.width * dpr));
+        canvas.height = Math.max(40, Math.floor(options.height * dpr));
+        const progress = audio.duration ? (audio.currentTime / audio.duration) : 0;
+        drawWaveform(progress);
+      }
+      window.addEventListener('resize', resizeCanvas);
+
+      function formatTime(s) {
+        if (!isFinite(s)) return '00:00';
+        const mm = Math.floor(s/60), ss = Math.floor(s%60);
+        return `${String(mm).padStart(2,'0')}:${String(ss).padStart(2,'0')}`;
+      }
+
+      const timeupdateHandler = () => {
+        const progress = audio.duration ? (audio.currentTime / audio.duration) : 0;
+        timeSpan.textContent = formatTime(audio.currentTime);
+        drawWaveform(progress);
+      };
+
+      audio.addEventListener('timeupdate', timeupdateHandler);
+      audio.addEventListener('loadeddata', () => {
+        drawFullWaveform();
+      });
+
+      canvas.addEventListener('click', (ev) => {
+        if (!audio.duration) return;
+        const rect = canvas.getBoundingClientRect();
+        const x = ev.clientX - rect.left;
+        const pct = Math.max(0, Math.min(1, x / rect.width));
+        audio.currentTime = pct * audio.duration;
+        drawWaveform(pct);
+      });
+
+      playBtn.addEventListener('click', async () => {
+        try {
+          if (audio.paused) await audio.play();
+          else audio.pause();
+        } catch (e) { console.warn('play error', e); }
+      });
+
+      audio.addEventListener('play', () => { playBtn.innerHTML = '<i class="fa-solid fa-pause"></i>'; });
+      audio.addEventListener('pause', () => { 
+        playBtn.innerHTML = '<i class="fa-solid fa-play"></i>'; 
+        const progress = audio.duration ? (audio.currentTime / audio.duration) : 0;
+        drawWaveform(progress);
+      });
+      audio.addEventListener('ended', () => { 
+        playBtn.innerHTML = '<i class="fa-solid fa-play"></i>'; 
+        drawFullWaveform();
+        timeSpan.textContent = '00:00'; 
+        audio.currentTime = 0; 
+      });
+
+      // Build waveform peaks using Web Audio API
+      async function buildPeaks() {
+        try {
+          const AudioContext = window.AudioContext || window.webkitAudioContext;
+          if (!AudioContext) throw new Error('Web Audio API not available');
+          const ac = new AudioContext();
+
+          let arrayBuffer;
+          if (typeof source === 'string') {
+            const fetchUrl = (source.startsWith('file://') || source.startsWith('content://')) && window.Capacitor && window.Capacitor.convertFileSrc ? await window.Capacitor.convertFileSrc(source) : source;
+            const resp = await fetch(fetchUrl);
+            arrayBuffer = await resp.arrayBuffer();
+          } else {
+            arrayBuffer = await source.arrayBuffer();
+          }
+
+          const audioBuffer = await ac.decodeAudioData(arrayBuffer);
+          buffer = audioBuffer;
+          resizeCanvas();
+          drawFullWaveform();
+          ac.close && ac.close();
+        } catch (e) {
+          console.warn('buildPeaks failed → fallback to native audio', e);
+          container.innerHTML = `<audio controls src="${audio.src}" style="width:100%"></audio>`;
+        }
+      }
+
+      setTimeout(resizeCanvas, 50);
+      await buildPeaks().catch(()=>{});
+
+      function destroy(){
+        try { 
+          audio.pause(); 
+          audio.src=''; 
+          if (objectUrl) URL.revokeObjectURL(objectUrl); 
+          container.innerHTML=''; 
+        } catch(e){console.warn(e);}
+      }
+
+      return { audio, destroy };
+    }
+
+    /* ---------- Resolve file/blob/base64 for upload (Capacitor/web compatible) ---------- */
+    async function resolveFileForUpload(file) {
+      if (!file) return null;
+
+      // Already a File/Blob
+      if (file instanceof File || file instanceof Blob) {
+        if (file instanceof Blob && !(file instanceof File)) {
+          return new File([file], file.name || 'upload', { type: file.type || 'application/octet-stream' });
+        }
+        return file;
+      }
+
+      // Capacitor-style object { path, name, mimeType, data? }
+      if (window.Capacitor && file.path) {
+        try {
+          const webPath = await window.Capacitor.convertFileSrc(file.path);
+          const resp = await fetch(webPath);
+          if (!resp.ok) throw new Error(`Fetch failed: ${resp.status}`);
+          const blob = await resp.blob();
+          return new File([blob], file.name || (file.path.split('/').pop()), { type: file.mimeType || blob.type || 'audio/webm' });
+        } catch (e) {
+          console.error('resolveFileForUpload Capacitor error:', e);
+          throw new Error('File conversion error: ' + e.message);
+        }
+      }
+
+      // Base64 data
+      if (file.data && typeof file.data === 'string') {
+        try {
+          let b64 = file.data;
+          if (b64.startsWith('data:')) b64 = b64.split(',')[1];
+          const binary = atob(b64);
+          const arr = new Uint8Array(binary.length);
+          for (let i = 0; i < binary.length; i++) arr[i] = binary.charCodeAt(i);
+          const blob = new Blob([arr.buffer], { type: file.mimeType || 'audio/webm' });
+          return new File([blob], file.name || 'upload.webm', { type: file.mimeType || blob.type });
+        } catch (e) {
+          console.warn('resolveFileForUpload: base64 → blob failed', e);
+        }
+      }
+
+      // Generic file-like object
+      if (typeof file === 'object' && file.name && file.size) return file;
+
+      return null;
+    }
+
+    /* VOICE RECORDING */
+    function startRecording() {
+      navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
+        mediaRecorder = new MediaRecorder(stream);
+        recordedChunks = [];
+        mediaRecorder.ondataavailable = e => {
+          if (e.data.size > 0) recordedChunks.push(e.data);
+        };
+        mediaRecorder.onstop = () => {
+          const blob = new Blob(recordedChunks, { type: 'audio/webm' });
+          const file = new File([blob], 'recording.webm', { type: 'audio/webm' });
+          selectedFile = null; // Clear any previous file
+          mediaType = 'audio';
+          renderMediaPreview(file, mediaType);
+        };
+        mediaRecorder.start();
+        isRecording = true;
+        document.getElementById('recordBtn').classList.add('recording');
+        document.getElementById('recordBtn').innerHTML = '<i class="fa-solid fa-stop"></i>';
+      }).catch(err => {
+        showError('Voice recording error', err);
+      });
+    }
+
+    function stopRecording() {
+      if (mediaRecorder && isRecording) {
+        mediaRecorder.stop();
+        mediaRecorder.stream.getTracks().forEach(track => track.stop());
+        isRecording = false;
+        document.getElementById('recordBtn').classList.remove('recording');
+        document.getElementById('recordBtn').innerHTML = '<i class="fa-solid fa-microphone"></i>';
+      }
+    }
+
+    /* FILE SELECTION */
+    function handleFileSelect(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const type = getMediaType(file);
+      if (!type || (type !== 'image' && type !== 'video')) {
+        alert('Only image and video files are supported.');
+        return;
+      }
+      selectedFile = file;
+      recordedChunks = []; // Clear any voice recording
+      mediaType = type;
+      renderMediaPreview(file, type);
+    }
+
+    /* POST TWEET */
+    async function tweetAt() {
+      const uploadStatus = document.getElementById('upload-status');
+      uploadStatus.textContent = '';
+      try {
+        await loadCurrentUser();
+        if (!currentUser) { alert('You must sign in to post!'); return; }
+        const txtEl = document.getElementById('tweetInput');
+        const text = (txtEl.value || '').trim();
+        if (!text && !quotedTweetId && !selectedFile && recordedChunks.length === 0) { 
+          alert('Please enter text, quote something, or attach media.'); 
+          return; 
+        }
+
+        const btn = document.getElementById('tweetBtn');
+        if (btn) { 
+          btn.disabled = true; 
+          btn.textContent = 'Posting...'; 
+        }
+
+        const createdAt = new Date().toISOString();
+        let publicMediaUrl = null;
+        let mediaPath = null;
+        let finalMediaType = null;
+
+        // Handle media upload (voice or selected file)
+        if (recordedChunks.length > 0) {
+          const blob = new Blob(recordedChunks, { type: 'audio/webm' });
+          const rawFile = new File([blob], 'recording.webm', { type: 'audio/webm' });
+          finalMediaType = 'audio';
+
+          const MAX_AUDIO_MB = 50;
+          if (rawFile.size > MAX_AUDIO_MB * 1024 * 1024) {
+            alert(`Audio file too large. Max: ${MAX_AUDIO_MB} MB.`);
+            return;
+          }
+
+          let uploadFile = await resolveFileForUpload(rawFile);
+          if (!uploadFile) {
+            alert('Could not prepare audio file. Please try recording again.');
+            return;
+          }
+
+          const uuid = (crypto && crypto.randomUUID) ? crypto.randomUUID() : String(Date.now());
+          const safeFileName = 'recording.webm';
+          const path = `${currentUser}/${uuid}-${safeFileName}`;
+          mediaPath = path;
+
+          if (btn) {
+            btn.disabled = true;
+            btn.textContent = 'Uploading...';
+          }
+          uploadStatus.textContent = 'Uploading audio...';
+
+          const { data: uploadData, error: uploadErr } = await supabase.storage.from('tweet_images').upload(path, uploadFile, {
+            contentType: uploadFile.type,
+            upsert: true
+          });
+          if (uploadErr) throw uploadErr;
+          console.log('Audio upload success:', uploadData);
+
+          const { data: urlData } = supabase.storage.from('tweet_images').getPublicUrl(path);
+          publicMediaUrl = urlData?.publicUrl || null;
+
+          if (!publicMediaUrl) {
+            try {
+              const { data: signedData, error: signedErr } = await supabase.storage.from('tweet_images').createSignedUrl(path, 3600);
+              if (signedErr) throw signedErr;
+              publicMediaUrl = signedData?.signedUrl || null;
+              console.log('Using signed URL:', publicMediaUrl);
+            } catch (e) {
+              console.warn('Signed URL fallback failed', e);
+            }
+          }
+
+          if (!publicMediaUrl) throw new Error('Could not get audio URL.');
+          console.log('Audio upload completed:', { publicMediaUrl, finalMediaType });
+          uploadStatus.textContent = 'Audio uploaded successfully!';
+        } else if (selectedFile) {
+          finalMediaType = mediaType;
+
+          const MAX_MEDIA_MB = 100;
+          if (selectedFile.size > MAX_MEDIA_MB * 1024 * 1024) {
+            alert(`Media file too large. Max: ${MAX_MEDIA_MB} MB.`);
+            return;
+          }
+
+          let uploadFile = await resolveFileForUpload(selectedFile);
+          if (!uploadFile) {
+            alert('Could not prepare file. Please select again.');
+            return;
+          }
+
+          const uuid = (crypto && crypto.randomUUID) ? crypto.randomUUID() : String(Date.now());
+          const safeFileName = selectedFile.name.replace(/[^a-zA-Z0-9.-]/g, '_');
+          const path = `${currentUser}/${uuid}-${safeFileName}`;
+          mediaPath = path;
+
+          if (btn) {
+            btn.disabled = true;
+            btn.textContent = 'Uploading...';
+          }
+          uploadStatus.textContent = `${finalMediaType === 'image' ? 'Uploading image' : 'Uploading video'}...`;
+
+          const { data: uploadData, error: uploadErr } = await supabase.storage.from('tweet_images').upload(path, uploadFile, {
+            contentType: uploadFile.type,
+            upsert: true
+          });
+          if (uploadErr) throw uploadErr;
+          console.log('Media upload success:', uploadData);
+
+          const { data: urlData } = supabase.storage.from('tweet_images').getPublicUrl(path);
+          publicMediaUrl = urlData?.publicUrl || null;
+
+          if (!publicMediaUrl) {
+            try {
+              const { data: signedData, error: signedErr } = await supabase.storage.from('tweet_images').createSignedUrl(path, 3600);
+              if (signedErr) throw signedErr;
+              publicMediaUrl = signedData?.signedUrl || null;
+              console.log('Using signed URL:', publicMediaUrl);
+            } catch (e) {
+              console.warn('Signed URL fallback failed', e);
+            }
+          }
+
+          if (!publicMediaUrl) throw new Error('Could not get media URL.');
+          console.log('Media upload completed:', { publicMediaUrl, finalMediaType });
+          uploadStatus.textContent = `${finalMediaType === 'image' ? 'Image' : 'Video'} uploaded successfully!`;
+        }
+
+        console.log('Tweet insert object:', { user_id: currentUser, text, media_url: publicMediaUrl, media_type: finalMediaType, media_path: mediaPath, quoted_tweet_id: quotedTweetId, created_at: createdAt });
+        const insertObj = {
+          user_id: currentUser,
+          text: text || null,
+          media_url: publicMediaUrl,
+          media_type: finalMediaType,
+          media_path: mediaPath,
+          quoted_tweet_id: quotedTweetId,
+          created_at: createdAt,
+          likes_count: 0,
+          comments_count: 0,
+          quotes_count: 0
+        };
+        const { data: inserted, error: insertErr } = await supabase
+          .from('tweets')
+          .insert([insertObj])
+          .select('id, user_id, text, media_url, media_type, media_path, quoted_tweet_id, created_at, likes_count, comments_count, quotes_count, profiles(id, username, display_name, avatar_url, is_founder)')
+          .single();
+
+        console.log('Tweet insert result:', inserted, 'Error:', insertErr);
+
+        if (insertErr) throw insertErr;
+
+        // Extract and insert hashtags
+        const hashtags = text.match(/#(\w+)/g) || [];
+        const uniqueHashtags = [...new Set(hashtags.map(h => h.slice(1).toLowerCase()))];
+        if (uniqueHashtags.length > 0) {
+          const hashtagInserts = uniqueHashtags.map(tag => ({ tag, tweet_id: inserted.id }));
+          const { error: hashtagErr } = await supabase.from('hashtags').insert(hashtagInserts);
+          if (hashtagErr) console.warn('Hashtag insert error', hashtagErr);
+        }
+
+        // If quoting, increment quote count and send notification
+        if (quotedTweetId) {
+          const { data: qCount, error: qErr } = await supabase.from('tweets').select('quotes_count, user_id').eq('id', quotedTweetId).single();
+          if (qErr) console.warn('quotes_count fetch error', qErr);
+          else {
+            await supabase.from('tweets').update({ quotes_count: (qCount.quotes_count || 0) + 1 }).eq('id', quotedTweetId);
+            if (qCount.user_id !== currentUser) {
+              const senderUsername = currentUserData?.username || 'A user';
+              const notif = {
+                recipient_id: qCount.user_id,
+                sender_id: currentUser,
+                type: 'quote',
+                related_id: inserted.id,
+                message: `${senderUsername} quoted your tweet: "${text ? text.slice(0, 50) + (text.length > 50 ? '...' : '') : ''}"`,
+                is_read: false,
+                created_at: new Date().toISOString()
+              };
+              const { error: notifErr } = await supabase.from('notifications').insert([notif]);
+              if (notifErr) console.warn('Quote notification error', notifErr);
+              else await updateNotifCount();
+            }
+          }
+        }
+
+        renderSingleTweet(inserted, { prepend: true, isTemp: false });
+        if (txtEl) txtEl.value = '';
+        document.getElementById('mediaPreview').innerHTML = '';
+        recordedChunks = [];
+        selectedFile = null;
+        mediaType = null;
+        clearQuotePreview();
+        if (btn) btn.textContent = 'Posted!';
+        setTimeout(() => { if (btn) btn.textContent = 'Concordia'; }, 2000);
+      } catch (innerErr) {
+        console.error('tweetAt general error:', innerErr);
+        showError('tweetAt catch', innerErr);
+        uploadStatus.textContent = 'Posting failed!';
+      } finally {
+        const btn = document.getElementById('tweetBtn');
+        if (btn) { 
+          btn.disabled = false; 
+          btn.textContent = 'Concordia';
+        }
+      }
+    }
+
+    /* FETCH TIMELINE TWEETS */
+    async function fetchTimeline(offset = 0, limit = PAGE_SIZE) {
+      try {
+        const { data, error } = await supabase
+          .from('tweets')
+          .select('id, user_id, text, media_url, media_type, media_path, quoted_tweet_id, created_at, likes_count, comments_count, quotes_count, profiles(id, username, display_name, avatar_url, is_founder)')
+          .order('created_at', { ascending: false })
+          .range(offset, offset + limit - 1);
+
+        if (error) throw error;
+        return data || [];
+      } catch (err) {
+        showError('fetchTimeline', err);
+        return [];
+      }
+    }
+
+    async function initialRender() {
+      feedRendered = 0;
+      reachedEnd = false;
+      const feed = document.getElementById('feed');
+      if (feed) feed.innerHTML = '';
+      await loadMore();
+      setupRealtime();
+      await updateNotifCount();
+    }
+
+    async function loadMore() {
+      try {
+        if (isLoading || reachedEnd) return;
+        isLoading = true;
+        const loadingEl = document.getElementById('loadingMore');
+        if (loadingEl) loadingEl.style.display = 'block';
+
+        const tweets = await fetchTimeline(feedRendered, PAGE_SIZE);
+        if (!tweets || tweets.length === 0) {
+          reachedEnd = true;
+          const noMoreEl = document.getElementById('noMore');
+          if (noMoreEl) noMoreEl.style.display = 'block';
+          if (loadingEl) loadingEl.style.display = 'none';
+          isLoading = false;
+          return;
+        }
+
+        for (const t of tweets) {
+          renderSingleTweet(t, { prepend: false, isTemp: false });
+        }
+
+        feedRendered += tweets.length;
+        if (loadingEl) loadingEl.style.display = 'none';
+        isLoading = false;
+      } catch (err) {
+        showError('loadMore catch', err);
+        const loadingEl = document.getElementById('loadingMore');
+        if (loadingEl) loadingEl.style.display = 'none';
+        isLoading = false;
+      }
+    }
+
+    /* LIKE / COMMENT / DELETE / FOLLOW / QUOTE HANDLERS */
+    async function likeTweetHandler(tweetId, articleEl) {
+      try {
+        await loadCurrentUser();
+        if (!currentUser) { alert('You must sign in!'); return; }
+
+        const { data: tweetData, error: tweetErr } = await supabase
+          .from('tweets')
+          .select('user_id')
+          .eq('id', tweetId)
+          .single();
+        if (tweetErr) throw tweetErr;
+        const tweetOwner = tweetData.user_id;
+
+        const { data: existing, error: eErr } = await supabase
+          .from('likes')
+          .select('id')
+          .eq('tweet_id', tweetId)
+          .eq('user_id', currentUser)
+          .limit(1)
+          .maybeSingle();
+
+        if (eErr) throw eErr;
+
+        let isNewLike = false;
+
+        if (existing) {
+          const { error: delErr } = await supabase.from('likes').delete().eq('id', existing.id);
+          if (delErr) throw delErr;
+        } else {
+          const { error: insErr } = await supabase.from('likes').insert([{ tweet_id: tweetId, user_id: currentUser }]);
+          if (insErr) throw insErr;
+          isNewLike = true;
+        }
+
+        const { count } = await supabase.from('likes').select('*', { count: 'exact', head: false }).eq('tweet_id', tweetId);
+        await supabase.from('tweets').update({ likes_count: count }).eq('id', tweetId);
+
+        const cnt = document.querySelector(`[data-tweet="${tweetId}"] .like-count`);
+        if (cnt) cnt.textContent = count;
+
+        const likeEl = articleEl?.querySelector('.action.like') || document.querySelector(`[data-tweet="${tweetId}"] .action.like`);
+        if (likeEl) {
+          const icon = likeEl.querySelector('i');
+          if (icon) {
+            if (isNewLike) {
+              icon.className = 'fa-solid fa-star';
+              icon.style.color = 'var(--yellow)';
+            } else {
+              icon.className = 'fa-regular fa-star';
+              icon.style.color = '';
+            }
+          }
+        }
+
+        // Send notification if new like and not own tweet
+        if (isNewLike && tweetOwner !== currentUser) {
+          const senderUsername = currentUserData?.username || 'A user';
+          const notif = {
+            recipient_id: tweetOwner,
+            sender_id: currentUser,
+            type: 'like',
+            related_id: tweetId,
+            message: `${senderUsername} liked your tweet.`,
+            is_read: false,
+            created_at: new Date().toISOString()
+          };
+          const { error: notifErr } = await supabase.from('notifications').insert([notif]);
+          if (notifErr) console.warn('Notification error', notifErr);
+          else {
+            await updateNotifCount();
+          }
+        }
+      } catch (err) { showError('likeTweet catch', err); }
+    }
+
+    async function addCommentHandler(tweetId, textInput, commentsWrap) {
+      try {
+        await loadCurrentUser();
+        if (!currentUser) { alert('You must sign in!'); return; }
+        const text = (textInput.value || '').trim();
+        if (!text) return;
+
+        const { data: tweetData, error: tweetErr } = await supabase
+          .from('tweets')
+          .select('user_id')
+          .eq('id', tweetId)
+          .single();
+        if (tweetErr) throw tweetErr;
+        const tweetOwner = tweetData.user_id;
+
+        const payload = { tweet_id: tweetId, user_id: currentUser, text, created_at: new Date().toISOString() };
+        const { data: insertedComment, error } = await supabase.from('comments').insert([payload]).select('id, text, created_at, user_id, profiles(id, username, display_name)').single();
+        if (error) throw error;
+
+        const { count } = await supabase.from('comments').select('*', { count: 'exact', head: false }).eq('tweet_id', tweetId);
+        await supabase.from('tweets').update({ comments_count: count }).eq('id', tweetId);
+
+        const cnt = document.querySelector(`[data-tweet="${tweetId}"] .comment-count`);
+        if (cnt) cnt.textContent = count;
+
+        const who = currentUserData?.username || (currentUser || '').slice(0, 6);
+        const d = document.createElement('div');
+        d.className = 'comment-item';
+        d.dataset.commentId = insertedComment.id;
+        const commentText = document.createElement('span');
+        commentText.textContent = `${who}: ${text}`;
+        d.appendChild(commentText);
+        if (insertedComment.user_id === currentUser) {
+          const delBtn = document.createElement('button');
+          delBtn.className = 'delete-comment-btn';
+          delBtn.innerHTML = '<i class="fa-solid fa-trash"></i>';
+          delBtn.style.marginLeft = 'auto';
+          delBtn.style.background = 'none';
+          delBtn.style.border = 'none';
+          delBtn.style.color = 'var(--danger)';
+          delBtn.style.cursor = 'pointer';
+          delBtn.addEventListener('click', () => deleteCommentHandler(insertedComment.id, d, tweetId));
+          d.appendChild(delBtn);
+        }
+        commentsWrap.appendChild(d);
+        textInput.value = '';
+
+        if (tweetOwner !== currentUser) {
+          const senderUsername = currentUserData?.username || 'A user';
+          const notif = {
+            recipient_id: tweetOwner,
+            sender_id: currentUser,
+            type: 'comment',
+            related_id: tweetId,
+            message: `${senderUsername} commented on your tweet: "${text.slice(0, 50)}${text.length > 50 ? '...' : ''}"`,
+            is_read: false,
+            created_at: new Date().toISOString()
+          };
+          const { error: notifErr } = await supabase.from('notifications').insert([notif]);
+          if (notifErr) console.warn('Notification error', notifErr);
+          else {
+            await updateNotifCount();
+          }
+        }
+      } catch (err) { showError('addComment catch', err); }
+    }
+
+    async function deleteCommentHandler(commentId, commentEl, tweetId) {
+      try {
+        await loadCurrentUser();
+        if (!currentUser) { alert('You must sign in!'); return; }
+        const { data: c, error: cErr } = await supabase.from('comments').select('user_id').eq('id', commentId).single();
+        if (cErr) throw cErr;
+        if (!c || c.user_id !== currentUser) { alert('You can only delete your own comments.'); return; }
+        if (!confirm('Are you sure you want to delete this comment?')) return;
+
+        const { error: delErr } = await supabase.from('comments').delete().eq('id', commentId);
+        if (delErr) throw delErr;
+
+        if (commentEl) commentEl.remove();
+
+        const { count } = await supabase.from('comments').select('*', { count: 'exact', head: false }).eq('tweet_id', tweetId);
+        await supabase.from('tweets').update({ comments_count: count }).eq('id', tweetId);
+
+        const cnt = document.querySelector(`[data-tweet="${tweetId}"] .comment-count`);
+        if (cnt) cnt.textContent = count;
+      } catch (err) { showError('deleteComment catch', err); }
+    }
+
+    async function deleteTweetHandler(id, articleEl) {
+      try {
+        await loadCurrentUser();
+        if (!currentUser) { alert('You must sign in!'); return; }
+        const { data: t, error: tErr } = await supabase.from('tweets').select('user_id, media_path').eq('id', id).single();
+        if (tErr) throw tErr;
+        if (!t || t.user_id !== currentUser) { alert('You can only delete your own tweets.'); return; }
+        if (!confirm('Are you sure you want to delete this tweet?')) return;
+
+        await supabase.from('likes').delete().eq('tweet_id', id);
+        await supabase.from('comments').delete().eq('tweet_id', id);
+        await supabase.from('notifications').delete().eq('related_id', id).in('type', ['like', 'comment', 'quote']);
+
+        try {
+          if (t.media_path) {
+            await supabase.storage.from('tweet_images').remove([t.media_path]);
+          }
+        } catch (e) { console.warn('media delete error', e); }
+
+        const { error: delErr } = await supabase.from('tweets').delete().eq('id', id);
+        if (delErr) throw delErr;
+
+        if (articleEl) articleEl.remove();
+      } catch (err) { showError('deleteTweet catch', err); }
+    }
+
+    async function isFollowing(followerId, followingId) {
+      try {
+        const { data, error } = await supabase
+          .from('follows')
+          .select('id')
+          .eq('follower', followerId)
+          .eq('following', followingId)
+          .limit(1)
+          .maybeSingle();
+        if (error) throw error;
+        return !!data;
+      } catch (err) {
+        console.warn('isFollowing error', err);
+        return false;
+      }
+    }
+
+    async function followUser(targetUserId) {
+      try {
+        await loadCurrentUser();
+        if (!currentUser) { alert('You must sign in!'); return false; }
+        if (currentUser === targetUserId) { alert('You cannot follow yourself!'); return false; }
+
+        const alreadyFollowing = await isFollowing(currentUser, targetUserId);
+        if (alreadyFollowing) {
+          alert('You are already following this user!');
+          return false;
+        }
+
+        const { error } = await supabase.from('follows').insert([{ follower: currentUser, following: targetUserId }]);
+        if (error) {
+          if (error.code === '23505') {
+            alert('You are already following this user!');
+          } else {
+            showError('follow error', error);
+          }
+          return false;
+        }
+
+        const senderUsername = currentUserData?.username || 'A user';
+        const notif = {
+          recipient_id: targetUserId,
+          sender_id: currentUser,
+          type: 'follow',
+          related_id: null,
+          message: `${senderUsername} started following you.`,
+          is_read: false,
+          created_at: new Date().toISOString()
+        };
+        const { error: notifErr } = await supabase.from('notifications').insert([notif]);
+        if (notifErr) console.warn('Notification error', notifErr);
+        else {
+          await updateNotifCount();
+        }
+
+        // You can update UI button text here if needed (follow → following)
+        return true;
+      } catch (err) {
+        showError('followUser catch', err);
+        return false;
+      }
+    }
+            return true;
+      } catch (err) {
+        showError('followUser catch', err);
+        return false;
+      }
+    }
+
+    async function unfollowUser(targetUserId) {
+      try {
+        await loadCurrentUser();
+        if (!currentUser) { alert('You must sign in!'); return false; }
+        const { error } = await supabase.from('follows').delete().match({ follower: currentUser, following: targetUserId });
+        if (error) {
+          showError('unfollow error', error);
+          return false;
+        }
+        return true;
+      } catch (err) {
+        showError('unfollowUser catch', err);
+        return false;
+      }
+    }
+
+    async function quoteTweetHandler(tweetId) {
+      try {
+        await loadCurrentUser();
+        if (!currentUser) { alert('You must sign in!'); return; }
+
+        const { data: quotedTweet, error } = await supabase
+          .from('tweets')
+          .select('id, user_id, text, media_url, media_type, created_at, profiles(id, username, display_name, avatar_url, is_founder)')
+          .eq('id', tweetId)
+          .single();
+        if (error) throw error;
+
+        quotedTweetId = tweetId;
+        await renderQuotePreview(quotedTweet);
+
+        const txtEl = document.getElementById('tweetInput');
+        txtEl.placeholder = 'Add a comment to the quote...';
+        txtEl.focus();
+      } catch (err) {
+        showError('quoteTweetHandler', err);
+      }
+    }
+
+    async function renderQuotePreview(quotedTweet) {
+      const previewDiv = document.getElementById('quotePreview');
+      if (!previewDiv) return;
+
+      previewDiv.innerHTML = '';
+      const quotedDiv = document.createElement('div');
+      quotedDiv.className = 'quoted-tweet';
+
+      const profile = quotedTweet.profiles || {};
+      const username = profile.username || (quotedTweet.user_id || '').slice(0, 6);
+      const display = profile.display_name || username;
+      const avatar = profile.avatar_url || fallbackAvatar(username);
+      const isFounder = profile.is_founder || false;
+
+      const header = document.createElement('header');
+      const avatarImg = document.createElement('img');
+      avatarImg.className = 's-avatar';
+      avatarImg.src = escapeHTML(avatar);
+      avatarImg.alt = 'avatar';
+      avatarImg.width = 36;
+      avatarImg.height = 36;
+      const nameSpan = document.createElement('span');
+      nameSpan.className = 'name';
+      let nameHTML = `${escapeHTML(display)} <span class="uname">@${escapeHTML(username)}</span>`;
+      if (isFounder) {
+        nameHTML += ` <span class="founder-badge"><i class="fa-solid fa-crown"></i> Founder</span>`;
+      }
+      nameSpan.innerHTML = nameHTML;
+      header.appendChild(avatarImg);
+      header.appendChild(nameSpan);
+
+      const textP = document.createElement('p');
+      textP.innerHTML = linkHashtags(quotedTweet.text || '');
+
+      quotedDiv.appendChild(header);
+      quotedDiv.appendChild(textP);
+
+      if (quotedTweet.media_url && quotedTweet.media_type) {
+        if (quotedTweet.media_type === 'audio') {
+          const playerContainer = document.createElement('div');
+          quotedDiv.appendChild(playerContainer);
+          createWaveformPlayer(playerContainer, quotedTweet.media_url);
+        } else if (quotedTweet.media_type === 'image') {
+          const img = document.createElement('img');
+          img.src = quotedTweet.media_url;
+          img.alt = 'Media';
+          img.style.maxWidth = '100%';
+          img.style.borderRadius = '6px';
+          quotedDiv.appendChild(img);
+        } else if (quotedTweet.media_type === 'video') {
+          createVideoPreview(quotedDiv, quotedTweet.media_url, true);
+        }
+      }
+
+      previewDiv.appendChild(quotedDiv);
+      previewDiv.style.display = 'block';
+
+      const cancelBtn = document.getElementById('cancelQuoteBtn');
+      if (cancelBtn) cancelBtn.style.display = 'block';
+    }
+
+    function clearQuotePreview() {
+      quotedTweetId = null;
+      const previewDiv = document.getElementById('quotePreview');
+      if (previewDiv) {
+        previewDiv.innerHTML = '';
+        previewDiv.style.display = 'none';
+      }
+      const cancelBtn = document.getElementById('cancelQuoteBtn');
+      if (cancelBtn) cancelBtn.style.display = 'none';
+      const txtEl = document.getElementById('tweetInput');
+      txtEl.placeholder = "What's happening?";
+    }
+
+    /* SEARCH */
+    async function doSearch(q) {
+      try {
+        q = (q || '').trim();
+        const resWrap = document.getElementById('searchResults');
+        if (!q) {
+          if (resWrap) resWrap.style.display = 'none';
+          return;
+        }
+
+        resWrap.innerHTML = '';
+
+        if (q.startsWith('#')) {
+          // Hashtag search
+          const tagQuery = q.slice(1).trim();
+          if (tagQuery) {
+            const { data: hashtags, error } = await supabase
+              .from('hashtags')
+              .select('tag')
+              .ilike('tag', `%${tagQuery}%`)
+              .limit(20);
+
+            if (error) {
+              console.warn('search hashtags error', error);
+            } else if (hashtags && hashtags.length > 0) {
+              const uniqueTags = [...new Set(hashtags.map(h => h.tag))];
+              uniqueTags.forEach(tag => {
+                const item = document.createElement('div');
+                item.className = 'search-item';
+                item.innerHTML = `<i class="fa-solid fa-hashtag" style="font-size: 20px; color: var(--accent);"></i> <div class="s-meta"><div class="s-name">#${escapeHTML(tag)}</div></div>`;
+                item.addEventListener('mousedown', (ev) => {
+                  ev.preventDefault();
+                  window.location.href = `hashtag.html?tag=${encodeURIComponent(tag)}`;
+                  resWrap.style.display = 'none';
+                });
+                resWrap.appendChild(item);
+              });
+            }
+          }
+        } else {
+          // User search
+          const { data: users, error } = await supabase
+            .from('profiles')
+            .select('id, username, display_name, avatar_url, is_founder')
+            .ilike('username', `%${q}%`)
+            .limit(20);
+
+          if (error) {
+            console.warn('search profiles error', error);
+          } else if (users && users.length > 0) {
+            users.forEach(u => {
+              const item = document.createElement('div');
+              item.className = 'search-item';
+              const avatar = u.avatar_url || fallbackAvatar(u.username);
+              let nameHTML = `${escapeHTML(u.display_name || u.username)}`;
+              if (u.is_founder) {
+                nameHTML += ` <span class="founder-badge"><i class="fa-solid fa-crown"></i> Founder</span>`;
+              }
+              item.innerHTML = `<img class="s-avatar" src="${escapeHTML(avatar)}" width="36" height="36" alt="avatar"> <div class="s-meta"><div class="s-name">${nameHTML}</div><div class="s-username">@${escapeHTML(u.username)}</div></div>`;
+              item.addEventListener('mousedown', (ev) => {
+                ev.preventDefault();
+                window.location.href = `profile.html?id=${u.id}`;
+                resWrap.style.display = 'none';
+              });
+              resWrap.appendChild(item);
+            });
+          }
+        }
+
+        if (resWrap.innerHTML === '') {
+          const p = document.createElement('div');
+          p.className = 'search-item';
+          p.textContent = 'No results';
+          resWrap.appendChild(p);
+        }
+
+        resWrap.style.display = 'block';
+      } catch (err) { showError('doSearch catch', err); }
+    }
+
+    /* MODAL FUNCTIONS */
+    const modal = document.getElementById('tweetModal');
+    const closeModalBtn = document.getElementById('closeModal');
+    const modalContent = document.getElementById('modalTweetContent');
+
+    if (closeModalBtn) {
+      closeModalBtn.addEventListener('click', () => {
+        modal.style.display = 'none';
+      });
+    }
+
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) {
+        modal.style.display = 'none';
+      }
+    });
+
+    async function openTweetModal(tweetId) {
+      try {
+        const { data: tweet, error } = await supabase
+          .from('tweets')
+          .select('id, user_id, text, media_url, media_type, media_path, quoted_tweet_id, created_at, likes_count, comments_count, quotes_count, profiles(id, username, display_name, avatar_url, is_founder)')
+          .eq('id', tweetId)
+          .single();
+
+        if (error || !tweet) {
+          showError('Could not load tweet', error);
+          return;
+        }
+
+        await renderModalTweet(tweet);
+        modal.style.display = 'block';
+      } catch (err) {
+        showError('Error opening modal', err);
+      }
+    }
+
+    async function renderModalTweet(tweet) {
+      modalContent.innerHTML = '';
+
+      const profile = tweet.profiles || {};
+      const username = profile.username || (tweet.user_id || '').slice(0, 6);
+      const display = profile.display_name || username;
+      const avatar = profile.avatar_url || fallbackAvatar(username);
+      const isFounder = profile.is_founder || false;
+
+      let likeIconClass = 'fa-regular fa-star';
+      let likeColor = '';
+      if (currentUser) {
+        const { data: existingLike } = await supabase
+          .from('likes')
+          .select('id')
+          .eq('tweet_id', tweet.id)
+          .eq('user_id', currentUser)
+          .maybeSingle();
+        if (existingLike) {
+          likeIconClass = 'fa-solid fa-star';
+          likeColor = 'var(--yellow)';
+        }
+      }
+
+      // Header
+      const header = document.createElement('header');
+      header.style.display = 'flex';
+      header.style.alignItems = 'flex-start';
+      header.style.gap = '10px';
+      header.style.marginBottom = '10px';
+      const avatarImg = document.createElement('img');
+      avatarImg.className = 'avatar';
+      avatarImg.src = escapeHTML(avatar);
+      avatarImg.alt = 'avatar';
+      avatarImg.width = 48;
+      avatarImg.height = 48;
+      const headerInfo = document.createElement('div');
+      headerInfo.style.flex = 1;
+      const nameDiv = document.createElement('div');
+      nameDiv.className = 'name';
+      let nameHTML = `${escapeHTML(display)} <span class="uname" style="margin-left:8px;color:#bbb;font-weight:500;font-size:13px">@${escapeHTML(username)}</span>`;
+      if (isFounder) {
+        nameHTML += ` <span class="founder-badge"><i class="fa-solid fa-crown"></i> Founder</span>`;
+      }
+      nameDiv.innerHTML = nameHTML;
+      const timeDiv = document.createElement('div');
+      timeDiv.className = 'time muted';
+      timeDiv.style.color = '#bbb';
+      timeDiv.style.fontSize = '12px';
+      timeDiv.style.marginTop = '4px';
+      timeDiv.textContent = fmtTime(tweet.created_at);
+      headerInfo.appendChild(nameDiv);
+      headerInfo.appendChild(timeDiv);
+      header.appendChild(avatarImg);
+      header.appendChild(headerInfo);
+
+      // Text
+      const textP = document.createElement('p');
+      textP.style.margin = '10px 0 0 0';
+      textP.innerHTML = linkHashtags(tweet.text || '');
+
+      // Media
+      let mediaDiv = null;
+      if (tweet.media_url && tweet.media_type) {
+        mediaDiv = document.createElement('div');
+        mediaDiv.style.marginTop = '8px';
+        if (tweet.media_type === 'audio') {
+          const playerContainer = document.createElement('div');
+          mediaDiv.appendChild(playerContainer);
+          createWaveformPlayer(playerContainer, tweet.media_url);
+        } else if (tweet.media_type === 'image') {
+          const img = document.createElement('img');
+          img.src = tweet.media_url;
+          img.alt = 'Media';
+          mediaDiv.appendChild(img);
+        } else if (tweet.media_type === 'video') {
+          createVideoPreview(mediaDiv, tweet.media_url, true);
+        }
+      }
+
+      // Quoted tweet
+      let quotedDiv = null;
+      if (tweet.quoted_tweet_id) {
+        quotedDiv = document.createElement('div');
+        quotedDiv.className = 'quoted-tweet';
+        try {
+          const { data: quotedTweet } = await supabase
+            .from('tweets')
+            .select('id, user_id, text, media_url, media_type, created_at, profiles(id, username, display_name, avatar_url, is_founder)')
+            .eq('id', tweet.quoted_tweet_id)
+            .single();
+
+          if (quotedTweet) {
+            const qProfile = quotedTweet.profiles || {};
+            const qUsername = qProfile.username || (quotedTweet.user_id || '').slice(0, 6);
+            const qDisplay = qProfile.display_name || qUsername;
+            const qAvatar = qProfile.avatar_url || fallbackAvatar(qUsername);
+            const qIsFounder = qProfile.is_founder || false;
+
+            const qHeader = document.createElement('header');
+            const qAvatarImg = document.createElement('img');
+            qAvatarImg.className = 'avatar';
+            qAvatarImg.src = escapeHTML(qAvatar);
+            qAvatarImg.alt = 'avatar';
+            qAvatarImg.width = 24;
+            qAvatarImg.height = 24;
+            const qNameSpan = document.createElement('span');
+            qNameSpan.className = 'name';
+            let qNameHTML = `${escapeHTML(qDisplay)} <span class="uname">@${escapeHTML(qUsername)}</span>`;
+            if (qIsFounder) {
+              qNameHTML += ` <span class="founder-badge"><i class="fa-solid fa-crown"></i> Founder</span>`;
+            }
+            qNameSpan.innerHTML = qNameHTML;
+            qHeader.appendChild(qAvatarImg);
+            qHeader.appendChild(qNameSpan);
+
+            const qTextP = document.createElement('p');
+            qTextP.innerHTML = linkHashtags(quotedTweet.text || '');
+
+            quotedDiv.appendChild(qHeader);
+            quotedDiv.appendChild(qTextP);
+
+            if (quotedTweet.media_url && quotedTweet.media_type) {
+              if (quotedTweet.media_type === 'audio') {
+                const playerContainer = document.createElement('div');
+                quotedDiv.appendChild(playerContainer);
+                createWaveformPlayer(playerContainer, quotedTweet.media_url);
+              } else if (quotedTweet.media_type === 'image') {
+                const img = document.createElement('img');
+                img.src = quotedTweet.media_url;
+                img.alt = 'Media';
+                img.style.maxWidth = '100%';
+                img.style.borderRadius = '6px';
+                quotedDiv.appendChild(img);
+              } else if (quotedTweet.media_type === 'video') {
+                createVideoPreview(quotedDiv, quotedTweet.media_url, true);
+              }
+            }
+          }
+        } catch (e) {
+          console.warn('quoted tweet load', e);
+        }
+      }
+
+      // Actions
+      const actions = document.createElement('div');
+      actions.className = 'modal-actions';
+      actions.style.marginTop = '10px';
+      actions.style.display = 'flex';
+      actions.style.gap = '12px';
+      actions.style.alignItems = 'center';
+
+      const likeDiv = document.createElement('div');
+      likeDiv.className = 'action like';
+      likeDiv.dataset.id = tweet.id;
+      likeDiv.innerHTML = `<i class="${likeIconClass}" style="color: ${likeColor};"></i><span class="like-count" style="margin-left:6px">${tweet.likes_count || 0}</span>`;
+
+      const commentBtnDiv = document.createElement('div');
+      commentBtnDiv.className = 'action comment-btn';
+      commentBtnDiv.dataset.id = tweet.id;
+      commentBtnDiv.innerHTML = '<i class="fa-solid fa-comment"></i><span class="comment-count" style="margin-left:6px">' + (tweet.comments_count || 0) + '</span>';
+
+      const quoteBtnDiv = document.createElement('div');
+      quoteBtnDiv.className = 'action quote-btn';
+      quoteBtnDiv.dataset.id = tweet.id;
+      quoteBtnDiv.innerHTML = '<i class="fa-solid fa-quote-left"></i><span class="quote-count" style="margin-left:6px">' + (tweet.quotes_count || 0) + '</span>';
+
+      actions.appendChild(likeDiv);
+      actions.appendChild(commentBtnDiv);
+      actions.appendChild(quoteBtnDiv);
+
+      if (tweet.user_id === currentUser) {
+        const deleteDiv = document.createElement('div');
+        deleteDiv.className = 'action delete-btn';
+        deleteDiv.dataset.id = tweet.id;
+        deleteDiv.innerHTML = `<i class="fa-solid fa-trash"></i><span style="margin-left:6px">Delete</span>`;
+        actions.appendChild(deleteDiv);
+      }
+
+      // Comments section
+      const commentsWrap = document.createElement('div');
+      commentsWrap.className = 'modal-comments';
+      const { data: comments } = await supabase
+        .from('comments')
+        .select('id, text, created_at, user_id, profiles(id, username, display_name)')
+        .eq('tweet_id', tweet.id)
+        .order('created_at', { ascending: true });
+      (comments || []).forEach(c => {
+        const who = c.profiles?.username || (c.user_id || '').slice(0, 6);
+        const d = document.createElement('div');
+        d.className = 'comment-item';
+        d.dataset.commentId = c.id;
+        const commentText = document.createElement('span');
+        commentText.textContent = `${who}: ${c.text}`;
+        d.appendChild(commentText);
+        if (c.user_id === currentUser) {
+          const delBtn = document.createElement('button');
+          delBtn.className = 'delete-comment-btn';
+          delBtn.innerHTML = '<i class="fa-solid fa-trash"></i>';
+          delBtn.style.marginLeft = 'auto';
+          delBtn.style.background = 'none';
+          delBtn.style.border = 'none';
+          delBtn.style.color = 'var(--danger)';
+          delBtn.style.cursor = 'pointer';
+          delBtn.addEventListener('click', () => deleteCommentHandler(c.id, d, tweet.id));
+          d.appendChild(delBtn);
+        }
+        commentsWrap.appendChild(d);
+      });
+
+      // Comment form
+      const commentForm = document.createElement('div');
+      commentForm.className = 'modal-comment-form';
+      commentForm.style.display = 'none';
+      const commentInput = document.createElement('input');
+      commentInput.type = 'text';
+      commentInput.placeholder = 'Write a comment...';
+      const commentSubmit = document.createElement('button');
+      commentSubmit.textContent = 'Comment';
+      commentForm.appendChild(commentInput);
+      commentForm.appendChild(commentSubmit);
+
+      // Append everything
+      const modalTweet = document.createElement('div');
+      modalTweet.className = 'modal-tweet';
+      modalTweet.appendChild(header);
+      modalTweet.appendChild(textP);
+      if (mediaDiv) modalTweet.appendChild(mediaDiv);
+      if (quotedDiv) modalTweet.appendChild(quotedDiv);
+      modalTweet.appendChild(actions);
+
+      modalContent.appendChild(modalTweet);
+      modalContent.appendChild(commentsWrap);
+      modalContent.appendChild(commentForm);
+
+      // Event listeners for modal actions
+      const modalLikeEl = modalContent.querySelector('.action.like');
+      if (modalLikeEl) {
+        modalLikeEl.addEventListener('click', async (e) => {
+          await likeTweetHandler(tweet.id, null);
+          const { count: updatedCount } = await supabase.from('likes').select('*', { count: 'exact', head: false }).eq('tweet_id', tweet.id);
+          const { data: isLikedData } = await supabase.from('likes').select('id').eq('tweet_id', tweet.id).eq('user_id', currentUser).maybeSingle();
+          const likeCountEl = modalContent.querySelector('.like-count');
+          if (likeCountEl) {
+            likeCountEl.textContent = updatedCount || 0;
+          }
+          const icon = modalLikeEl.querySelector('i');
+          if (icon) {
+            if (isLikedData) {
+              icon.className = 'fa-solid fa-star';
+              icon.style.color = 'var(--yellow)';
+            } else {
+              icon.className = 'fa-regular fa-star';
+              icon.style.color = '';
+            }
+          }
+        });
+      }
+
+      const modalCommentBtn = modalContent.querySelector('.comment-btn');
+      if (modalCommentBtn) {
+        modalCommentBtn.addEventListener('click', () => {
+          commentForm.style.display = commentForm.style.display === 'none' ? 'flex' : 'none';
+        });
+      }
+
+      commentSubmit.addEventListener('click', async () => {
+        await addCommentHandler(tweet.id, commentInput, commentsWrap);
+        const commentCntEl = modalContent.querySelector('.comment-count');
+        if (commentCntEl) {
+          const { data: updatedTweet } = await supabase.from('tweets').select('comments_count').eq('id', tweet.id).single();
+          commentCntEl.textContent = updatedTweet.comments_count || 0;
+        }
+      });
+
+      const modalQuoteBtn = modalContent.querySelector('.quote-btn');
+      if (modalQuoteBtn) {
+        modalQuoteBtn.addEventListener('click', async () => {
+          await quoteTweetHandler(tweet.id);
+          modal.style.display = 'none';
+        });
+      }
+
+      const modalDelBtn = modalContent.querySelector('.delete-btn');
+      if (modalDelBtn) {
+        modalDelBtn.addEventListener('click', () => {
+          deleteTweetHandler(tweet.id, null);
+          modal.style.display = 'none';
+        });
+      }
+    }
+
+    /* RENDER SINGLE TWEET */
+    async function renderSingleTweet(tweet, { prepend = true, isTemp = false } = {}) {
+      const feed = document.getElementById('feed');
+      if (!feed) return;
+      if (document.querySelector(`[data-tweet="${tweet.id}"]`)) return;
+
+      const article = document.createElement('article');
+      article.className = 'tweet';
+      if (isTemp) article.classList.add('temp');
+      article.setAttribute('data-tweet', tweet.id);
+      const profile = tweet.profiles || {};
+      const isFounder = profile.is_founder || false;
+      if (isFounder) {
+        article.classList.add('founder-tweet');
+      }
+
+      const username = profile.username || (tweet.user_id || '').slice(0, 6);
+      const display = profile.display_name || username;
+      const avatar = profile.avatar_url || fallbackAvatar(username);
+
+      const isFollowingUser = await isFollowing(currentUser, tweet.user_id);
+
+      let likeIconClass = 'fa-regular fa-star';
+      let likeColor = '';
+      if (currentUser) {
+        const { data: existingLike } = await supabase
+          .from('likes')
+          .select('id')
+          .eq('tweet_id', tweet.id)
+          .eq('user_id', currentUser)
+          .maybeSingle();
+        if (existingLike) {
+          likeIconClass = 'fa-solid fa-star';
+          likeColor = 'var(--yellow)';
+        }
+      }
+
+      const header = document.createElement('header');
+      header.style.display = 'flex';
+      header.style.alignItems = 'flex-start';
+      header.style.gap = '10px';
+      header.style.cursor = 'pointer';
+      header.addEventListener('click', () => {
+        window.location.href = `profile.html?id=${tweet.user_id}`;
+      });
+      const avatarImg = document.createElement('img');
+      avatarImg.className = 'avatar';
+      avatarImg.src = escapeHTML(avatar);
+      avatarImg.alt = 'avatar';
+      avatarImg.width = 48;
+      avatarImg.height = 48;
+      const headerInfo = document.createElement('div');
+      headerInfo.style.flex = 1;
+      const nameDiv = document.createElement('div');
+      nameDiv.className = 'name';
+      let nameHTML = `${escapeHTML(display)} <span class="uname" style="margin-left:8px;color:#bbb;font-weight:500;font-size:13px">@${escapeHTML(username)}</span>`;
+      if (isFounder) {
+        nameHTML += ` <span class="founder-badge"><i class="fa-solid fa-crown"></i> Founder</span>`;
+      }
+      nameDiv.innerHTML = nameHTML;
+      const timeDiv = document.createElement('div');
+      timeDiv.className = 'time muted';
+      timeDiv.style.color = '#bbb';
+      timeDiv.style.fontSize = '12px';
+      timeDiv.style.marginTop = '4px';
+      timeDiv.textContent = fmtTime(tweet.created_at);
+      headerInfo.appendChild(nameDiv);
+      headerInfo.appendChild(timeDiv);
+      header.appendChild(avatarImg);
+      header.appendChild(headerInfo);
+
+      if (tweet.user_id !== currentUser) {
+        const followDiv = document.createElement('div');
+        const followBtn = document.createElement('button');
+        followBtn.className = 'follow-btn';
+        followBtn.dataset.user = tweet.user_id;
+        followBtn.textContent = isFollowingUser ? 'Unfollow' : 'Follow';
+        followDiv.appendChild(followBtn);
+        header.appendChild(followDiv);
+      }
+
+      const textP = document.createElement('p');
+      textP.style.margin = '10px 0 0 0';
+      textP.innerHTML = linkHashtags(tweet.text || '');
+
+      let mediaDiv = null;
+      if (tweet.media_url && tweet.media_type) {
+        mediaDiv = document.createElement('div');
+        mediaDiv.style.marginTop = '8px';
+        if (tweet.media_type === 'audio') {
+          const playerContainer = document.createElement('div');
+          mediaDiv.appendChild(playerContainer);
+          createWaveformPlayer(playerContainer, tweet.media_url);
+        } else if (tweet.media_type === 'image') {
+          const img = document.createElement('img');
+          img.src = tweet.media_url;
+          img.alt = 'Media';
+          mediaDiv.appendChild(img);
+        } else if (tweet.media_type === 'video') {
+          createVideoPreview(mediaDiv, tweet.media_url, true);
+        }
+      }
+
+      let quotedDiv = null;
+      if (tweet.quoted_tweet_id) {
+        quotedDiv = document.createElement('div');
+        quotedDiv.className = 'quoted-tweet';
+        try {
+          const { data: quotedTweet } = await supabase
+            .from('tweets')
+            .select('id, user_id, text, media_url, media_type, created_at, profiles(id, username, display_name, avatar_url, is_founder)')
+            .eq('id', tweet.quoted_tweet_id)
+            .single();
+
+          if (quotedTweet) {
+            const qProfile = quotedTweet.profiles || {};
+            const qUsername = qProfile.username || (quotedTweet.user_id || '').slice(0, 6);
+            const qDisplay = qProfile.display_name || qUsername;
+            const qAvatar = qProfile.avatar_url || fallbackAvatar(qUsername);
+            const qIsFounder = qProfile.is_founder || false;
+
+            const qHeader = document.createElement('header');
+            const qAvatarImg = document.createElement('img');
+            qAvatarImg.className = 'avatar';
+            qAvatarImg.src = escapeHTML(qAvatar);
+            qAvatarImg.alt = 'avatar';
+            qAvatarImg.width = 24;
+            qAvatarImg.height = 24;
+            const qNameSpan = document.createElement('span');
+            qNameSpan.className = 'name';
+            let qNameHTML = `${escapeHTML(qDisplay)} <span class="uname">@${escapeHTML(qUsername)}</span>`;
+            if (qIsFounder) {
+              qNameHTML += ` <span class="founder-badge"><i class="fa-solid fa-crown"></i> Founder</span>`;
+            }
+            qNameSpan.innerHTML = qNameHTML;
+            qHeader.appendChild(qAvatarImg);
+            qHeader.appendChild(qNameSpan);
+
+            const qTextP = document.createElement('p');
+            qTextP.innerHTML = linkHashtags(quotedTweet.text || '');
+
+            quotedDiv.appendChild(qHeader);
+            quotedDiv.appendChild(qTextP);
+
+            if (quotedTweet.media_url && quotedTweet.media_type) {
+              if (quotedTweet.media_type === 'audio') {
+                const playerContainer = document.createElement('div');
+                quotedDiv.appendChild(playerContainer);
+                createWaveformPlayer(playerContainer, quotedTweet.media_url);
+              } else if (quotedTweet.media_type === 'image') {
+                const img = document.createElement('img');
+                img.src = quotedTweet.media_url;
+                img.alt = 'Media';
+                img.style.maxWidth = '100%';
+                img.style.borderRadius = '6px';
+                quotedDiv.appendChild(img);
+              } else if (quotedTweet.media_type === 'video') {
+                createVideoPreview(quotedDiv, quotedTweet.media_url, true);
+              }
+            }
+          }
+        } catch (e) {
+          console.warn('quoted tweet load', e);
+        }
+      }
+
+      const actions = document.createElement('div');
+      actions.className = 'actions';
+      actions.style.marginTop = '10px';
+      actions.style.display = 'flex';
+      actions.style.gap = '12px';
+      actions.style.alignItems = 'center';
+
+      const likeDiv = document.createElement('div');
+      likeDiv.className = 'action like';
+      likeDiv.dataset.id = tweet.id;
+      likeDiv.innerHTML = `<i class="${likeIconClass}" style="color: ${likeColor};"></i><span class="like-count" style="margin-left:6px">${tweet.likes_count || 0}</span>`;
+
+      const commentBtnDiv = document.createElement('div');
+      commentBtnDiv.className = 'action comment-btn';
+      commentBtnDiv.dataset.id = tweet.id;
+      commentBtnDiv.innerHTML = '<i class="fa-solid fa-comment"></i><span class="comment-count" style="margin-left:6px">' + (tweet.comments_count || 0) + '</span>';
+
+      const quoteBtnDiv = document.createElement('div');
+      quoteBtnDiv.className = 'action quote-btn';
+      quoteBtnDiv.dataset.id = tweet.id;
+      quoteBtnDiv.innerHTML = '<i class="fa-solid fa-quote-left"></i><span class="quote-count" style="margin-left:6px">' + (tweet.quotes_count || 0) + '</span>';
+
+      const detailDiv = document.createElement('div');
+      detailDiv.className = 'action detail-btn';
+      detailDiv.dataset.id = tweet.id;
+      detailDiv.innerHTML = '<i class="fa-solid fa-eye"></i><span style="margin-left:6px">Detail</span>';
+
+      actions.appendChild(likeDiv);
+      actions.appendChild(commentBtnDiv);
+      actions.appendChild(quoteBtnDiv);
+      actions.appendChild(detailDiv);
+
+      if (tweet.user_id === currentUser) {
+        const deleteDiv = document.createElement('div');
+        deleteDiv.className = 'action delete-btn';
+        deleteDiv.dataset.id = tweet.id;
+        deleteDiv.innerHTML = `<i class="fa-solid fa-trash"></i><span style="margin-left:6px">Delete</span>`;
+        actions.appendChild(deleteDiv);
+      }
+
+      const commentsWrap = document.createElement('div');
+      commentsWrap.className = 'comments';
+      commentsWrap.style.marginTop = '8px';
+
+      try {
+        const { data: comments } = await supabase
+          .from('comments')
+          .select('id, text, created_at, user_id, profiles(id, username, display_name)')
+          .eq('tweet_id', tweet.id)
+          .order('created_at', { ascending: true });
+        (comments || []).forEach(c => {
+          const who = c.profiles?.username || (c.user_id || '').slice(0, 6);
+          const d = document.createElement('div');
+          d.className = 'comment-item';
+          d.dataset.commentId = c.id;
+          const commentText = document.createElement('span');
+          commentText.textContent = `${who}: ${c.text}`;
+          d.appendChild(commentText);
+          if (c.user_id === currentUser) {
+            const delBtn = document.createElement('button');
+            delBtn.className = 'delete-comment-btn';
+            delBtn.innerHTML = '<i class="fa-solid fa-trash"></i>';
+            delBtn.style.marginLeft = 'auto';
+            delBtn.style.background = 'none';
+            delBtn.style.border = 'none';
+            delBtn.style.color = 'var(--danger)';
+            delBtn.style.cursor = 'pointer';
+            delBtn.addEventListener('click', () => deleteCommentHandler(c.id, d, tweet.id));
+            d.appendChild(delBtn);
+          }
+          commentsWrap.appendChild(d);
+        });
+      } catch (e) { console.warn('comments load', e); }
+
+      const commentForm = document.createElement('div');
+      commentForm.className = 'comment-form';
+      commentForm.style.display = 'none';
+      commentForm.style.marginTop = '8px';
+      const commentInput = document.createElement('input');
+      commentInput.type = 'text';
+      commentInput.placeholder = 'Write a comment...';
+      const commentSubmit = document.createElement('button');
+      commentSubmit.textContent = 'Comment';
+      commentForm.appendChild(commentInput);
+      commentForm.appendChild(commentSubmit);
+
+      article.appendChild(header);
+      article.appendChild(textP);
+      if (mediaDiv) article.appendChild(mediaDiv);
+      if (quotedDiv) article.appendChild(quotedDiv);
+      article.appendChild(actions);
+      article.appendChild(commentsWrap);
+      article.appendChild(commentForm);
+
+      // Follow button listener
+      const followBtn = article.querySelector('.follow-btn');
+      if (followBtn) {
+        followBtn.addEventListener('click', async (e) => {
+          e.stopPropagation();
+          const targetId = e.currentTarget.getAttribute('data-user');
+          if (!currentUser) { alert('Sign in to follow'); return; }
+          if (e.currentTarget.textContent.trim() === 'Follow') {
+            const success = await followUser(targetId);
+            if (success) e.currentTarget.textContent = 'Unfollow';
+          } else {
+            const success = await unfollowUser(targetId);
+            if (success) e.currentTarget.textContent = 'Follow';
+          }
+        });
+      }
+
+      const likeEl = article.querySelector('.action.like');
+      if (likeEl) {
+        likeEl.addEventListener('click', async (e) => {
+          await likeTweetHandler(tweet.id, article);
+        });
+      }
+
+      const commentBtn = article.querySelector('.comment-btn');
+      if (commentBtn) {
+        commentBtn.addEventListener('click', async function () {
+          commentForm.style.display = (commentForm.style.display === 'none') ? 'block' : 'none';
+        });
+      }
+
+      commentSubmit.addEventListener('click', async function () {
+        await addCommentHandler(tweet.id, commentInput, commentsWrap);
+      });
+
+      const quoteBtn = article.querySelector('.quote-btn');
+      if (quoteBtn) {
+        quoteBtn.addEventListener('click', async function () {
+          await quoteTweetHandler(tweet.id);
+        });
+      }
+
+      const detailBtn = article.querySelector('.detail-btn');
+      if (detailBtn) {
+        detailBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          openTweetModal(tweet.id);
+        });
+      }
+
+      const delBtn = article.querySelector('.delete-btn');
+      if (delBtn) {
+        delBtn.addEventListener('click', function () { deleteTweetHandler(tweet.id, article); });
+      }
+
+      if (prepend) feed.prepend(article); else feed.appendChild(article);
+    }
+
+    /* REALTIME SUBSCRIPTIONS */
+    function setupRealtime() {
+      try {
+        if (realtimeChannel) return;
+
+        realtimeChannel = supabase.channel('public:tweets')
+          .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'tweets' }, payload => {
+            const newTweet = payload.new;
+            if (!newTweet) return;
+            (async () => {
+              await loadCurrentUser();
+              if (!currentUser) {
+                const { data: full } = await supabase.from('tweets').select('id, user_id, text, media_url, media_type, media_path, quoted_tweet_id, created_at, likes_count, comments_count, quotes_count, profiles(id, username, display_name, avatar_url, is_founder)').eq('id', newTweet.id).single();
+                if (full) renderSingleTweet(full, { prepend: true });
+                return;
+              }
+              const { data: f } = await supabase.from('follows').select('following').eq('follower', currentUser).eq('following', newTweet.user_id).single();
+              if ((newTweet.user_id === currentUser) || f) {
+                const { data: full } = await supabase.from('tweets').select('id, user_id, text, media_url, media_type, media_path, quoted_tweet_id, created_at, likes_count, comments_count, quotes_count, profiles(id, username, display_name, avatar_url, is_founder)').eq('id', newTweet.id).single();
+                if (full) renderSingleTweet(full, { prepend: true });
+              }
+            })();
+          })
+          .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'tweets' }, async payload => {
+            const updatedTweet = payload.new;
+            if (!updatedTweet) return;
+            const tweetId = updatedTweet.id;
+            const tweetEl = document.querySelector(`[data-tweet="${tweetId}"]`);
+            if (tweetEl) {
+              const likeCountEl = tweetEl.querySelector('.like-count');
+              if (likeCountEl) likeCountEl.textContent = updatedTweet.likes_count || 0;
+              const commentCountEl = tweetEl.querySelector('.comment-count');
+              if (commentCountEl) commentCountEl.textContent = updatedTweet.comments_count || 0;
+              const quoteCountEl = tweetEl.querySelector('.quote-count');
+              if (quoteCountEl) quoteCountEl.textContent = updatedTweet.quotes_count || 0;
+            }
+          })
+          .subscribe();
+
+        supabase.channel('public:comments')
+          .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'comments' }, async payload => {
+            const newComment = payload.new;
+            if (!newComment) return;
+            const tweetId = newComment.tweet_id;
+            const commentsWrap = document.querySelector(`[data-tweet="${tweetId}"] .comments`);
+            if (commentsWrap) {
+              const { data: comment } = await supabase
+                .from('comments')
+                .select('id, text, created_at, user_id, profiles(id, username, display_name)')
+                .eq('id', newComment.id)
+                .single();
+              if (comment) {
+                const who = comment.profiles?.username || (comment.user_id || '').slice(0, 6);
+                const d = document.createElement('div');
+                d.className = 'comment-item';
+                d.dataset.commentId = comment.id;
+                const commentText = document.createElement('span');
+                commentText.textContent = `${who}: ${comment.text}`;
+                d.appendChild(commentText);
+                if (comment.user_id === currentUser) {
+                  const delBtn = document.createElement('button');
+                  delBtn.className = 'delete-comment-btn';
+                  delBtn.innerHTML = '<i class="fa-solid fa-trash"></i>';
+                  delBtn.style.marginLeft = 'auto';
+                  delBtn.style.background = 'none';
+                  delBtn.style.border = 'none';
+                  delBtn.style.color = 'var(--danger)';
+                  delBtn.style.cursor = 'pointer';
+                  delBtn.addEventListener('click', () => deleteCommentHandler(comment.id, d, tweetId));
+                  d.appendChild(delBtn);
+                }
+                commentsWrap.appendChild(d);
+
+                const { count } = await supabase.from('comments').select('*', { count: 'exact', head: false }).eq('tweet_id', tweetId);
+                await supabase.from('tweets').update({ comments_count: count }).eq('id', tweetId);
+                const cnt = document.querySelector(`[data-tweet="${tweetId}"] .comment-count`);
+                if (cnt) cnt.textContent = count;
+              }
+            }
+          })
+          .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'comments' }, async payload => {
+            const oldComment = payload.old;
+            if (!oldComment) return;
+            const tweetId = oldComment.tweet_id;
+            const commentEl = document.querySelector(`[data-comment-id="${oldComment.id}"]`);
+            if (commentEl) commentEl.remove();
+
+            const { count } = await supabase.from('comments').select('*', { count: 'exact', head: false }).eq('tweet_id', tweetId);
+            await supabase.from('tweets').update({ comments_count: count }).eq('id', tweetId);
+            const cnt = document.querySelector(`[data-tweet="${tweetId}"] .comment-count`);
+            if (cnt) cnt.textContent = count;
+          })
+          .subscribe();
+
+        realtimeNotifChannel = supabase.channel('public:notifications')
+          .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'notifications' }, async payload => {
+            if (payload.new.recipient_id === currentUser) {
+              await updateNotifCount();
+            }
+          })
+          .subscribe();
+      } catch (err) { console.warn('realtime setup error', err); }
+    }
+
+    /* NOTIFICATIONS COUNT */
+    async function updateNotifCount() {
+      try {
+        await loadCurrentUser();
+        if (!currentUser) {
+          const el = document.getElementById('notifCount');
+          if (el) el.style.display = 'none';
+          return;
+        }
+        const { count } = await supabase.from('notifications').select('*', { count: 'exact', head: false }).eq('recipient_id', currentUser).eq('is_read', false);
+        const el = document.getElementById('notifCount');
+        if (el) {
+          if (count && count > 0) {
+            el.style.display = 'inline-block';
+            el.textContent = count;
+          } else {
+            el.style.display = 'none';
+          }
+        }
+      } catch (e) { console.warn('notif count', e); }
+    }
+
+    /* PULL TO REFRESH */
+    async function refreshFeed() {
+      feedRendered = 0;
+      reachedEnd = false;
+      const feed = document.getElementById('feed');
+      if (feed) feed.innerHTML = '';
+      await loadMore();
+    }
+
+    const ALLOW_START_ZONE = 40;
+    const MIN_DRAG_TO_ACTIVATE = 12;
+    const THRESHOLD = 80;
+
+    function getScrollableAncestor(el) {
+      while (el && el !== document.body) {
+        const style = window.getComputedStyle(el);
+        const overflowY = style.overflowY;
+        if ((overflowY === 'auto' || overflowY === 'scroll') && el.scrollHeight > el.clientHeight) return el;
+        el = el.parentElement;
+      }
+      return document.documentElement;
+    }
+
+    function shouldStartPTR(target) {
+      if (!target) return false;
+      if (target.closest && target.closest('.no-ptr')) return false;
+      if (target.closest && target.closest('nav, .bottom-bar, button, input, textarea, select, a, .actions, .action, .modal, .search-wrapper')) {
+        return false;
+      }
+      return true;
+    }
+
+    let startY = 0;
+    let pulling = false;
+    let pullDistance = 0;
+    let pointerDown = false;
+    const MAX_PULL = 150;
+    let isRefreshing = false;
+    const wrap = document.getElementById('feedPage');
+    const spinner = document.createElement('div');
+    spinner.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+    spinner.style.position = 'absolute';
+    spinner.style.top = '10px';
+    spinner.style.left = '50%';
+    spinner.style.transform = 'translateX(-50%)';
+    spinner.style.display = 'none';
+    wrap.appendChild(spinner);
+
+    wrap.classList.add('ptr-wrap');
+
+    function onTouchStart(e) {
+      if (isRefreshing) return;
+      if (window.scrollY !== 0) return;
+      if (!e.touches || e.touches.length !== 1) return;
+
+      const startTarget = e.target;
+      if (!shouldStartPTR(startTarget)) return;
+
+      const y = e.touches[0].clientY;
+      if (y > ALLOW_START_ZONE) return;
+
+      const sc = getScrollableAncestor(startTarget);
+      if (sc && sc.scrollTop !== 0) return;
+
+      startY = y;
+      pulling = true;
+      pullDistance = 0;
+      wrap.style.transition = 'none';
+    }
+
+    function onTouchMove(e) {
+      if (!pulling || isRefreshing) return;
+      if (!e.touches || e.touches.length !== 1) return;
+      const currentY = e.touches[0].clientY;
+      const delta = currentY - startY;
+      if (delta <= 0) return;
+      if (delta < MIN_DRAG_TO_ACTIVATE) return;
+
+      e.preventDefault();
+
+      const damp = Math.min(MAX_PULL, Math.round((1 - Math.pow(0.8, delta / 12)) * delta));
+      pullDistance = damp;
+      wrap.style.transform = `translateY(${damp}px)`;
+      wrap.classList.add('visible');
+      spinner.style.transform = `rotate(${damp * 3}deg)`;
+
+      if (pullDistance >= THRESHOLD) {
+        wrap.classList.add('ready');
+      } else {
+        wrap.classList.remove('ready');
+      }
+    }
+
+    function onTouchEnd(/*e*/) {
+      if (!pulling) return;
+      pulling = false;
+      wrap.style.transition = 'transform 300ms ease';
+      if (pullDistance >= THRESHOLD) {
+        triggerRefresh();
+      } else {
+        resetPull(true);
+      }
+    }
+
+    function onPointerDown(e) {
+      if (isRefreshing) return;
+      if (window.scrollY !== 0) return;
+      if (!e.isPrimary) return;
+
+      const startTarget = e.target;
+      if (!shouldStartPTR(startTarget)) return;
+
+      const y = e.clientY;
+      if (y > ALLOW_START_ZONE) return;
+
+      const sc = getScrollableAncestor(startTarget);
+      if (sc && sc.scrollTop !== 0) return;
+
+      pointerDown = true;
+      startY = y;
+      pullDistance = 0;
+      wrap.style.transition = 'none';
+    }
+
+    function onPointerMove(e) {
+      if (!pointerDown || isRefreshing) return;
+      const currentY = e.clientY;
+      const delta = currentY - startY;
+      if (delta <= 0) return;
+      if (delta < MIN_DRAG_TO_ACTIVATE) return;
+      e.preventDefault && e.preventDefault();
+
+      const damp = Math.min(MAX_PULL, Math.round((1 - Math.pow(0.8, delta / 12)) * delta));
+      pullDistance = damp;
+      wrap.style.transform = `translateY(${damp}px)`;
+      wrap.classList.add('visible');
+      spinner.style.transform = `rotate(${damp * 3}deg)`;
+      if (pullDistance >= THRESHOLD) wrap.classList.add('ready'); else wrap.classList.remove('ready');
+    }
+
+    function onPointerUp(/*e*/) {
+      if (!pointerDown) return;
+      pointerDown = false;
+      wrap.style.transition = 'transform 300ms ease';
+      if (pullDistance >= THRESHOLD) triggerRefresh(); else resetPull(true);
+    }
+
+    function triggerRefresh() {
+      isRefreshing = true;
+      spinner.style.display = 'block';
+      document.getElementById('refreshIndicator').textContent = 'Refreshing...';
+      refreshFeed().finally(() => {
+        resetPull(false);
+        isRefreshing = false;
+        spinner.style.display = 'none';
+      });
+    }
+
+    function resetPull(animate) {
+      if (animate) {
+        wrap.style.transform = 'translateY(0)';
+        setTimeout(() => {
+          wrap.classList.remove('visible', 'ready');
+        }, 300);
+      } else {
+        wrap.style.transform = 'translateY(0)';
+        wrap.classList.remove('visible', 'ready');
+      }
+    }
+
+    window.removeEventListener('touchstart', onTouchStart);
+    window.removeEventListener('touchmove', onTouchMove);
+    window.removeEventListener('touchend', onTouchEnd);
+    window.removeEventListener('pointerdown', onPointerDown);
+    window.removeEventListener('pointermove', onPointerMove);
+    window.removeEventListener('pointerup', onPointerUp);
+
+    window.addEventListener('touchstart', onTouchStart, { passive: true });
+    window.addEventListener('touchmove', onTouchMove, { passive: false });
+    window.addEventListener('touchend', onTouchEnd, { passive: true });
+
+    window.addEventListener('pointerdown', onPointerDown);
+    window.addEventListener('pointermove', onPointerMove);
+    window.addEventListener('pointerup', onPointerUp);
+    window.addEventListener('pointercancel', onPointerUp);
+
+    /* INFINITE SCROLL */
+    const onScroll = debounce(() => {
+      if (reachedEnd || isLoading) return;
+      if (window.scrollY + window.innerHeight >= document.documentElement.scrollHeight * 0.85) loadMore();
+    }, 120);
+    function attachScroll() { window.addEventListener('scroll', onScroll, { passive: true }); }
+    function detachScroll() { window.removeEventListener('scroll', onScroll); }
+
+    window.app = { tweetAt, followUser, unfollowUser, likeTweetHandler, addCommentHandler, deleteTweetHandler, doSearch };
+
+    /* SEARCH UI HELPERS */
+    function attachSearchUI() {
+      const wrapper = document.getElementById('searchWrapper');
+      const input = document.getElementById('searchInput');
+      const resWrap = document.getElementById('searchResults');
+
+      document.addEventListener('click', (e) => {
+        if (!wrapper.contains(e.target)) {
+          if (resWrap) resWrap.style.display = 'none';
+        }
+      });
+
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          if (resWrap) resWrap.style.display = 'none';
+          if (input) input.blur();
+        }
+      });
+
+      if (input) {
+        input.addEventListener('blur', () => {
+          setTimeout(() => {
+            if (resWrap) resWrap.style.display = 'none';
+          }, 200);
+        });
+      }
+    }
+
+    /* INITIALIZATION */
+    async function tryInit() {
+      try {
+        updateTexts();
+        await loadCurrentUser();
+        updateNavAuth();
+        await updateNotifCount();
+        if (!USE_PLACEHOLDER_KEY) {
+          supabase.auth.onAuthStateChange(async (event, session) => {
+            await loadCurrentUser();
+            updateNavAuth();
+            await updateNotifCount();
+          });
+        }
+        const settingsLink = document.getElementById('settingsLink');
+        const settingsMenu = document.getElementById('settingsMenu');
+        const languageBtn = document.getElementById('languageBtn');
+        const languageList = document.getElementById('languageList');
+
+        if (settingsLink && settingsMenu) {
+          settingsLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            const rect = settingsLink.getBoundingClientRect();
+            const menuWidth = 150;
+            if (settingsMenu.style.display === 'block') {
+              settingsMenu.style.display = 'none';
+            } else {
+              settingsMenu.style.display = 'block';
+              const menuHeight = settingsMenu.offsetHeight || 180;
+              settingsMenu.style.top = `${rect.top - menuHeight - 10}px`;
+              settingsMenu.style.left = `${Math.max(10, window.innerWidth / 2 - menuWidth / 2)}px`;
+              settingsMenu.style.zIndex = '2001';
+            }
+          });
+
+          document.addEventListener('click', (e) => {
+            if (!settingsMenu.contains(e.target) && e.target !== settingsLink) {
+              settingsMenu.style.display = 'none';
+            }
+          });
+        }
+
+        if (languageBtn && languageList) {
+          languageBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            languageList.style.display = (languageList.style.display === 'block') ? 'none' : 'block';
+          });
+
+          languageList.querySelectorAll('a[data-lang]').forEach(link => {
+            link.addEventListener('click', (e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              const lang = e.currentTarget.dataset.lang;
+              setLanguage(lang);
+            });
+          });
+        }
+
+        const btn = document.getElementById('tweetBtn');
+        if (btn) btn.addEventListener('click', (e) => { e.preventDefault(); tweetAt(); });
+
+        const cancelQuoteBtn = document.getElementById('cancelQuoteBtn');
+        if (cancelQuoteBtn) cancelQuoteBtn.addEventListener('click', clearQuotePreview);
+
+        const recordBtn = document.getElementById('recordBtn');
+        if (recordBtn) {
+          recordBtn.addEventListener('click', () => {
+            if (isRecording) {
+              stopRecording();
+            } else {
+              startRecording();
+            }
+          });
+        }
+
+        const fileBtn = document.getElementById('fileBtn');
+        const fileInput = document.getElementById('fileInput');
+        if (fileBtn && fileInput) {
+          fileBtn.addEventListener('click', () => {
+            fileInput.click();
+          });
+          fileInput.addEventListener('change', handleFileSelect);
+        }
+
+        const searchInput = document.getElementById('searchInput');
+        if (searchInput) {
+          searchInput.addEventListener('input', debounce((e) => {
+            const q = e.target.value;
+            if (!q) {
+              const res = document.getElementById('searchResults');
+              if (res) res.style.display = 'none';
+              return;
+            }
+            doSearch(q);
+          }, 300));
+        }
+
+        attachSearchUI();
+        await initialRender();
+        attachScroll();
+      } catch (err) { console.error('tryInit error', err); }
+    }
+
+    /* AUTH HELPERS */
+    async function loadCurrentUser() {
+      try {
+        if (USE_PLACEHOLDER_KEY) {
+          currentUser = null; currentUserData = null; return;
+        }
+        const { data } = await supabase.auth.getUser();
+        const user = data?.user || null;
+        if (!user) {
+          currentUser = null;
+          currentUserData = null;
+          return;
+        }
+        currentUser = user.id;
+        const { data: profile, error } = await supabase
+          .from('profiles')
+          .select('id, username, display_name, avatar_url, profile_pic, is_founder')
+          .eq('id', currentUser)
+          .single();
+        if (error && error.code !== 'PGRST116') console.warn('profile load', error);
+        currentUserData = profile || null;
+      } catch (err) { showError('loadCurrentUser', err); currentUser = null; currentUserData = null; }
+    }
+
+    async function signIn(email, password) {
+      try {
+        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+        if (error) { showError('Sign in error', error); return null; }
+        await loadCurrentUser();
+        return data;
+      } catch (err) { showError('signIn catch', err); return null; }
+    }
+
+    async function signOut() {
+      try {
+        if (!USE_PLACEHOLDER_KEY) await supabase.auth.signOut();
+        currentUser = null; currentUserData = null;
+        window.location.href = 'index.html';
+      } catch (err) { showError('signOut catch', err); }
+    }
+
+    tryInit();
+  </script>
+</body>
+</html>

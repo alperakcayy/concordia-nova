@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Notifications — Concordia Nova</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" />
+<style>
+  body{ margin:0; font-family:'Poppins',sans-serif; background:linear-gradient(rgba(0,0,0,.6),rgba(0,0,0,.6)), url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1950&q=80') center/cover fixed; color:#fff; }
+  header{ display:flex; justify-content:space-between; align-items:center; padding:12px 18px; background:#1da1f2; }
+  header h1{ margin:0; font-size:18px; }
+  .header-buttons{ display:flex; gap:8px; }
+  .header-buttons button{ padding:8px 12px; border-radius:8px; border:none; cursor:pointer; font-weight:700; background:#fff; color:#1da1f2; }
+  .notifications{ max-width:950px; margin:18px auto; padding:18px; display:flex; flex-direction:column; gap:12px; background:rgba(0,0,0,.45); border-radius:12px; }
+  .notification{ padding:12px; background:rgba(20,20,20,.85); border-radius:8px; border:1px solid rgba(255,255,255,.05); display:flex; justify-content:space-between; align-items:flex-start; gap:12px; }
+  .left{ flex:1; }
+  .meta{ color:#bbb; font-size:13px; margin-bottom:6px; }
+  .msg{ color:#e6e6e6; }
+  .controls{ display:flex; gap:8px; align-items:center; }
+  .controls button{ padding:6px 8px; border-radius:6px; border:none; cursor:pointer; font-weight:600; background:#fff; color:#1da1f2; }
+  .small-btn{ padding:6px 8px; background:transparent; border:1px solid rgba(255,255,255,.06); color:#fff; border-radius:6px; cursor:pointer; }
+  .empty{ text-align:center; color:#ccc; padding:20px; }
+  a.link { color:#9fd8ff; text-decoration:none; }
+  .muted { color:#999; font-size:13px; margin-top:6px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Notifications</h1>
+  <div class="header-buttons">
+    <button id="clearAllBtn">Clear All</button>
+    <button id="homeBtn">Back to Home</button>
+  </div>
+</header>
+
+<main class="notifications" id="notifList">
+  <!-- will be loaded -->
+</main>
+
+<script type="module">
+  import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+
+  // ---------- Put your own Supabase information here ----------
+  const SUPABASE_URL = 'https://shkttorkfcnvkrwnkixf.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNoa3R0b3JrZmNudmtyd25raXhmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY2NzY2ODAsImV4cCI6MjA3MjI1MjY4MH0.GgDA8tSgQoMhCt_BYZU3mCkKaErUs_SQVNeWdCGQOgI';
+  // ----------------------------------------------------------
+
+  const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  let currentUser = null;
+  let realtimeSub = null;
+
+  function escapeHtml(s = ''){ return String(s).replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+
+  async function init(){
+    try{
+      const { data } = await supabase.auth.getUser();
+      currentUser = data?.user || null;
+      if(!currentUser){
+        alert('You need to log in to see notifications.');
+        window.location.href = 'register.html';
+        return;
+      }
+      document.getElementById('homeBtn').addEventListener('click', ()=> window.location.href = 'social.html');
+      document.getElementById('clearAllBtn').addEventListener('click', clearAllNotifications);
+      await loadNotificationsWithFallback();
+      setupRealtime();
+    }catch(err){
+      console.error('init error', err);
+      document.getElementById('notifList').innerHTML = '<div class="empty">An error occurred during initialization.</div>';
+    }
+  }
+
+  // Main: first try notifications table, then fallback to likes/comments
+  async function loadNotificationsWithFallback(){
+    const wrap = document.getElementById('notifList');
+    wrap.innerHTML = 'Loading...';
+
+    // 1) Fetch from notifications table (recipient_id)
+    let { data: notifications, error } = await supabase
+      .from('notifications')
+      .select('*')
+      .eq('recipient_id', currentUser.id)
+      .order('created_at', { ascending:false });
+
+    if(error){
+      console.warn('notifications select error', error);
+      // even if error, we will try fallback
+      notifications = [];
+    }
+
+    // fallback if column name is different user_id (may be used in old codes)
+    if((!notifications || notifications.length === 0) && !error){
+      const { data: alt, error: altErr } = await supabase
+        .from('notifications')
+        .select('*')
+        .eq('user_id', currentUser.id)
+        .order('created_at', { ascending:false });
+      if(altErr) console.warn('notifications.user_id fallback error', altErr);
+      if(alt && alt.length > 0) notifications = alt;
+    }
+
+    if(notifications && notifications.length > 0){
+      // use notifications table
+      await renderNotifications(notifications);
+      return;
+    }
+
+    // ---------- FALLBACK: If notifications is empty, fetch likes/comments ----------
+    // 1) Get user's tweets
+    const { data: myTweets } = await supabase.from('tweets').select('id').eq('user_id', currentUser.id);
+    const tweetIds = (myTweets || []).map(t=>t.id).filter(Boolean);
+    let pseudo = [];
+
+    if(tweetIds.length > 0){
+      // likes
+      const { data: likes } = await supabase
+        .from('likes')
+        .select('id, user_id, created_at, tweet_id')
+        .in('tweet_id', tweetIds)
+        .order('created_at', { ascending:false })
+        .limit(50);
+
+      // comments
+      const { data: comments } = await supabase
+        .from('comments')
+        .select('id, user_id, created_at, tweet_id, text')
+        .in('tweet_id', tweetIds)
+        .order('created_at', { ascending:false })
+        .limit(50);
+
+      // create
+      (likes || []).forEach(l => {
+        pseudo.push({
+          id: `like-${l.id}`,
+          type: 'like',
+          sender_id: l.user_id,
+          related_id: l.tweet_id,
+          message: null,
+          created_at: l.created_at,
+          _source: 'likes'
+        });
+      });
+      (comments || []).forEach(c => {
+        pseudo.push({
+          id: `comment-${c.id}`,
+          type: 'comment',
+          sender_id: c.user_id,
+          related_id: c.tweet_id,
+          message: c.text,
+          created_at: c.created_at,
+          _source: 'comments'
+        });
+      });
+    }
+
+    // sort by created_at
+    pseudo.sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
+
+    if(pseudo.length === 0){
+      wrap.innerHTML = '<div class="empty">No notifications yet.</div>';
+      updateBadge(0);
+      return;
+    }
+
+    // fetch sender profile information and tweet texts
+    // sender ids
+    const senderIds = [...new Set(pseudo.map(p => p.sender_id).filter(Boolean))];
+    const tweetIdsForFetch = [...new Set(pseudo.map(p => p.related_id).filter(Boolean))];
+
+    let profilesMap = {};
+    if(senderIds.length > 0){
+      const { data: profiles } = await supabase.from('profiles').select('id, username, display_name').in('id', senderIds);
+      (profiles || []).forEach(p => profilesMap[p.id] = p);
+    }
+
+    let tweetsMap = {};
+    if(tweetIdsForFetch.length > 0){
+      const { data: tweets } = await supabase.from('tweets').select('id, text, user_id').in('id', tweetIdsForFetch);
+      (tweets || []).forEach(t => tweetsMap[t.id] = t);
+    }
+
+    // render pseudo as notifications (do not write to DB)
+    wrap.innerHTML = '';
+    pseudo.forEach(n => {
+      const div = document.createElement('div');
+      div.className = 'notification';
+      const left = document.createElement('div');
+      left.className = 'left';
+      const senderName = profilesMap[n.sender_id]?.username || (n.sender_id ? n.sender_id.slice(0,8) : 'Anon');
+
+      let messageText = '';
+      if(n.type === 'like') messageText = `@${senderName} liked your tweet.`;
+      else if(n.type === 'comment') messageText = `@${senderName} commented on your tweet: "${(n.message||'').slice(0,80)}${(n.message||'').length>80?'...':''}"`;
+      else messageText = n.message || '';
+
+      const tweet = tweetsMap[n.related_id];
+      const tweetSnippet = tweet ? `<div class="muted">Tweet: <a class="link" href="profile.html?id=${tweet.user_id}#tweet-${tweet.id}" target="_blank">${escapeHtml((tweet.text||'').slice(0,120))}${(tweet.text||'').length>120?'...':''}</a></div>` : '';
+
+      left.innerHTML = `
+        <div class="meta"><strong>${escapeHtml(n.type || 'Notification')}</strong> — From: @${escapeHtml(senderName)}</div>
+        <div class="msg">${escapeHtml(messageText)}</div>
+        ${tweetSnippet}
+        <div class="meta time">${new Date(n.created_at).toLocaleString()}</div>
+      `;
+
+      // controls (no delete for pseudo since not in DB)
+      const controls = document.createElement('div');
+      controls.className = 'controls';
+      const infoBtn = document.createElement('button');
+      infoBtn.className = 'small-btn';
+      infoBtn.textContent = 'Details';
+      infoBtn.addEventListener('click', ()=> {
+        if(tweet) window.open(`profile.html?id=${tweet.user_id}#tweet-${tweet.id}`, '_blank');
+      });
+      controls.appendChild(infoBtn);
+
+      div.appendChild(left);
+      div.appendChild(controls);
+      wrap.appendChild(div);
+    });
+
+    updateBadge(pseudo.length);
+  }
+
+  // If notifications table exists, render it (DB data -> read/status/delete etc)
+  async function renderNotifications(notifications){
+    const wrap = document.getElementById('notifList');
+    wrap.innerHTML = '';
+
+    // collect sender ids and tweet ids
+    const senderIds = [...new Set(notifications.map(n => n.sender_id).filter(Boolean))];
+    const relatedIds = [...new Set(notifications.map(n => n.related_id).filter(Boolean))];
+
+    let profilesMap = {};
+    if(senderIds.length){
+      const { data: profiles } = await supabase.from('profiles').select('id, username, display_name').in('id', senderIds);
+      (profiles || []).forEach(p => profilesMap[p.id] = p);
+    }
+
+    let tweetsMap = {};
+    if(relatedIds.length){
+      const { data: tweets } = await supabase.from('tweets').select('id, text, user_id').in('id', relatedIds);
+      (tweets || []).forEach(t => tweetsMap[t.id] = t);
+    }
+
+    notifications.forEach(n => {
+      const div = document.createElement('div');
+      div.className = 'notification';
+      const left = document.createElement('div');
+      left.className = 'left';
+
+      const senderName = profilesMap[n.sender_id]?.username || (n.sender_id ? n.sender_id.slice(0,8) : 'Anon');
+      const typeLabel = n.type || 'Notification';
+      const created = n.created_at ? new Date(n.created_at).toLocaleString() : '';
+      const tweet = tweetsMap[n.related_id];
+
+      const msg = n.message || (n.type === 'like' ? `@${senderName} liked your tweet.` : '');
+
+      const tweetSnippet = tweet ? `<div class="muted">Tweet: <a class="link" href="profile.html?id=${tweet.user_id}#tweet-${tweet.id}" target="_blank">${escapeHtml((tweet.text||'').slice(0,120))}${(tweet.text||'').length>120?'...':''}</a></div>` : '';
+
+      left.innerHTML = `
+        <div class="meta"><strong>${escapeHtml(typeLabel)}</strong> — From: @${escapeHtml(senderName)}</div>
+        <div class="msg">${escapeHtml(msg)}</div>
+        ${tweetSnippet}
+        <div class="meta time">${escapeHtml(created)}</div>
+      `;
+
+      const controls = document.createElement('div');
+      controls.className = 'controls';
+
+      // Mark as read
+      const markBtn = document.createElement('button');
+      markBtn.className = 'small-btn';
+      markBtn.textContent = n.is_read ? 'Read' : 'Mark as Read';
+      markBtn.disabled = !!n.is_read;
+      markBtn.addEventListener('click', async () => {
+        const { error } = await supabase.from('notifications').update({ is_read: true }).eq('id', n.id);
+        if(error){ alert('Could not mark as read'); console.error(error); return; }
+        await loadNotificationsWithFallback();
+      });
+      controls.appendChild(markBtn);
+
+      // Delete
+      const delBtn = document.createElement('button');
+      delBtn.className = 'small-btn';
+      delBtn.textContent = 'Delete';
+      delBtn.addEventListener('click', async () => {
+        if(!confirm('Are you sure you want to delete this notification?')) return;
+        const { error } = await supabase.from('notifications').delete().eq('id', n.id);
+        if(error){ alert('An error occurred while deleting'); console.error(error); return; }
+        await loadNotificationsWithFallback();
+      });
+      controls.appendChild(delBtn);
+
+      div.appendChild(left);
+      div.appendChild(controls);
+      wrap.appendChild(div);
+    });
+
+    // unread badge
+    const unread = notifications.filter(x => !x.is_read).length;
+    updateBadge(unread);
+  }
+
+  async function clearAllNotifications(){
+    if(!confirm('Are you sure you want to delete all notifications?')) return;
+    // first try with recipient_id, then fallback to user_id
+    let { error } = await supabase.from('notifications').delete().eq('recipient_id', currentUser.id);
+    if(error){
+      console.warn('clear with recipient_id error, trying user_id', error);
+      const { error: e2 } = await supabase.from('notifications').delete().eq('user_id', currentUser.id);
+      if(e2){ alert('Clear failed'); console.error(e2); return; }
+    }
+    await loadNotificationsWithFallback();
+  }
+
+  function updateBadge(count){
+    // update local badge if exists
+    const candidates = [
+      document.getElementById('notifCount'),
+      (window.parent && window.parent.document && window.parent.document.getElementById('notifCount')),
+      (window.opener && window.opener.document && window.opener.document.getElementById('notifCount'))
+    ].filter(Boolean);
+    candidates.forEach(el => {
+      if(count && count > 0){
+        el.style.display = 'inline-block';
+        el.textContent = String(count);
+      } else {
+        el.style.display = 'none';
+        el.textContent = '0';
+      }
+    });
+  }
+
+  function setupRealtime(){
+    try{
+      if(realtimeSub) return;
+      realtimeSub = supabase.channel('public:notifications')
+        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'notifications' }, payload => {
+          if(payload.new && payload.new.recipient_id === currentUser.id){
+            loadNotificationsWithFallback();
+          }
+        })
+        .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'notifications' }, payload => {
+          if(payload.new && payload.new.recipient_id === currentUser.id){
+            loadNotificationsWithFallback();
+          }
+        })
+        .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'notifications' }, payload => {
+          if(payload.old && payload.old.recipient_id === currentUser.id){
+            loadNotificationsWithFallback();
+          }
+        })
+        .subscribe();
+    }catch(e){ console.warn('realtime error', e); }
+  }
+
+  // start
+  init();
+</script>
+
+</body>
+</html>

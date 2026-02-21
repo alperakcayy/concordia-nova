@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Concordia Nova — AI Hub</title>
+
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+
+  <meta name="description" content="Concordia Nova AI Hub: Text, image and idea generators." />
+
+  <style>
+    :root {
+      --bg-1: #04050a;
+      --bg-2: #071023;
+      --glass: rgba(255,255,255,0.03);
+      --muted: #9aa6b2;
+      --accent: #00f0ff;
+      --accent-2: #7b2fff;
+      --neon: #00f0ff;
+      --card: rgba(255,255,255,0.035);
+      --glass-2: rgba(255,255,255,0.02);
+      --glass-3: rgba(255,255,255,0.015);
+      --white: #ffffff;
+      --radius: 14px;
+      --shadow: 0 8px 30px rgba(2,6,23,0.6);
+      --glass-border: rgba(255,255,255,0.04);
+      --focus: 0 0 18px rgba(0,240,255,0.12);
+      --btn-gap: 16px;
+      --max-width: 1200px;
+      --transition: 280ms cubic-bezier(.2,.9,.2,1);
+      --ai-accent: #7b2fff;
+      --hover-glow: rgba(123,47,255,0.18);
+    }
+
+    * { box-sizing: border-box; }
+    html, body { height: 100%; margin: 0; }
+    body {
+      font-family: 'Poppins', system-ui, sans-serif;
+      background: linear-gradient(180deg, var(--bg-1) 0%, var(--bg-2) 100%);
+      color: var(--white);
+      overflow-x: hidden;
+    }
+
+    .container {
+      max-width: var(--max-width);
+      margin: 36px auto;
+      padding: 28px;
+      position: relative;
+      z-index: 20;
+      display: grid;
+      gap: 20px;
+    }
+
+    header.hub {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 12px 14px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border-radius: 12px;
+      border: 1px solid var(--glass-border);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(6px);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand .logo {
+      width: 52px;
+      height: 52px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--accent-2), var(--accent));
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 18px;
+      color: #020a0f;
+      box-shadow: 0 6px 20px rgba(123,47,255,0.14), 0 2px 10px rgba(0,240,255,0.06) inset;
+    }
+
+    .brand h1 {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: 0.2px;
+    }
+
+    .brand p {
+      margin: 0;
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .header-actions {
+      margin-left: auto;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    /* Mini Profile Box */
+    .mini-profile {
+      background: rgba(0,0,0,0.6);
+      padding: 16px;
+      border-radius: 12px;
+      margin: 20px auto;
+      max-width: 500px;
+      border: 1px solid rgba(123,47,255,0.2);
+      box-shadow: 0 8px 30px rgba(123,47,255,0.12);
+      display: none;
+    }
+
+    .mini-profile .top {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+    }
+
+    .mini-profile img {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      border: 2px solid var(--ai-accent);
+      object-fit: cover;
+    }
+
+    .mini-profile .info strong {
+      font-size: 18px;
+      color: var(--white);
+    }
+
+    .mini-profile .info .username {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .mini-profile .bio {
+      color: var(--muted);
+      font-size: 13px;
+      margin-top: 6px;
+      line-height: 1.4;
+    }
+
+    .mini-profile .stats {
+      margin-top: 12px;
+      display: flex;
+      gap: 24px;
+      justify-content: center;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .mini-profile .stats strong {
+      color: var(--white);
+    }
+
+    .mini-profile a {
+      margin-top: 12px;
+      display: inline-block;
+      background: var(--ai-accent);
+      color: white;
+      padding: 8px 16px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.3s;
+    }
+
+    .mini-profile a:hover {
+      background: #5e1fff;
+      transform: translateY(-2px);
+    }
+
+    /* AI Sections */
+    .ai-section {
+      padding: 20px;
+      border-radius: var(--radius);
+      background: var(--glass);
+      border: 1px solid var(--glass-border);
+      box-shadow: var(--shadow);
+    }
+
+    .ai-input {
+      width: 100%;
+      padding: 12px;
+      border-radius: 10px;
+      border: 1px solid var(--glass-border);
+      background: var(--glass-2);
+      color: var(--white);
+      font-size: 14px;
+      margin-bottom: 12px;
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    .ai-input::placeholder { color: var(--muted); }
+
+    .ai-btn {
+      padding: 12px 20px;
+      border-radius: 10px;
+      background: linear-gradient(90deg, var(--ai-accent), var(--accent));
+      color: #020a0f;
+      font-weight: 700;
+      border: none;
+      cursor: pointer;
+      transition: transform 0.3s;
+    }
+
+    .ai-btn:hover { transform: scale(1.03); }
+
+    .ai-output {
+      margin-top: 20px;
+      padding: 16px;
+      border-radius: 10px;
+      background: var(--glass-3);
+      border: 1px solid var(--glass-border);
+      white-space: pre-wrap;
+      min-height: 80px;
+    }
+
+    .ai-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+      margin-top: 24px;
+    }
+
+    /* Hero */
+    .hero {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+      padding: 26px;
+      border-radius: 14px;
+      background: linear-gradient(120deg, rgba(255,255,255,0.012), rgba(255,255,255,0.008));
+      border: 1px solid rgba(255,255,255,0.03);
+      box-shadow: 0 20px 50px rgba(2,6,23,0.6);
+    }
+
+    .hero-left { flex: 1; min-width: 300px; }
+    .hero-right { width: 360px; display: flex; justify-content: center; align-items: center; }
+
+    .hero h2 { margin: 0; font-size: 28px; line-height: 1.02; }
+    .hero p { margin: 12px 0 0 0; color: var(--muted); font-size: 14px; }
+
+    /* Background */
+    #bgCanvas {
+      position: fixed;
+      left: 0; top: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+      mix-blend-mode: screen;
+    }
+
+    .floating-planet {
+      position: absolute;
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      filter: blur(12px);
+      opacity: 0.12;
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    .planet-1 { right: 8%; top: 12%; background: radial-gradient(circle at 30% 30%, rgba(123,47,255,0.95), rgba(0,240,255,0.6)); transform: rotate(12deg); }
+    .planet-2 { left: 6%; bottom: 8%; background: radial-gradient(circle at 70% 70%, rgba(255,80,120,0.9), rgba(255,200,80,0.6)); transform: rotate(-14deg); }
+
+    .animated-lines {
+      position: absolute; inset: 0; z-index: 1; pointer-events: none;
+      background-image:
+        linear-gradient(transparent 30%, rgba(255,255,255,0.006) 31%, transparent 32%),
+        linear-gradient(90deg, transparent 40%, rgba(255,255,255,0.006) 41%, transparent 42%);
+      background-size: 100% 80px, 80px 100%;
+      opacity: 0.9;
+      mix-blend-mode: overlay;
+      animation: linesMove 18s linear infinite;
+    }
+
+    @keyframes linesMove { from { background-position: 0 0, 0 0; } to { background-position: 0 -720px, -720px 0; } }
+
+    .top-glow {
+      position: fixed; left: 0; right: 0; top: 0; height: 120px;
+      pointer-events: none; z-index: 2;
+      background: radial-gradient(ellipse at center, rgba(123,47,255,0.06), transparent 40%);
+      mix-blend-mode: screen;
+    }
+
+    footer.hub-note {
+      margin-top: 18px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 13px;
+      opacity: 0.95;
+    }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+      .hero { flex-direction: column; align-items: flex-start; gap: 14px; }
+      .hero-right { width: 100%; }
+      .ai-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 600px) {
+      .container { padding: 16px; }
+      .mini-profile { padding: 12px; max-width: 90%; }
+      .mini-profile img { width: 56px; height: 56px; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Background -->
+  <canvas id="bgCanvas" aria-hidden="true"></canvas>
+  <div class="floating-planet planet-1" aria-hidden="true"></div>
+  <div class="floating-planet planet-2" aria-hidden="true"></div>
+  <div class="animated-lines" aria-hidden="true"></div>
+  <div class="top-glow" aria-hidden="true"></div>
+
+  <main class="container" role="main" aria-labelledby="aiTitle">
+
+    <header class="hub" role="banner">
+      <div class="brand" aria-hidden="false">
+        <div class="logo" aria-hidden="true">CN</div>
+        <div>
+          <h1 id="aiTitle">Concordia Nova AI Hub</h1>
+          <p>Text, image and idea generators.</p>
+        </div>
+      </div>
+
+      <div class="header-actions" role="navigation" aria-label="Quick actions">
+        <button id="darkToggle" title="Change theme" aria-pressed="false" class="neon-badge" style="background:transparent;border:none;cursor:pointer;">Theme</button>
+        <a href="index.html" class="neon-badge" style="text-decoration:none;">Back to Hub</a>
+      </div>
+    </header>
+
+    <!-- Mini Profile Box (Common across all pages) -->
+    <div class="mini-profile" id="miniProfile">
+      <div class="top">
+        <img id="miniAvatar" src="https://via.placeholder.com/64" alt="Profile Picture">
+        <div class="info">
+          <strong id="miniName">Loading...</strong><br>
+          <span id="miniUsername" class="username"></span><br>
+          <small id="miniBio" class="bio">Loading bio...</small>
+        </div>
+        <a href="profile.html">Edit Profile</a>
+      </div>
+      <div class="stats">
+        <span><strong id="miniFollowing">0</strong> Following</span>
+        <span><strong id="miniFollowers">0</strong> Followers</span>
+      </div>
+    </div>
+
+    <section class="hero" aria-labelledby="heroHeading" role="region">
+      <div class="hero-left">
+        <h2 id="heroHeading">Artificial Intelligence Tools</h2>
+        <p>Mini AI model for text, image and idea generation. Enter prompt and generate.</p>
+      </div>
+      <div class="hero-right" aria-hidden="true">
+        <div style="width:280px; height:280px; border-radius:16px; display:flex;align-items:center;justify-content:center; background: linear-gradient(135deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border:1px solid rgba(255,255,255,0.03); box-shadow: 0 18px 50px rgba(2,6,23,0.6);">
+          <div style="text-align:center; padding:18px;">
+            <div style="font-size:42px; font-weight:800; letter-spacing:0.6px; color:transparent; -webkit-text-stroke: 0.8px rgba(255,255,255,0.06);">AI</div>
+            <div style="color:var(--muted); margin-top:8px; font-size:13px;">AI Hub</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="decor-line"></div>
+
+    <section class="ai-grid" aria-label="AI Generators">
+      <!-- Text Generator -->
+      <div class="ai-section ai-text">
+        <h3>Text Generator</h3>
+        <textarea class="ai-input" placeholder="Enter prompt (e.g., Write a story)" aria-label="Text prompt"></textarea>
+        <button class="ai-btn" onclick="generateText()">Generate</button>
+        <div class="ai-output" id="textOutput"></div>
+      </div>
+
+      <!-- Image Generator -->
+      <div class="ai-section ai-image">
+        <h3>Image Generator</h3>
+        <textarea class="ai-input" placeholder="Enter prompt (e.g., A landscape picture)" aria-label="Image prompt"></textarea>
+        <button class="ai-btn" onclick="generateImage()">Generate</button>
+        <div class="ai-output" id="imageOutput"></div>
+      </div>
+
+      <!-- Idea Generator -->
+      <div class="ai-section ai-idea">
+        <h3>Idea Generator</h3>
+        <textarea class="ai-input" placeholder="Enter prompt (e.g., Generate business ideas)" aria-label="Idea prompt"></textarea>
+        <button class="ai-btn" onclick="generateIdea()">Generate</button>
+        <div class="ai-output" id="ideaOutput"></div>
+      </div>
+
+      <!-- Other AI tools can be added here -->
+    </section>
+
+    <div class="rich-ornament" aria-hidden="true"></div>
+
+    <footer class="hub-note" role="contentinfo">
+      AI generation is simulated, no real model is used. © Concordia Nova AI
+    </footer>
+
+  </main>
+
+  <script type="module">
+    // Supabase connection
+    import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+
+    const SUPABASE_URL = 'https://shkttorkfcnvkrwnkixf.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNoa3R0b3JrZmNudmtyd25raXhmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY2NzY2ODAsImV4cCI6MjA3MjI1MjY4MH0.GgDA8tSgQoMhCt_BYZU3mCkKaErUs_SQVNeWdCGQOgI';
+
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // Load mini profile
+    async function loadMiniProfile() {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        window.location.href = 'register.html';
+        return;
+      }
+
+      const { data: profile, error } = await supabase
+        .from('profiles')
+        .select('avatar_url, display_name, username, bio')
+        .eq('id', user.id)
+        .single();
+
+      if (error || !profile) {
+        console.error('Profile could not be loaded:', error);
+        return;
+      }
+
+      document.getElementById('miniAvatar').src = profile.avatar_url || 'https://via.placeholder.com/64';
+      document.getElementById('miniName').textContent = profile.display_name || profile.username || 'User';
+      document.getElementById('miniUsername').textContent = '@' + (profile.username || 'none');
+      document.getElementById('miniBio').textContent = profile.bio || 'Bio not added';
+
+      // Following/followers counts (optional, keep simple)
+      const { count: following } = await supabase
+        .from('follows')
+        .select('*', { count: 'exact', head: true })
+        .eq('follower', user.id);
+
+      const { count: followers } = await supabase
+        .from('follows')
+        .select('*', { count: 'exact', head: true })
+        .eq('following', user.id);
+
+      document.getElementById('miniFollowing').textContent = following || 0;
+      document.getElementById('miniFollowers').textContent = followers || 0;
+
+      document.getElementById('miniProfile').style.display = 'block';
+    }
+
+    // Run on page load
+    loadMiniProfile();
+
+    // Simple AI simulation (taken from previous code)
+    const miniAI = {
+      generate: function(prompt, type) {
+        if (type === 'text') return "Generated text: A story about " + prompt + ".";
+        if (type === 'image') return "Generated image: [Simulated URL]";
+        if (type === 'idea') return "Generated idea: A new idea for " + prompt + ".";
+        return "Generated content.";
+      }
+    };
+
+    function generateText() {
+      const prompt = document.querySelector('.ai-text .ai-input').value;
+      document.getElementById('textOutput').innerText = miniAI.generate(prompt, 'text');
+    }
+
+    function generateImage() {
+      const prompt = document.querySelector('.ai-image .ai-input').value;
+      document.getElementById('imageOutput').innerHTML = `<img src="https://via.placeholder.com/300?text=${encodeURIComponent(prompt)}" alt="Generated image">`;
+    }
+
+    function generateIdea() {
+      const prompt = document.querySelector('.ai-idea .ai-input').value;
+      document.getElementById('ideaOutput').innerText = miniAI.generate(prompt, 'idea');
+    }
+  </script>
+</body>
+</html>

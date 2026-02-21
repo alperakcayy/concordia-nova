@@ -1,0 +1,1177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
+  <title>Concordia Nova Music - Full</title>
+  <!-- External libs -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.26/Tone.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jsmediatags/3.9.5/jsmediatags.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+  <style>
+    /* ---------- THEME / LAYOUT (based on your theme) ---------- */
+    :root{
+      --bg:#0a0e1a;
+      --glass: rgba(20,25,45,0.75);
+      --accent1:#00ffff;
+      --accent2:#ff00ff;
+      --muted:#9aa4b2;
+      --text:#ffffff;
+      --card:#0f1724;
+    }
+    *{box-sizing:border-box;margin:0;padding:0;font-family:Inter,system-ui,Segoe UI,Roboto,"Helvetica Neue",Arial;}
+    html,body{height:100%;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;}
+    .app{display:flex;height:100vh;width:100vw;position:relative;overflow:hidden;}
+    /* Sidebar */
+    .sidebar{width:280px;background:var(--glass);backdrop-filter:blur(18px);padding:28px 18px;display:flex;flex-direction:column;gap:18px;z-index:1000;border-right:1px solid rgba(255,255,255,0.04)}
+    .logo{font-weight:700;font-size:22px;background:linear-gradient(90deg,var(--accent1),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-align:center;margin-bottom:6px}
+    .categories{display:flex;flex-direction:column;gap:10px;}
+    .category-btn{background:rgba(255,255,255,0.03);border:none;padding:12px 14px;border-radius:12px;color:var(--muted);cursor:pointer;text-align:left;display:flex;align-items:center;gap:10px;transition:all .18s}
+    .category-btn:hover{transform:translateX(6px);background:rgba(0,255,255,0.06);color:var(--accent1)}
+    .category-btn.active{background:linear-gradient(90deg, rgba(0,255,255,0.12), rgba(255,0,255,0.05));color:var(--accent1);box-shadow:0 6px 20px rgba(0,255,255,0.06)}
+    .category-btn .label{flex:1}
+    /* Main area */
+    .main{flex:1;position:relative;display:flex;flex-direction:column;justify-content:flex-end;overflow:hidden;}
+    #visualizer, #particles, #vr-concert{position:absolute;inset:0;pointer-events:none;z-index:1}
+    #remix-canvas{position:absolute;bottom:200px;right:40px;width:220px;height:220px;border-radius:14px;background:rgba(255,255,255,0.03);z-index:1200;display:none;pointer-events:auto}
+    .player{position:relative;z-index:1001;background:rgba(8,12,20,0.85);backdrop-filter:blur(20px);border-top:1px solid rgba(0,255,255,0.06);padding:18px 26px;display:flex;flex-direction:column;gap:14px}
+    .track-info{display:flex;align-items:center;gap:18px;flex-wrap:wrap;}
+    .album-art{width:72px;height:72px;border-radius:12px;background:linear-gradient(45deg,var(--accent2),var(--accent1));display:flex;align-items:center;justify-content:center;font-size:26px}
+    .song-details h3{font-size:18px;margin-bottom:2px}
+    .song-details p{opacity:.7;font-size:13px;font-style:italic}
+    .controls{display:flex;align-items:center;justify-content:center;gap:18px;flex-wrap:wrap;}
+    .control-btn{width:56px;height:56px;border-radius:50%;border:none;background:rgba(255,255,255,0.04);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;min-width:56px;}
+    .control-btn:hover{transform:scale(1.08);box-shadow:0 8px 20px rgba(0,255,255,0.06)}
+    #play-btn{width:72px;height:72px;background:var(--accent1);color:#000;font-size:24px;box-shadow:0 8px 30px rgba(0,255,255,0.12)}
+    .progress-container{display:flex;align-items:center;gap:12px}
+    #progress{flex:1;height:8px;background:rgba(255,255,255,0.04);border-radius:99px;cursor:pointer;position:relative}
+    #progress-fill{height:100%;width:0%;border-radius:99px;background:linear-gradient(90deg,var(--accent1),var(--accent2))}
+    .time{font-size:13px;opacity:0.8}
+    /* panels */
+    .panel{position:absolute;top:80px;left:320px;width:420px;padding:18px;border-radius:12px;background:var(--glass);z-index:1001;display:none;max-height:60vh;overflow:auto}
+    .panel h4{color:var(--accent1);margin-bottom:8px}
+    /* playlist item */
+    .playlist-item, .podcast-item, .radio-item, .relax-item{display:flex;gap:12px;align-items:center;padding:10px;border-radius:10px;background:transparent;cursor:pointer;border:1px solid transparent;transition:all .12s;margin-bottom:8px}
+    .playlist-item:hover, .podcast-item:hover{background:rgba(0,255,255,0.02);border-color:rgba(0,255,255,0.02)}
+    .playlist-cover{width:48px;height:48px;border-radius:8px;background:linear-gradient(45deg,var(--accent2),var(--accent1));display:flex;align-items:center;justify-content:center;color:#000;font-weight:700}
+    /* buttons inline */
+    .btn{padding:8px 12px;border-radius:8px;border:none;cursor:pointer;background:var(--accent1);color:#000;min-width:60px;touch-action:manipulation;}
+    .btn.secondary{background:rgba(255,255,255,0.06);color:var(--text)}
+    /* small helper */
+    .flex{display:flex;align-items:center;gap:8px}
+    .small{font-size:12px;opacity:.85}
+    .tooltip{font-size:12px;padding:6px 8px;border-radius:6px;background:#000;opacity:.8}
+    /* responsive */
+    @media(max-width:900px){
+      .sidebar{width:70px;padding:12px}
+      .logo{display:none}
+      .panel{left:86px}
+    }
+    @media(max-width:768px){
+      .app{flex-direction:column;}
+      .sidebar{width:100%;height:70px;flex-direction:row;padding:12px;overflow-x:auto;z-index:1001;border-right:none;border-bottom:1px solid rgba(255,255,255,0.04);}
+      .categories{flex-direction:row;gap:6px;}
+      .category-btn{padding:8px 10px;font-size:14px;gap:4px;}
+      .category-btn .label{display:none;}
+      .main{justify-content:flex-start;}
+      .player{padding:12px 16px;gap:10px;position:fixed;bottom:0;left:0;right:0;z-index:1002;}
+      .track-info{gap:12px;justify-content:space-between;}
+      .song-details h3{font-size:16px;}
+      .song-details p{font-size:12px;}
+      .controls{gap:12px;justify-content:space-evenly;}
+      .control-btn{width:48px;height:48px;font-size:18px;}
+      #play-btn{width:60px;height:60px;font-size:20px;}
+      .progress-container{gap:8px;}
+      .time{font-size:12px;}
+      .panel{top:70px;left:0;width:100%;max-height:calc(100vh - 200px);border-radius:0;padding:12px;}
+      #remix-canvas{bottom:160px;right:20px;width:180px;height:180px;}
+      #file-input{width:100%;}
+      .comment-section{display:flex;flex-direction:column;gap:8px;}
+      #comment-input{width:100%;}
+    }
+    /* Mini Profile Box */
+    .mini-profile {
+      background: rgba(20,25,45,0.9);
+      padding: 16px;
+      border-radius: 12px;
+      margin: 20px auto;
+      max-width: 500px;
+      border: 1px solid rgba(0,255,255,0.2);
+      box-shadow: 0 8px 30px rgba(0,255,255,0.12);
+      display: none;
+    }
+    .mini-profile .top {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .mini-profile img {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      border: 3px solid var(--accent1);
+      object-fit: cover;
+    }
+    .mini-profile .info strong {
+      font-size: 18px;
+      color: var(--text);
+    }
+    .mini-profile .info .username {
+      color: var(--muted);
+      font-size: 14px;
+    }
+    .mini-profile .bio {
+      color: var(--muted);
+      font-size: 13px;
+      margin-top: 8px;
+      line-height: 1.4;
+    }
+    .mini-profile .stats {
+      margin-top: 12px;
+      display: flex;
+      gap: 24px;
+      justify-content: center;
+      font-size: 13px;
+      color: var(--muted);
+    }
+    .mini-profile .stats strong {
+      color: var(--text);
+    }
+    .mini-profile a {
+      margin-top: 12px;
+      display: inline-block;
+      background: var(--accent1);
+      color: #000;
+      padding: 8px 16px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: background 0.3s;
+    }
+    .mini-profile a:hover {
+      background: #00d0d0;
+    }
+    /* debug */
+    .dev-badge{position:absolute;top:8px;right:8px;background:rgba(0,0,0,0.6);padding:6px 8px;border-radius:8px;font-size:12px;z-index:2000}
+  </style>
+</head>
+<body data-theme="dark">
+<div class="app">
+  <!-- Visuals -->
+  <canvas id="particles"></canvas>
+  <canvas id="visualizer"></canvas>
+  <div id="vr-concert" style="display:none"></div>
+
+  <!-- Mini Profile Box -->
+  <div class="mini-profile" id="miniProfile">
+    <div class="top">
+      <img id="miniAvatar" src="https://via.placeholder.com/64" alt="Profile Picture">
+      <div class="info">
+        <strong id="miniName">Loading...</strong><br>
+        <span id="miniUsername" class="username"></span><br>
+        <small id="miniBio" class="bio">Loading bio...</small>
+      </div>
+      <a href="profile.html">Edit Profile</a>
+    </div>
+    <div class="stats">
+      <span><strong id="miniFollowing">0</strong> Following</span>
+      <span><strong id="miniFollowers">0</strong> Followers</span>
+    </div>
+  </div>
+
+  <!-- Sidebar -->
+  <div class="sidebar" role="navigation" aria-label="Main navigation">
+    <div class="logo">Concordia Nova Music</div>
+    <div class="categories" id="categories">
+      <button class="category-btn active" data-category="music"><span class="label">🎵 Music</span></button>
+      <button class="category-btn" data-category="podcast"><span class="label">🎙 Podcast</span></button>
+      <button class="category-btn" data-category="radio"><span class="label">📻 Live Radio</span></button>
+      <button class="category-btn" data-category="relax"><span class="label">🌊 Relaxation</span></button>
+      <button class="category-btn" data-category="evolve"><span class="label">🔄 Evolving Music</span></button>
+      <button class="category-btn" data-category="synesthesia"><span class="label">🌈 Synesthesia</span></button>
+      <button class="category-btn" data-category="quantum"><span class="label">⚛ Quantum</span></button>
+      <button class="category-btn" data-category="bio"><span class="label">💓 Bio-Music</span></button>
+      <button class="category-btn" data-category="narrative"><span class="label">📖 Story Mode</span></button>
+      <button class="category-btn" data-category="remix"><span class="label">🤝 Community Remix</span></button>
+      <button class="category-btn" data-category="metadata"><span class="label">📄 Hi-Res Info</span></button>
+      <button class="category-btn" data-category="vr"><span class="label">🕶 VR Concert</span></button>
+    </div>
+  </div>
+
+  <!-- Main -->
+  <div class="main">
+    <div class="dev-badge" id="dev-badge">DEV MODE</div>
+    <!-- panels -->
+    <div id="playlist-panel" class="panel"><h4>Playlist</h4><div id="playlist-items"></div></div>
+    <div id="podcast-list" class="panel"><h4>Podcast List</h4><div id="podcast-items"></div></div>
+    <div id="radio-list" class="panel"><h4>Radio Channels</h4><div id="radio-items"></div></div>
+    <div id="relax-sounds" class="panel"><h4>Relaxation Sounds</h4><div id="relax-items"></div></div>
+    <div id="synesthesia-panel" class="panel"><h4>Synesthesia</h4><div id="synesthesia-text">Synesthesia text here...</div></div>
+    <div id="narrative-panel" class="panel"><h4>Story Mode</h4><div id="narrative-text">Story matching the music will be displayed here...</div></div>
+    <div id="community-panel" class="panel" style="right:20px;left:auto;top:160px;display:none"><h4>Community Trends</h4><div id="trend-list"></div></div>
+    <canvas id="remix-canvas"></canvas>
+    <!-- metadata / share / profile modals -->
+    <div id="metadata-popup" class="panel" style="display:none"><h4>Hi-Res Metadata</h4><div id="metadata-content"></div></div>
+    <div id="share-modal" class="panel" style="display:none"><h4>Share</h4><input id="share-link" readonly style="width:100%;padding:8px;background:rgba(255,255,255,0.03);border-radius:8px;border:0"><div style="margin-top:8px"><button id="share-copy" class="btn">Copy</button></div></div>
+    <div id="profile-modal" class="panel" style="display:none"><h4>Profile</h4><input id="profile-nick" placeholder="Nickname" style="width:100%;padding:8px;margin-bottom:8px"><textarea id="profile-bio" placeholder="Bio" style="width:100%;padding:8px;margin-bottom:8px"></textarea><div style="display:flex;gap:8px"><button id="profile-save" class="btn">Save</button><button id="profile-close" class="btn secondary">Close</button></div></div>
+    <!-- Player -->
+    <div class="player" role="region" aria-label="Player">
+      <div class="track-info">
+        <div class="album-art" id="cover">♪</div>
+        <div class="song-details">
+          <h3 id="title">Nova Pulse</h3>
+          <p id="artist">Concordia Demo</p>
+        </div>
+        <div style="margin-left:auto;display:flex;align-items:center;gap:8px">
+          <input id="volume-slider" type="range" min="0" max="1" step="0.01" value="1" title="Volume">
+          <select id="speed-select"><option value="0.5">0.5x</option><option value="0.75">0.75x</option><option value="1" selected>1x</option><option value="1.25">1.25x</option><option value="1.5">1.5x</option><option value="2">2x</option></select>
+          <button id="like-btn" class="btn secondary">❤️ Like</button>
+          <button id="save-btn" class="btn secondary">💾 Save</button>
+          <button id="share-btn" class="btn">🔗 Share</button>
+        </div>
+      </div>
+      <div class="controls">
+        <button class="control-btn" id="prev-btn">⏮</button>
+        <button class="control-btn" id="rewind-btn">⏪</button>
+        <button id="play-btn">▶</button>
+        <button class="control-btn" id="forward-btn">⏩</button>
+        <button class="control-btn" id="next-btn">⏭</button>
+        <button id="evolve-btn" class="control-btn">🔄 Evolve</button>
+      </div>
+      <div class="progress-container">
+        <span class="time" id="current-time">0:00</span>
+        <div id="progress"><div id="progress-fill"></div></div>
+        <span class="time" id="duration">0:00</span>
+      </div>
+      <div style="text-align:center;margin-top:8px">
+        <small>Sample track loading... Select files to add more music ↓</small><br>
+        <input id="file-input" type="file" accept="audio/*" multiple style="margin-top:10px">
+      </div>
+      <div class="comment-section" style="margin-top:12px;display:none">
+        <input id="comment-input" class="comment-input" placeholder="Write comment..." style="padding:8px;width:70%">
+        <button id="comment-submit" class="btn secondary">Send</button>
+        <div id="comments" style="margin-top:8px"></div>
+      </div>
+    </div>
+  </div>
+</div>
+<script type="module">
+  // Supabase connection
+  import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+
+  const SUPABASE_URL = 'https://shkttorkfcnvkrwnkixf.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNoa3R0b3JrZmNudmtyd25raXhmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY2NzY2ODAsImV4cCI6MjA3MjI1MjY4MH0.GgDA8tSgQoMhCt_BYZU3mCkKaErUs_SQVNeWdCGQOgI';
+
+  const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  // Load mini profile
+  async function loadMiniProfile() {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      window.location.href = 'register.html';
+      return;
+    }
+
+    const { data: profile, error } = await supabase
+      .from('profiles')
+      .select('avatar_url, display_name, username, bio')
+      .eq('id', user.id)
+      .single();
+
+    if (error || !profile) {
+      console.error('Profile could not be loaded:', error);
+      return;
+    }
+
+    document.getElementById('miniAvatar').src = profile.avatar_url || 'https://via.placeholder.com/64';
+    document.getElementById('miniName').textContent = profile.display_name || profile.username || 'User';
+    document.getElementById('miniUsername').textContent = '@' + (profile.username || 'none');
+    document.getElementById('miniBio').textContent = profile.bio || 'No bio added';
+
+    const { count: following } = await supabase
+      .from('follows')
+      .select('*', { count: 'exact', head: true })
+      .eq('follower', user.id);
+
+    const { count: followers } = await supabase
+      .from('follows')
+      .select('*', { count: 'exact', head: true })
+      .eq('following', user.id);
+
+    document.getElementById('miniFollowing').textContent = following || 0;
+    document.getElementById('miniFollowers').textContent = followers || 0;
+
+    document.getElementById('miniProfile').style.display = 'block';
+  }
+
+  // Run on page load
+  loadMiniProfile();
+
+  /* ===========================
+     Concordia Nova Music - Single File App
+     - Centralized, modular but single-file for demo
+     - Follows your theme & components
+     - Updated to make all features functional with real URLs and completions
+     =========================== */
+  /* GLOBAL STATE */
+  const state = {
+    activeMode: 'music',
+    audioContext: null,
+    masterAnalyser: null,
+    audioDestination: null,
+    devMode: true,
+  };
+  /* Create single AudioContext lazily */
+  function ensureAudioContext() {
+    if (!state.audioContext) {
+      state.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      state.audioDestination = state.audioContext.destination;
+      state.masterAnalyser = state.audioContext.createAnalyser();
+      state.masterAnalyser.fftSize = 2048;
+      state.masterAnalyser.smoothingTimeConstant = 0.85;
+      if (state.devMode) console.log('AudioContext created');
+    }
+  }
+  /* ---------------------------
+     Utilities
+     --------------------------- */
+  function q(sel){ return document.querySelector(sel); }
+  function qa(sel){ return Array.from(document.querySelectorAll(sel)); }
+  function fmtTime(seconds){
+    if (!seconds || !isFinite(seconds)) return '0:00';
+    const m = Math.floor(seconds/60);
+    const s = Math.floor(seconds%60);
+    return `${m}:${s<10?'0':''}${s}`;
+  }
+  function showError(msg){ alert(msg); console.error(msg); }
+  function logEvent(type,payload){ if(state.devMode) console.log('LOG',type,payload); }
+  /* ---------------------------
+     Basic UI management (category switching)
+     --------------------------- */
+  const panels = ['playlist-panel','podcast-list','radio-list','relax-sounds','synesthesia-panel','narrative-panel','remix-canvas','metadata-popup','community-panel','profile-modal','share-modal'];
+  function hideAllPanels(){
+    panels.forEach(id => {
+      const el = document.getElementById(id);
+      if(el) el.style.display = 'none';
+    });
+  }
+  function removeActiveButtons(){
+    qa('.category-btn').forEach(b => b.classList.remove('active'));
+  }
+  function stopAllPlayers(){
+    try {
+      musicPlayer && musicPlayer.pause();
+      podcastPlayer && podcastPlayer.pause();
+      radioPlayer && radioPlayer.pause();
+      ambientPlayer && ambientPlayer.stopMix();
+      quantumEngine && quantumEngine.stop();
+      aiGenerative && aiGenerative.stop();
+      if (Tone && Tone.Transport && Tone.Transport.state === 'started') Tone.Transport.stop();
+      if (bioStream) {
+        bioStream.getTracks().forEach(t=>t.stop());
+        bioStream = null;
+      }
+    } catch(e){ console.warn('stopAllPlayers err', e) }
+  }
+  /* central switch function */
+  function switchCategory(cat){
+    if(state.devMode) console.log('Category:',cat);
+    state.activeMode = cat;
+    removeActiveButtons();
+    const btn = qa('.category-btn').find(b => b.dataset.category === cat);
+    if(btn) btn.classList.add('active');
+    hideAllPanels();
+    stopAllPlayers();
+    document.querySelector('.comment-section').style.display = 'none';
+    q('#title').textContent = 'Nova Pulse';
+    q('#artist').textContent = 'Concordia Demo';
+    q('#play-btn').textContent = '▶';
+    if(cat === 'music'){
+      show(q('#playlist-panel'));
+      currentPlayer = musicPlayer;
+    } else if(cat === 'podcast'){
+      show(q('#podcast-list'));
+      currentPlayer = podcastPlayer;
+      document.querySelector('.comment-section').style.display = 'block';
+    } else if(cat === 'radio'){
+      show(q('#radio-list'));
+      currentPlayer = radioPlayer;
+    } else if(cat === 'relax'){
+      show(q('#relax-sounds'));
+      currentPlayer = ambientPlayer;
+    } else if(cat === 'evolve'){
+      show(q('#community-panel'));
+      aiGenerative.start();
+      currentPlayer = aiGenerative;
+    } else if(cat === 'synesthesia'){
+      show(q('#synesthesia-panel'));
+      currentPlayer = musicPlayer;
+      musicPlayer.playTrack(0); // Play music for synesthesia
+    } else if(cat === 'quantum'){
+      show(q('#community-panel'));
+      show(q('#remix-canvas'));
+      quantumEngine.start();
+      currentPlayer = quantumEngine;
+    } else if(cat === 'bio'){
+      currentPlayer = musicPlayer;
+      startBiofeedback();
+      musicPlayer.playTrack(0); // Play music for bio and adjust BPM
+    } else if(cat === 'narrative'){
+      show(q('#narrative-panel'));
+      currentPlayer = musicPlayer;
+      renderNarrative();
+      musicPlayer.playTrack(0);
+    } else if(cat === 'remix'){
+      show(q('#remix-canvas'));
+      currentPlayer = quantumEngine; // Trigger quantum notes with remix
+      quantumEngine.start();
+    } else if(cat === 'metadata'){
+      show(q('#metadata-popup'));
+      renderMetadataForCurrent();
+    } else if(cat === 'vr'){
+      show(q('#vr-concert'));
+      loadVR();
+    }
+    document.getElementById('dev-badge').textContent = 'Mod: ' + state.activeMode;
+  }
+  /* Wire category buttons */
+  qa('.category-btn').forEach(btn=>{
+    btn.addEventListener('click', e=>{
+      const cat = btn.dataset.category;
+      switchCategory(cat);
+    });
+    btn.addEventListener('keydown', e=>{
+      if(e.key==='Enter' || e.key===' ') { e.preventDefault(); btn.click(); }
+    });
+  });
+  /* ============================
+     PLAYERS - Shared AudioContext design
+     ============================ */
+  class BasePlayer {
+    constructor(){
+      ensureAudioContext();
+      this.audio = new Audio();
+      this.audio.crossOrigin = "anonymous";
+      this.audio.preload = "metadata";
+      this.sourceNode = state.audioContext.createMediaElementSource(this.audio);
+      this.gainNode = state.audioContext.createGain();
+      this.sourceNode.connect(this.gainNode);
+      this.gainNode.connect(state.masterAnalyser);
+      state.masterAnalyser.connect(state.audioContext.destination);
+      this.playlist = [];
+      this.currentIndex = 0;
+      this.isPlaying = false;
+      this.hls = null;
+      this.setupListeners();
+    }
+    setupListeners(){
+      this.audio.addEventListener('timeupdate', ()=> {
+        if(state.activeMode === 'music' || state.activeMode === 'podcast' || state.activeMode === 'radio'){
+          const cur = this.audio.currentTime;
+          const dur = this.audio.duration;
+          q('#current-time').textContent = fmtTime(cur);
+          q('#duration').textContent = fmtTime(dur);
+          const pct = dur ? (cur/dur)*100 : 0;
+          q('#progress-fill').style.width = pct + '%';
+        }
+      });
+      this.audio.addEventListener('ended', ()=>{
+        if(this.onEnded) this.onEnded();
+      });
+      this.audio.addEventListener('error', (e) => {
+        showError('Audio error: '+ (e?.message || e?.type || 'unknown'));
+      });
+    }
+    setSource(src){
+      if(!src) return;
+      const wasPlaying = !this.audio.paused;
+      if (this.audio.src) this.audio.src = '';
+      if(this.hls) { this.hls.destroy(); this.hls = null; }
+      if(src.endsWith('.m3u8') || src.includes('.m3u')) {
+        if(Hls.isSupported()) {
+          this.hls = new Hls();
+          this.hls.loadSource(src);
+          this.hls.attachMedia(this.audio);
+        } else if(this.audio.canPlayType('application/vnd.apple.mpegurl')) {
+          this.audio.src = src;
+        } else {
+          showError('HLS not supported.');
+          return;
+        }
+      } else {
+        this.audio.src = src;
+      }
+      if(wasPlaying) { this.play(); }
+    }
+    play(){
+      ensureAudioContext();
+      state.audioContext.resume();
+      return this.audio.play().then(()=> {
+        this.isPlaying = true;
+        q('#play-btn').textContent = '⏸';
+      }).catch(e=>{
+        console.warn('play err', e);
+        showError('Playback failed, try clicking on the page to start.');
+      });
+    }
+    pause(){
+      this.audio.pause();
+      this.isPlaying = false;
+      q('#play-btn').textContent = '▶';
+    }
+    seek(time){
+      if(!this.audio.duration) return;
+      this.audio.currentTime = Math.max(0, Math.min(time, this.audio.duration));
+    }
+    setVolume(v){
+      this.gainNode.gain.value = v;
+    }
+    setPlaybackRate(r){
+      this.audio.playbackRate = r;
+    }
+    addToPlaylist(track){
+      this.playlist.push(track);
+    }
+    cleanup(){
+      try {
+        this.pause();
+        this.audio.src = '';
+        if(this.hls) this.hls.destroy();
+        this.sourceNode.disconnect();
+        this.gainNode.disconnect();
+      } catch(e){}
+    }
+  }
+  /* MusicPlayer: extends BasePlayer with playlist rendering */
+  class MusicPlayer extends BasePlayer {
+    constructor(){
+      super();
+      this.playlist = [
+        { id:'nova-pulse', url:'https://cdn.glitch.global/8e0c9c8d-7d9f-4e1f-9b0f-4d8e9f6b8e3d/nova-pulse.mp3?v=173706', name:'Nova Pulse', artist:'Concordia Demo', cover:null, uploadedBy:'system' },
+        { id:'ambient-loop', url:'https://cdn.glitch.global/8e0c9c8d-7d9f-4e1f-9b0f-4d8e9f6b8e3d/ambient-loop.mp3?v=1', name:'Ambient Loop', artist:'Concordia', cover:null, uploadedBy:'system' },
+        { id:'sample3', url:'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3', name:'SoundHelix Sample 1', artist:'SoundHelix', cover:null, uploadedBy:'system' },
+        { id:'sample4', url:'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3', name:'SoundHelix Sample 2', artist:'SoundHelix', cover:null, uploadedBy:'system' },
+      ];
+      this.loadSaved();
+      this.renderPlaylist();
+    }
+    loadSaved(){
+      try {
+        const saved = localStorage.getItem('musicPlaylist');
+        if(saved) {
+          const arr = JSON.parse(saved);
+          if(Array.isArray(arr) && arr.length>0) this.playlist = arr.concat(this.playlist);
+        }
+      } catch(e){}
+    }
+    save(){
+      try { localStorage.setItem('musicPlaylist', JSON.stringify(this.playlist)); } catch(e){}
+    }
+    renderPlaylist(){
+      const container = q('#playlist-items');
+      if(!container) return;
+      container.innerHTML = '';
+      this.playlist.forEach((t,i) => {
+        const div = document.createElement('div');
+        div.className = 'playlist-item';
+        div.dataset.index = i;
+        div.innerHTML = `
+          <div class="playlist-cover">${t.cover ? '' : t.name[0] || '♫'}</div>
+          <div style="flex:1">
+            <div style="font-weight:600">${t.name}</div>
+            <div class="small" style="opacity:.7">${t.artist || 'Unknown'}</div>
+          </div>
+          <div class="flex">
+            <button class="btn secondary btn-like">❤️</button>
+            <button class="btn secondary btn-save">💾</button>
+            <button class="btn secondary btn-share">🔗</button>
+          </div>
+        `;
+        div.addEventListener('click', (e)=>{
+          if(e.target.closest('.btn-like') || e.target.closest('.btn-save') || e.target.closest('.btn-share')) return;
+          this.playTrack(i);
+        });
+        div.querySelector('.btn-like').addEventListener('click', (ev)=>{
+          ev.stopPropagation();
+          handleLike(this.playlist[i]);
+        });
+        div.querySelector('.btn-save').addEventListener('click', (ev)=>{
+          ev.stopPropagation();
+          handleSave(this.playlist[i]);
+        });
+        div.querySelector('.btn-share').addEventListener('click', (ev)=>{
+          ev.stopPropagation();
+          showShareForTrack(this.playlist[i]);
+        });
+        container.appendChild(div);
+      });
+    }
+    playTrack(index){
+      if(index < 0 || index >= this.playlist.length) return;
+      this.currentIndex = index;
+      const track = this.playlist[index];
+      this.setSource(track.url);
+      q('#title').textContent = track.name;
+      q('#artist').textContent = track.artist || 'Unknown';
+      q('#cover').textContent = track.cover ? '' : (track.name[0] || '♪');
+      this.play();
+      userProfile.lastListened = userProfile.lastListened || [];
+      userProfile.lastListened.unshift({ id: track.id, name: track.name, at: Date.now() });
+      userProfile.lastListened = userProfile.lastListened.slice(0,50);
+      saveProfile();
+      logEvent('play_track', track);
+    }
+    next(){
+      this.currentIndex = (this.currentIndex + 1) % this.playlist.length;
+      this.playTrack(this.currentIndex);
+    }
+    prev(){
+      this.currentIndex = (this.currentIndex - 1 + this.playlist.length) % this.playlist.length;
+      this.playTrack(this.currentIndex);
+    }
+    addFile(file){
+      const url = URL.createObjectURL(file);
+      const entry = { id: 'local-'+Date.now(), url, name: file.name, artist: 'Local File', uploadedBy: userProfile.nickname || 'Guest' };
+      window.jsmediatags && jsmediatags.read(file, {
+        onSuccess: tag => {
+          entry.name = tag.tags.title || entry.name;
+          entry.artist = tag.tags.artist || entry.artist;
+          this.playlist.unshift(entry);
+          this.save();
+          this.renderPlaylist();
+        },
+        onError: _ => {
+          this.playlist.unshift(entry);
+          this.save();
+          this.renderPlaylist();
+        }
+      });
+    }
+  }
+  /* PodcastPlayer for long form with resume and comments */
+  class PodcastPlayer extends BasePlayer {
+    constructor(){
+      super();
+      this.playlist = [
+        { id:'pod1', name:'Alice in Wonderland Ch1', url:'https://ia800205.us.archive.org/10/items/alices_adventures_in_wonderland_librivox/alicewonderland_01_carroll_64kb.mp3', description:'Lewis Carroll', duration:600 },
+        { id:'pod2', name:'Sherlock Holmes - A Study in Scarlet Ch1', url:'https://ia800307.us.archive.org/28/items/studyinscarlet_0907_librivox/studyinscarlet_01_doyle.mp3', description:'Arthur Conan Doyle', duration:1200 }
+      ];
+      this.comments = {};
+      this.loadComments();
+      this.renderPodcasts();
+    }
+    loadComments(){
+      try {
+        const s = localStorage.getItem('podcastComments');
+        if(s) this.comments = JSON.parse(s);
+      } catch(e){}
+    }
+    saveComments(){
+      try { localStorage.setItem('podcastComments', JSON.stringify(this.comments)); } catch(e){}
+    }
+    renderPodcasts(){
+      const container = q('#podcast-items');
+      container.innerHTML = '';
+      this.playlist.forEach((p,i)=>{
+        const div = document.createElement('div');
+        div.className='podcast-item';
+        div.dataset.index = i;
+        div.innerHTML = `<div style="flex:1"><strong>${p.name}</strong><div class="small">${p.description}</div></div><div class="small">${fmtTime(p.duration)}</div>`;
+        div.addEventListener('click', ()=> {
+          this.currentIndex = i;
+          this.setSource(p.url);
+          const resume = localStorage.getItem(`podcast_resume_${p.id}`);
+          if(resume) this.seek(Number(resume));
+          this.play();
+          q('#title').textContent = p.name;
+          q('#artist').textContent = 'Podcast';
+          if(this._resumeInterval) clearInterval(this._resumeInterval);
+          this._resumeInterval = setInterval(()=> {
+            localStorage.setItem(`podcast_resume_${p.id}`, this.audio.currentTime);
+          },5000);
+          renderComments(i);
+          document.querySelector('.comment-section').style.display = 'block';
+        });
+        container.appendChild(div);
+      });
+    }
+    addComment(index,text){
+      if(!this.comments[index]) this.comments[index] = [];
+      this.comments[index].push({ text, at: Date.now(), by: userProfile.nickname || 'Guest' });
+      this.saveComments();
+    }
+  }
+  /* RadioPlayer */
+  class RadioPlayer extends BasePlayer {
+    constructor(){ 
+      super(); 
+      this.playlist = [
+        {id:'r1',name:'I Love Radio',url:'https://stream.iloveradio.de/iloveradio1.mp3', isHLS:false},
+        {id:'r2',name:'Classic Rock Florida',url:'https://stream.crfm.us/stream.m3u', isHLS:true}
+      ]; 
+      this.renderRadios();
+    }
+    renderRadios(){
+      const container = q('#radio-items'); container.innerHTML='';
+      this.playlist.forEach((r,i)=>{
+        const div = document.createElement('div'); div.className='radio-item'; div.innerHTML = `<div style="flex:1">${r.name}</div>`; div.addEventListener('click', ()=>{
+          this.setSource(r.url);
+          this.play();
+          q('#title').textContent = r.name;
+          q('#artist').textContent = 'Live Radio';
+        }); container.appendChild(div);
+      });
+    }
+  }
+  /* AmbientPlayer */
+  class AmbientPlayer {
+    constructor(){
+      this.sounds = [
+        {id:'rain',name:'Rain',url:'https://freesound.org/data/previews/174/174027_3026166-lq.mp3',volume:0.5},
+        {id:'ocean',name:'Ocean',url:'https://freesound.org/data/previews/204/204868_2405876-lq.mp3',volume:0.5}
+      ];
+      this.mixers = [];
+      this.timer = null;
+      this.renderList();
+    }
+    renderList(){
+      const container = q('#relax-items'); container.innerHTML='';
+      this.sounds.forEach((s,i)=>{
+        const div = document.createElement('div'); div.className='relax-item';
+        div.innerHTML = `<div style="flex:1"><strong>${s.name}</strong></div><div style="display:flex;gap:6px;align-items:center"><input type="range" min="0" max="1" step="0.01" value="${s.volume}" data-i="${i}" class="mix-slider"><button class="btn" data-i="${i}">▶</button></div>`;
+        div.querySelector('button').addEventListener('click', (e)=>{
+          const idx = Number(e.target.dataset.i);
+          this.toggleSound(idx);
+          e.target.textContent = this.mixers[idx] ? '⏸' : '▶';
+        });
+        div.querySelector('.mix-slider').addEventListener('input', (ev)=>{
+          const idx = Number(ev.target.dataset.i); this.setVolume(idx, Number(ev.target.value));
+        });
+        container.appendChild(div);
+      });
+    }
+    toggleSound(index){
+      if(this.mixers[index]){ 
+        this.mixers[index].pause();
+        this.mixers[index] = null;
+      } else {
+        const audio = new Audio(this.sounds[index].url);
+        audio.loop = true; audio.volume = this.sounds[index].volume;
+        audio.play().catch(()=>{
+          showError('Ambient could not be played.');
+        });
+        this.mixers[index] = audio;
+      }
+    }
+    setVolume(index,vol){
+      this.sounds[index].volume = vol;
+      if(this.mixers[index]) this.mixers[index].volume = vol;
+    }
+    stopMix(){
+      this.mixers.forEach(a => { if(a) a.pause(); });
+      this.mixers = [];
+    }
+  }
+  /* QuantumEngine */
+  class QuantumEngine {
+    constructor(){
+      this.synth = new Tone.PolySynth(Tone.Synth).toDestination();
+      this.genome = { bpm:120, scale:'C', mood:'focus', seed: Math.floor(Math.random()*0xffffffff) };
+      this.loop = null;
+      this.running = false;
+      this.scaleMap = {
+        'C': ['C4','D4','E4','F4','G4','A4','B4','C5'],
+        'Amin': ['A3','B3','C4','D4','E4','F4','G4','A4'],
+        'Chromatic': ['C4','C#4','D4','D#4','E4','F4','F#4','G4','G#4','A4','A#4','B4']
+      };
+    }
+    setMood(mood){
+      this.genome.mood = mood;
+      if(mood==='focus') { this.genome.bpm = 100; this.genome.scale = 'C' }
+      else if(mood==='relax'){ this.genome.bpm = 60; this.genome.scale = 'Amin' }
+      else if(mood==='chaos'){ this.genome.bpm = 180; this.genome.scale = 'Chromatic' }
+      Tone.Transport.bpm.value = this.genome.bpm;
+    }
+    start(){
+      if(this.running) return;
+      Tone.start();
+      Tone.Transport.bpm.value = this.genome.bpm;
+      this.loop = new Tone.Loop((time)=>{
+        const notes = this.scaleMap[this.genome.scale] || this.scaleMap['C'];
+        const rnd = this.seededRandom();
+        const note = notes[Math.floor(rnd * notes.length)];
+        this.synth.triggerAttackRelease(note, '8n', time);
+      }, '4n').start(0);
+      Tone.Transport.start();
+      this.running = true;
+      q('#play-btn').textContent = '⏸';
+    }
+    stop(){
+      if(this.loop) this.loop.stop();
+      if(Tone.Transport.state === 'started') Tone.Transport.stop();
+      this.running = false;
+      q('#play-btn').textContent = '▶';
+    }
+    generateSeed(){
+      this.genome.seed = Math.floor(Math.random()*0xffffffff);
+      return this.genome.seed;
+    }
+    shareSeed(){
+      const seed = this.generateSeed();
+      const link = `${location.origin}${location.pathname}?quantum_seed=${seed}`;
+      showShareModal(link);
+    }
+    loadFromSeed(seed){
+      this.genome.seed = Number(seed) || this.genome.seed;
+    }
+    seededRandom(){
+      let s = this.genome.seed >>> 0;
+      s = (s * 1664525 + 1013904223) >>> 0;
+      this.genome.seed = s;
+      return (s & 0xffffffff) / 0xffffffff;
+    }
+  }
+  /* AIGenerativePlayer */
+  class AIGenerativePlayer {
+    constructor(){ this.playing=false; this.synth = new Tone.SimpleSynth().toDestination(); }
+    start(){ if(!this.playing){ Tone.start(); this.playing=true; this._i = setInterval(()=>{ this.synth.triggerAttackRelease(['C4','E4','G4','A4'][Math.floor(Math.random()*4)], '8n'); }, 300); q('#play-btn').textContent = '⏸'; } }
+    stop(){ if(this.playing){ clearInterval(this._i); this.playing=false; q('#play-btn').textContent = '▶'; } }
+  }
+  /* Instantiate players */
+  const musicPlayer = new MusicPlayer();
+  const podcastPlayer = new PodcastPlayer();
+  const radioPlayer = new RadioPlayer();
+  const ambientPlayer = new AmbientPlayer();
+  const quantumEngine = new QuantumEngine();
+  const aiGenerative = new AIGenerativePlayer();
+  let currentPlayer = musicPlayer;
+  /* ---------------------------
+     Player controls wiring
+     --------------------------- */
+  q('#play-btn').addEventListener('click', async ()=>{
+    ensureAudioContext();
+    try { await Tone.start(); } catch(e){}
+    if(state.activeMode === 'quantum'){
+      if(quantumEngine.running) quantumEngine.stop(); else quantumEngine.start();
+      return;
+    } else if(state.activeMode === 'evolve'){
+      if(aiGenerative.playing) aiGenerative.stop(); else aiGenerative.start();
+      return;
+    }
+    if(currentPlayer && typeof currentPlayer.play === 'function'){
+      if(currentPlayer.isPlaying) currentPlayer.pause(); else currentPlayer.play();
+    } else {
+      musicPlayer.playTrack(0); currentPlayer = musicPlayer;
+    }
+  });
+  q('#next-btn').addEventListener('click', ()=> { if(currentPlayer.next) currentPlayer.next(); });
+  q('#prev-btn').addEventListener('click', ()=> { if(currentPlayer.prev) currentPlayer.prev(); });
+  q('#rewind-btn').addEventListener('click', ()=> {
+    if(currentPlayer.seek) currentPlayer.seek((currentPlayer.audio.currentTime||0)-15);
+  });
+  q('#forward-btn').addEventListener('click', ()=>{
+    if(currentPlayer.seek) currentPlayer.seek((currentPlayer.audio.currentTime||0)+15);
+  });
+  q('#volume-slider').addEventListener('input', (e)=>{
+    const v = Number(e.target.value);
+    if(currentPlayer.setVolume) currentPlayer.setVolume(v);
+  });
+  q('#speed-select').addEventListener('change', (e)=>{
+    const r = Number(e.target.value);
+    if(currentPlayer.setPlaybackRate) currentPlayer.setPlaybackRate(r);
+  });
+  /* File input */
+  q('#file-input').addEventListener('change', (e)=>{
+    const files = Array.from(e.target.files || []);
+    files.forEach(f => musicPlayer.addFile(f));
+  });
+  /* Like / Save / Share */
+  function handleLike(track){
+    userProfile.favorites = userProfile.favorites || [];
+    const id = track.id || track.name;
+    if(!userProfile.favorites.includes(id)) userProfile.favorites.push(id);
+    saveProfile();
+    alert('Liked ✓');
+  }
+  function handleSave(track){
+    userProfile.saved = userProfile.saved || [];
+    const id = track.id || track.name;
+    if(!userProfile.saved.includes(id)) userProfile.saved.push(id);
+    saveProfile();
+    alert('Saved ✓');
+  }
+  function showShareForTrack(track){
+    const link = `${location.origin}${location.pathname}?track=${encodeURIComponent(track.id||track.name)}&name=${encodeURIComponent(track.name)}`;
+    showShareModal(link);
+  }
+  /* Share modal */
+  function showShareModal(link){
+    q('#share-link').value = link;
+    show(q('#share-modal'));
+  }
+  q('#share-copy').addEventListener('click', ()=>{
+    navigator.clipboard.writeText(q('#share-link').value).then(()=> alert('Copied'));
+  });
+  /* Comment submit */
+  q('#comment-submit').addEventListener('click', ()=>{
+    const text = q('#comment-input').value.trim(); if(!text) return;
+    if(podcastPlayer.currentIndex != null){
+      podcastPlayer.addComment(podcastPlayer.currentIndex, text);
+      renderComments(podcastPlayer.currentIndex);
+      q('#comment-input').value='';
+    }
+  });
+  function renderComments(index){
+    const div = q('#comments');
+    div.innerHTML = '';
+    const arr = podcastPlayer.comments[index] || [];
+    arr.forEach(c => {
+      const d = document.createElement('div'); d.className='comment'; d.style.padding='8px'; d.style.borderBottom='1px solid rgba(255,255,255,0.03)';
+      d.textContent = `${c.by || 'Guest'} • ${new Date(c.at).toLocaleString()}\n${c.text}`;
+      div.appendChild(d);
+    });
+  }
+  /* Trends for quantum/evolve */
+  const trends = [
+    {name:'Trend: Quantum Seed 1', seed:'0x1a2b3c'},
+    {name:'Weekly Discovery', seed:'0xdeadbeef'},
+    {name:'Relax Mode', seed:'0xrelax123'}
+  ];
+  function renderTrends(){
+    const c = q('#trend-list'); c.innerHTML='';
+    trends.forEach(t=>{
+      const el = document.createElement('div'); el.className='playlist-item'; el.textContent=t.name; el.dataset.seed=t.seed;
+      el.addEventListener('click', ()=>{
+        quantumEngine.loadFromSeed(t.seed);
+        quantumEngine.setMood('relax'); // Example
+        if(!quantumEngine.running) quantumEngine.start();
+        switchCategory('quantum');
+      });
+      c.appendChild(el);
+    });
+  }
+  renderTrends();
+  /* Synesthesia & visualizer */
+  function generateSynesthesia(bass){
+    const text = bass > 150 ? 'Red passion: High energy' : bass > 75 ? 'Green freshness: Energetic' : 'Blue peace: Chill';
+    q('#synesthesia-text').textContent = `${text} — Bass: ${Math.round(bass)}`;
+  }
+  function drawVisualizerLoop(){
+    const vis = q('#visualizer'); if(!vis) return;
+    const ctx = vis.getContext('2d');
+    function resize(){ vis.width = innerWidth; vis.height = innerHeight; }
+    window.addEventListener('resize', resize); resize();
+    const analyser = state.masterAnalyser;
+    const data = new Uint8Array(analyser.frequencyBinCount);
+    function loop(){
+      requestAnimationFrame(loop);
+      analyser.getByteFrequencyData(data);
+      let bass=0; for(let i=0;i<30;i++) bass+=data[i]; bass = bass/30;
+      generateSynesthesia(bass);
+      ctx.fillStyle = 'rgba(10,14,26,0.2)';
+      ctx.fillRect(0,0,vis.width,vis.height);
+      const barWidth = Math.max(2, Math.floor(vis.width / data.length));
+      for(let i=0;i<data.length;i++){
+        const v = data[i];
+        const h = (v/255) * (vis.height/3);
+        ctx.fillStyle = `hsl(${v}, 100%, 50%)`;
+        ctx.fillRect(i*barWidth, vis.height - h, barWidth-1, h);
+      }
+    }
+    loop();
+  }
+  drawVisualizerLoop();
+  /* Particles */
+  function initParticles() {
+    const canvas = q('#particles');
+    const ctx = canvas.getContext('2d');
+    canvas.width = innerWidth;
+    canvas.height = innerHeight;
+    window.addEventListener('resize', () => {
+      canvas.width = innerWidth;
+      canvas.height = innerHeight;
+    });
+    const particles = [];
+    class Particle {
+      constructor() {
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height;
+        this.size = Math.random() * 5 + 1;
+        this.speedX = Math.random() * 3 - 1.5;
+        this.speedY = Math.random() * 3 - 1.5;
+      }
+      update() {
+        this.x += this.speedX;
+        this.y += this.speedY;
+        if (this.size > 0.2) this.size -= 0.1;
+      }
+      draw() {
+        ctx.fillStyle = 'rgba(0,255,255,0.5)';
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+    function animate() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      if (particles.length < 100) particles.push(new Particle());
+      particles.forEach((p, i) => {
+        p.update();
+        p.draw();
+        if (p.size <= 0.2) particles.splice(i, 1);
+      });
+      requestAnimationFrame(animate);
+    }
+    animate();
+  }
+  initParticles();
+  /* Biofeedback */
+  let bioStream = null;
+  let bioFeedback = 60;
+  async function startBiofeedback(){
+    try{
+      bioStream = await navigator.mediaDevices.getUserMedia({video:true});
+      const v = document.createElement('video'); v.srcObject = bioStream; v.play();
+      let lastAvg = 0; let bpmSamples = [];
+      const cvs = document.createElement('canvas'); cvs.width=70; cvs.height=70; const cctx = cvs.getContext('2d');
+      const interval = setInterval(()=>{
+        cctx.drawImage(v,0,0,70,70);
+        const img = cctx.getImageData(0,0,70,70).data;
+        let rsum=0;
+        for(let i=0;i<img.length;i+=4){ rsum += img[i]; }
+        const ravg = rsum/(70*70);
+        const delta = ravg - lastAvg; lastAvg = ravg;
+        if(delta>1) bpmSamples.push(Date.now());
+        if(bpmSamples.length>30) bpmSamples.shift();
+        if(bpmSamples.length>2){
+          const intervals = bpmSamples.slice(1).map((t,i)=> t - bpmSamples[i]);
+          const avg = intervals.reduce((a,b)=>a+b,0)/intervals.length;
+          bioFeedback = Math.max(30, Math.min(220, Math.round(60000/avg)));
+          q('#dev-badge').textContent = 'BPM:'+bioFeedback;
+          if(currentPlayer.setPlaybackRate) currentPlayer.setPlaybackRate(Math.max(0.5, Math.min(1.5, bioFeedback/60)));
+        }
+      },120);
+    } catch(e){ showError('Camera could not be opened: ' + (e.message || e)); }
+  }
+  /* Remix canvas */
+  const remixCanvas = q('#remix-canvas');
+  let remixCtx = null;
+  let remixDrawing=false;
+  function initRemixCanvas(){
+    if(!remixCanvas) return;
+    remixCanvas.width = remixCanvas.clientWidth * devicePixelRatio;
+    remixCanvas.height = remixCanvas.clientHeight * devicePixelRatio;
+    remixCanvas.style.width = remixCanvas.clientWidth+'px';
+    remixCanvas.style.height = remixCanvas.clientHeight+'px';
+    remixCtx = remixCanvas.getContext('2d');
+    remixCtx.scale(devicePixelRatio, devicePixelRatio);
+    remixCtx.fillStyle = 'rgba(0,0,0,0)';
+    remixCtx.fillRect(0,0,remixCanvas.width,remixCanvas.height);
+    remixCanvas.addEventListener('pointerdown', (e)=>{ remixDrawing=true; drawAt(e); });
+    remixCanvas.addEventListener('pointermove', (e)=>{ if(remixDrawing) drawAt(e); });
+    window.addEventListener('pointerup', ()=> remixDrawing=false);
+  }
+  function drawAt(e){
+    const rect = remixCanvas.getBoundingClientRect();
+    const x = (e.clientX - rect.left);
+    const y = (e.clientY - rect.top);
+    remixCtx.beginPath();
+    remixCtx.fillStyle = '#00fff0';
+    remixCtx.arc(x, y, 6, 0, Math.PI*2);
+    remixCtx.fill();
+    if(quantumEngine && quantumEngine.synth) quantumEngine.synth.triggerAttackRelease('C5','16n');
+  }
+  initRemixCanvas();
+  /* Metadata */
+  function renderMetadataForCurrent(){
+    const cur = musicPlayer.playlist[musicPlayer.currentIndex] || {};
+    q('#metadata-content').innerHTML = `<strong>Artist:</strong> ${cur.artist || 'Unknown'}<br><strong>Title:</strong> ${cur.name}<br><strong>Source:</strong> ${cur.url}`;
+  }
+  /* Narrative (simple static based on mode) */
+  function renderNarrative(){
+    const text = state.activeMode === 'music' ? 'A music journey begins...' : 'Story mode active.';
+    q('#narrative-text').innerHTML = text;
+  }
+  /* Profile */
+  let userProfile = { nickname:'Guest', bio:'', favorites:[], saved:[], lastListened:[] };
+  function loadProfile(){
+    try { const s = localStorage.getItem('cn_user'); if(s) userProfile = JSON.parse(s); } catch(e){}
+  }
+  function saveProfile(){ try{ localStorage.setItem('cn_user', JSON.stringify(userProfile)); }catch(e){} }
+  loadProfile();
+  q('#like-btn').addEventListener('click', ()=>{
+    const cur = musicPlayer.playlist[musicPlayer.currentIndex] || {};
+    handleLike(cur);
+  });
+  q('#save-btn').addEventListener('click', ()=>{
+    const cur = musicPlayer.playlist[musicPlayer.currentIndex] || {};
+    handleSave(cur);
+  });
+  q('#share-btn').addEventListener('click', ()=>{
+    const cur = musicPlayer.playlist[musicPlayer.currentIndex] || {};
+    showShareForTrack(cur);
+  });
+  q('#profile-save').addEventListener('click', ()=>{
+    userProfile.nickname = q('#profile-nick').value || userProfile.nickname;
+    userProfile.bio = q('#profile-bio').value || userProfile.bio;
+    saveProfile();
+    hide(q('#profile-modal'));
+  });
+  q('#profile-close').addEventListener('click', ()=> hide(q('#profile-modal')));
+  /* VR load */
+  function loadVR(){
+    if(!window.THREE){
+      const s = document.createElement('script');
+      s.src = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';
+      s.onload = initVR;
+      document.head.appendChild(s);
+    } else initVR();
+  }
+  function initVR(){
+    const container = q('#vr-concert');
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, innerWidth/innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer();
+    renderer.setSize(innerWidth, innerHeight);
+    container.appendChild(renderer.domElement);
+    const geometry = new THREE.BoxGeometry();
+    const material = new THREE.MeshBasicMaterial({color: 0x00ffff});
+    const cube = new THREE.Mesh(geometry, material);
+    scene.add(cube);
+    camera.position.z = 5;
+    function animate() {
+      requestAnimationFrame(animate);
+      cube.rotation.x += 0.01;
+      cube.rotation.y += 0.01;
+      renderer.render(scene, camera);
+    }
+    animate();
+  }
+  /* Progress seek */
+  q('#progress').addEventListener('click', (e)=>{
+    const rect = e.currentTarget.getBoundingClientRect();
+    const pct = (e.clientX - rect.left) / rect.width;
+    if(currentPlayer && currentPlayer.audio && currentPlayer.audio.duration) currentPlayer.seek(pct * currentPlayer.audio.duration);
+  });
+  /* Open from URL */
+  function openFromURLParams(){
+    const params = new URLSearchParams(location.search);
+    if(params.has('track')){
+      const t = params.get('track');
+      const found = musicPlayer.playlist.find(p => p.id === t || p.name === t);
+      if(found) { musicPlayer.playTrack(musicPlayer.playlist.indexOf(found)); switchCategory('music'); }
+    }
+    if(params.has('quantum_seed')){ const seed = params.get('quantum_seed'); quantumEngine.loadFromSeed(seed); switchCategory('quantum'); quantumEngine.start(); }
+  }
+  openFromURLParams();
+  /* Evolve button (random mood change) */
+  q('#evolve-btn').addEventListener('click', ()=>{
+    if(state.activeMode === 'quantum') quantumEngine.setMood(['focus','relax','chaos'][Math.floor(Math.random()*3)]);
+    else if(state.activeMode === 'evolve') aiGenerative.stop(); aiGenerative.start();
+  });
+  /* Init */
+  switchCategory('music');
+</script>
+</body>
+</html>

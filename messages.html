@@ -1,0 +1,1103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Concordia Nova — Messages & Video</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    :root{
+      --bg: #0b0b0b;
+      --panel: rgba(255,255,255,0.03);
+      --card: #101010;
+      --muted: #bdbdbd;
+      --accent: #1da1f2;
+      --glass: rgba(0,0,0,.75);
+    }
+    *{box-sizing:border-box;}
+    body{
+      margin:0; color:#fff; font-family:'Poppins',sans-serif;
+      background: linear-gradient(180deg,#071014 0%, #0b0b0b 100%);
+      min-height:100vh;
+      -webkit-font-smoothing:antialiased;
+      position:relative;
+      overflow-x:hidden;
+    }
+    header{
+      display:flex; align-items:center; gap:12px; padding:12px 16px; background:var(--glass); border-bottom:1px solid rgba(255,255,255,.04);
+    }
+    header h1{ margin:0; font-size:18px; font-weight:700; }
+    header a { color:#fff; text-decoration:none; font-weight:600; display:inline-flex; align-items:center; gap:8px; }
+    .wrap{ display:grid; grid-template-columns: 260px 1fr 260px; gap:14px; padding:16px; max-width:1200px; margin:18px auto; }
+    .panel{
+      background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border-radius:12px; padding:12px; border:1px solid rgba(255,255,255,.04);
+    }
+    /* Contacts */
+    #contacts{ display:flex; flex-direction:column; gap:8px; max-height:72vh; overflow:auto; }
+    .contact{ display:flex; gap:10px; align-items:center; padding:8px; border-radius:8px; cursor:pointer; }
+    .contact:hover{ background: rgba(255,255,255,0.02); }
+    .contact .avatar{ width:44px; height:44px; border-radius:50%; background:#222; flex-shrink:0; border:1px solid rgba(255,255,255,.06); }
+    .contact .meta{ display:flex; flex-direction:column; }
+    .contact .meta .name{ font-weight:600; font-size:14px; }
+    .contact .meta .uname{ font-size:12px; color:var(--muted); }
+    /* Chat area */
+    .chat-area{ display:flex; flex-direction:column; height:72vh; }
+    .chat-header{ display:flex; align-items:center; gap:12px; padding-bottom:8px; border-bottom:1px solid rgba(255,255,255,.03); }
+    .chat-header .avatar{ width:48px; height:48px; border-radius:50%; background:#222; border:1px solid rgba(255,255,255,.06); }
+    .chat-header .title{ font-weight:700; }
+    .messages{ flex:1; overflow:auto; padding:12px; display:flex; flex-direction:column; gap:8px; scroll-behavior:smooth; }
+    .msg { max-width:78%; padding:8px 10px; border-radius:10px; line-height:1.3; word-break:break-word; }
+    .msg.me{ align-self:flex-end; background: linear-gradient(180deg, #1da1f2, #0b93d8); color:#fff; border-bottom-right-radius:4px; }
+    .msg.them{ align-self:flex-start; background: rgba(255,255,255,0.03); color:#eaeaea; border-bottom-left-radius:4px; }
+    .msg .meta{ font-size:11px; color:rgba(255,255,255,0.7); margin-top:6px; opacity:.9; }
+    .msg.file { background: rgba(255,255,255,0.05); }
+    .msg.file a { color: var(--accent); text-decoration: none; }
+    .msg.audio audio { width: 100%; }
+    .no-chat{ color:var(--muted); text-align:center; padding:20px; }
+    /* Video call modal */
+    #videoCallModal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.85);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+    #videoCallContainer {
+      width: 80%;
+      height: 80%;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    #localVideo, #remoteVideo {
+      width: 100%;
+      height: 45%;
+      background: #000;
+      border-radius: 8px;
+      object-fit: cover;
+    }
+    #callControls {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+    }
+    #videoBadge { position:absolute; top:18px; right:18px; background:rgba(0,0,0,0.5); padding:8px 12px; border-radius:8px; font-weight:700; }
+    /* Voice call modal */
+    #voiceCallModal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.85);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+    #voiceCallContainer {
+      width: 300px;
+      height: 200px;
+      background: var(--panel);
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+    }
+    /* Incoming call modal */
+    #incomingCallModal {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: var(--panel);
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+      z-index: 1001;
+      display: none;
+    }
+    #incomingCallModal button {
+      margin: 10px;
+    }
+    /* Drop animation */
+    .drop-init { transform: translateY(-24px) scale(0.98); opacity:0; transition: transform 420ms cubic-bezier(.2,.9,.2,1), opacity 320ms ease-out; }
+    .drop-final { transform: translateY(0) scale(1); opacity:1; }
+    /* Composer */
+    .composer{ display:flex; gap:8px; padding-top:8px; border-top:1px solid rgba(255,255,255,.03); align-items:center; }
+    .composer textarea{ flex:1; resize:none; min-height:44px; max-height:160px; padding:10px; background: #0a0a0a; color:#fff; border-radius:8px; border:1px solid rgba(255,255,255,.04); }
+    .composer .tools{ display:flex; gap:8px; align-items:center; }
+    .btn{ background:var(--accent); color:#fff; border:none; padding:8px 12px; border-radius:8px; font-weight:700; cursor:pointer; }
+    .icon-btn{ background:transparent; border:1px solid rgba(255,255,255,.04); padding:8px; border-radius:8px; cursor:pointer; color:#ddd; }
+    .emoji-picker{ position: absolute; background:var(--card); border:1px solid rgba(255,255,255,.06); padding:8px; border-radius:8px; display:none; box-shadow: 0 12px 36px rgba(0,0,0,.6); z-index:40; }
+    .emoji-picker button{ background:transparent; border:none; font-size:20px; padding:6px; cursor:pointer; }
+    /* Right panel (info / start new) */
+    #right-panel .section{ margin-bottom:12px; }
+    select, .small-input{ width:100%; padding:8px; border-radius:8px; border:1px solid rgba(255,255,255,.04); background:#0a0a0a; color:#fff; }
+    footer.note{ max-width:1200px; margin:0 auto 40px; padding:8px 16px; color:var(--muted); font-size:13px; text-align:center; }
+    @media (max-width:1000px){
+      .wrap{ grid-template-columns: 1fr; padding:12px; gap:12px; }
+      #right-panel{ order:3; }
+      #contacts{ order:1; max-height:30vh; display:flex; flex-direction:row; gap:8px; overflow:auto; }
+      .contact{ min-width:140px; flex-direction:column; align-items:center; padding:10px; }
+      .chat-area{ order:2; }
+    }
+    /* --- Star dust canvas overlay --- */
+    #starsCanvas{
+      position:fixed;
+      left:0;
+      top:0;
+      width:100%;
+      height:100%;
+      pointer-events:none;
+      z-index:999;
+      mix-blend-mode: screen;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <a href="index.html" title="Home"><i class="fa-solid fa-house"></i></a>
+    <h1>Messages</h1>
+    <div style="margin-left:auto; color:var(--muted); font-size:13px;">Concordia Nova</div>
+  </header>
+  <main class="wrap">
+    <!-- Contacts -->
+    <aside class="panel" id="left-panel">
+      <h3 style="margin:0 0 10px 0;">Contacts</h3>
+      <div id="contacts"></div>
+      <div style="margin-top:12px;">
+        <button id="btnRefreshContacts" class="icon-btn" title="Refresh"><i class="fa-solid fa-arrows-rotate"></i> Refresh</button>
+        <a href="index.html" class="icon-btn" style="margin-left:8px"><i class="fa-solid fa-arrow-left"></i> Back</a>
+      </div>
+    </aside>
+    <!-- Chat -->
+    <section class="panel chat-area" id="chat-panel">
+      <div class="chat-header" id="chatHeader">
+        <div class="avatar" id="chatAvatar"></div>
+        <div>
+          <div class="title" id="chatTitle">No chat selected</div>
+          <div style="font-size:13px; color:var(--muted);" id="chatSubtitle">Select a followed user to message.</div>
+        </div>
+        <div style="margin-left: auto; display: flex; gap: 8px;">
+          <button id="startVoiceCall" class="icon-btn" title="Voice Call"><i class="fa-solid fa-phone"></i></button>
+          <button id="startVideoCall" class="icon-btn" title="Video Call"><i class="fa-solid fa-video"></i></button>
+        </div>
+      </div>
+      <div class="messages" id="messages">
+        <div class="no-chat" id="noChatNotice">No conversation selected yet.</div>
+      </div>
+      <div class="composer" id="composer">
+        <button id="emojiBtn" class="icon-btn" title="Emoji"><i class="fa-regular fa-face-smile"></i></button>
+        <div style="position:relative;">
+          <div id="emojiPicker" class="emoji-picker" aria-hidden="true">
+            <div style="display:flex; gap:6px; flex-wrap:wrap; width:220px;">
+              <button type="button" class="emoji">😀</button>
+              <button type="button" class="emoji">😂</button>
+              <button type="button" class="emoji">😍</button>
+              <button type="button" class="emoji">😊</button>
+              <button type="button" class="emoji">😅</button>
+              <button type="button" class="emoji">😎</button>
+              <button type="button" class="emoji">🤗</button>
+              <button type="button" class="emoji">👍</button>
+              <button type="button" class="emoji">🙏</button>
+              <button type="button" class="emoji">🔥</button>
+              <button type="button" class="emoji">🎉</button>
+              <button type="button" class="emoji">💡</button>
+            </div>
+          </div>
+        </div>
+        <textarea id="messageInput" placeholder="Type message... (Enter = send, Shift+Enter = new line)"></textarea>
+        <div class="tools">
+          <button id="recordVoice" class="icon-btn" title="Record Voice"><i class="fa-solid fa-microphone"></i></button>
+          <input type="file" id="fileInput" style="display:none;" />
+          <button id="attachFile" class="icon-btn" title="Attach File"><i class="fa-solid fa-paperclip"></i></button>
+          <button id="sendBtn" class="btn">Send</button>
+        </div>
+      </div>
+    </section>
+    <!-- Right panel: start new conversation / info -->
+    <aside class="panel" id="right-panel">
+      <div class="section">
+        <h4 style="margin:0 0 8px 0;">New Message</h4>
+        <label style="font-size:13px;color:var(--muted)">Followed</label>
+        <select id="startSelect">
+          <option value="">-- Select --</option>
+        </select>
+        <button id="startBtn" class="btn" style="margin-top:8px;">Start Chat</button>
+      </div>
+      <div class="section">
+        <h4 style="margin:0 0 8px 0;">User Info</h4>
+        <div id="userInfo" style="font-size:13px;color:var(--muted)">Information about the selected user appears here.</div>
+      </div>
+      <div class="section">
+        <h4 style="margin:0 0 8px 0;">Help</h4>
+        <div style="font-size:13px; color:var(--muted)">
+          - You can only message followed users.<br>
+          - Messages are updated in real-time.<br>
+          - The view is mobile compatible.<br>
+          - Video and voice calls are supported.<br>
+          - You can send voice messages and files.
+        </div>
+      </div>
+    </aside>
+  </main>
+  <!-- Video Call Modal -->
+  <div id="videoCallModal">
+    <div id="videoCallContainer">
+      <div id="videoBadge">Call</div>
+      <video id="localVideo" autoplay playsinline muted></video>
+      <video id="remoteVideo" autoplay playsinline></video>
+      <div id="callControls">
+        <button id="toggleCam" class="icon-btn" title="Toggle Camera"><i class="fa-solid fa-video"></i></button>
+        <button id="toggleMic" class="icon-btn" title="Toggle Microphone"><i class="fa-solid fa-microphone"></i></button>
+        <button id="endVideoCall" class="btn">End Call</button>
+      </div>
+    </div>
+  </div>
+  <!-- Voice Call Modal -->
+  <div id="voiceCallModal">
+    <div id="voiceCallContainer">
+      <h3>Voice Call</h3>
+      <p id="voiceCallStatus">Connecting...</p>
+      <button id="endVoiceCall" class="btn">End Call</button>
+    </div>
+  </div>
+  <!-- Incoming Call Modal -->
+  <div id="incomingCallModal">
+    <h3>Incoming Call</h3>
+    <p id="incomingCaller">Unknown user is calling...</p>
+    <button id="acceptCall" class="btn">Accept</button>
+    <button id="rejectCall" class="btn" style="background: red;">Reject</button>
+  </div>
+  <footer class="note">Messaging is real-time with Supabase.</footer>
+  <canvas id="starsCanvas" aria-hidden="true"></canvas>
+  <script type="module">
+  import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+  const SUPABASE_URL = 'https://shkttorkfcnvkrwnkixf.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNoa3R0b3JrZmNudmtyd25raXhmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY2NzY2ODAsImV4cCI6MjA3MjI1MjY4MH0.GgDA8tSgQoMhCt_BYZU3mCkKaErUs_SQVNeWdCGQOgI';
+  const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  let currentUser = null;
+  let currentUserData = null;
+  let currentChatUser = null;
+  let inboxChannel = null;
+  let signalChannel = null;
+  const contactsEl = document.getElementById('contacts');
+  const messagesEl = document.getElementById('messages');
+  const chatAvatarEl = document.getElementById('chatAvatar');
+  const chatTitleEl = document.getElementById('chatTitle');
+  const chatSubtitleEl = document.getElementById('chatSubtitle');
+  const messageInput = document.getElementById('messageInput');
+  const sendBtn = document.getElementById('sendBtn');
+  const startSelect = document.getElementById('startSelect');
+  const startBtn = document.getElementById('startBtn');
+  const userInfo = document.getElementById('userInfo');
+  const emojiBtn = document.getElementById('emojiBtn');
+  const emojiPicker = document.getElementById('emojiPicker');
+  const btnRefreshContacts = document.getElementById('btnRefreshContacts');
+  const noChatNotice = document.getElementById('noChatNotice');
+  const recordVoiceBtn = document.getElementById('recordVoice');
+  const attachFileBtn = document.getElementById('attachFile');
+  const fileInput = document.getElementById('fileInput');
+  const startVoiceCallBtn = document.getElementById('startVoiceCall');
+  const startVideoCallBtn = document.getElementById('startVideoCall');
+  const videoCallModal = document.getElementById('videoCallModal');
+  const localVideo = document.getElementById('localVideo');
+  const remoteVideo = document.getElementById('remoteVideo');
+  const endVideoCallBtn = document.getElementById('endVideoCall');
+  const voiceCallModal = document.getElementById('voiceCallModal');
+  const voiceCallStatus = document.getElementById('voiceCallStatus');
+  const endVoiceCallBtn = document.getElementById('endVoiceCall');
+  const toggleCamBtn = document.getElementById('toggleCam');
+  const toggleMicBtn = document.getElementById('toggleMic');
+  const incomingCallModal = document.getElementById('incomingCallModal');
+  const incomingCaller = document.getElementById('incomingCaller');
+  const acceptCallBtn = document.getElementById('acceptCall');
+  const rejectCallBtn = document.getElementById('rejectCall');
+  let mediaRecorder;
+  let audioChunks = [];
+  let localStream = null;
+  let peerConnection = null;
+  let voicePeerConnection = null;
+  let localVideoTrackEnabled = true;
+  let localAudioTrackEnabled = true;
+  let incomingCallType = null;
+  let incomingFrom = null;
+  let incomingOfferSDP = null; // Store incoming offer SDP
+  const iceServers = [
+    { urls: 'stun:stun.l.google.com:19302' },
+    // Add TURN server
+  ];
+  function fmtTime(ts) { return new Date(ts).toLocaleString(); }
+  function showAlert(msg){ alert(msg); }
+  function fallbackAvatar(username){
+    const c = (username || 'U')[0].toUpperCase();
+    const svg = encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' width='80' height='80'><rect width='100%' height='100%' fill='#222'/><text x='50%' y='56%' font-family='Arial' font-size='38' fill='#fff' text-anchor='middle' dominant-baseline='middle'>${c}</text></svg>`);
+    return `data:image/svg+xml;charset=utf-8,${svg}`;
+  }
+  function escapeHtml(str){ return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;').replace(/\n/g,'<br>'); }
+  async function loadCurrentUser(){
+    try{
+      const { data } = await supabase.auth.getUser();
+      const user = data?.user;
+      currentUser = user?.id || null;
+      if(!currentUser){
+        const devId = localStorage.getItem('dev_user_id');
+        if(devId){
+          currentUser = devId;
+          currentUserData = { id: devId, username: devId, display_name: devId };
+          return true;
+        }
+        window.location.href = 'register.html';
+        return false;
+      }
+      const { data: profile, error } = await supabase.from('profiles').select('*').eq('id', currentUser).single();
+      if(error){ console.error('profile load error', error); }
+      currentUserData = profile || { id: currentUser };
+      return true;
+    }catch(err){
+      console.error(err);
+      return false;
+    }
+  }
+  async function checkPermission(type) {
+    if ('permissions' in navigator) {
+      const permission = await navigator.permissions.query({ name: type });
+      return permission.state;
+    }
+    return 'prompt'; // If permissions API is not available, default prompt
+  }
+  async function renderContacts(){
+    contactsEl.innerHTML = '';
+    startSelect.innerHTML = '<option value="">-- Select --</option>';
+    if(!await loadCurrentUser()) return;
+    const { data: following, error: fErr } = await supabase.from('follows').select(`
+      following,
+      following_user:profiles!following (*)
+    `).eq('follower', currentUser);
+    if(fErr || !following){ showAlert('Followed could not be loaded.'); return; }
+    const users = following.map(f => f.following_user).filter(u => u);
+    if(users.length === 0){
+      const p = document.createElement('div'); p.style.color='var(--muted)'; p.textContent = 'No followed yet. You can message followed users.'; contactsEl.appendChild(p);
+      startSelect.disabled = true;
+      return;
+    }
+    users.forEach(u => {
+      const c = document.createElement('div'); c.className = 'contact';
+      c.dataset.userId = u.id;
+      const av = document.createElement('img'); av.className='avatar'; av.src = u.avatar_url || fallbackAvatar(u.username);
+      const meta = document.createElement('div'); meta.className='meta';
+      const name = document.createElement('div'); name.className='name'; name.textContent = u.display_name || u.username;
+      const uname = document.createElement('div'); uname.className='uname'; uname.textContent = '@' + (u.username||'');
+      meta.appendChild(name); meta.appendChild(uname);
+      c.appendChild(av); c.appendChild(meta);
+      c.addEventListener('click', () => openChat(u.id));
+      contactsEl.appendChild(c);
+      const opt = document.createElement('option'); opt.value = u.id; opt.textContent = (u.display_name||u.username) + ' @' + u.username;
+      startSelect.appendChild(opt);
+    });
+  }
+  async function openChat(userId){
+    if(!userId) return;
+    currentChatUser = userId;
+    const { data: u, error } = await supabase.from('profiles').select('*').eq('id', userId).single();
+    if(error || !u){ showAlert('User not found.'); return; }
+    chatAvatarEl.innerHTML = '';
+    const img = document.createElement('img'); img.src = u.avatar_url || fallbackAvatar(u.username); img.style.width='100%'; img.style.height='100%'; img.style.borderRadius='50%';
+    chatAvatarEl.appendChild(img);
+    chatTitleEl.textContent = u.display_name || u.username;
+    chatSubtitleEl.textContent = '@' + u.username;
+    userInfo.innerHTML = '<strong>' + (u.display_name||u.username) + '</strong><div style="color:var(--muted); margin-top:6px">@' + u.username + '</div>';
+    await renderMessages();
+    setupSignalChannel();
+    messageInput.focus();
+  }
+  async function getConversation(otherId){
+    if(!currentUser || !otherId) return [];
+    const { data: msgs, error } = await supabase.from('messages')
+      .select('*')
+      .or(`and(sender_id.eq.${currentUser},recipient_id.eq.${otherId}),and(sender_id.eq.${otherId},recipient_id.eq.${currentUser})`)
+      .order('created_at', { ascending: true });
+    if(error){ console.error(error); return []; }
+    return msgs || [];
+  }
+  async function renderMessages(){
+    messagesEl.innerHTML = '';
+    if(!currentChatUser){ noChatNotice.style.display = 'block'; return; }
+    noChatNotice.style.display = 'none';
+    const conv = await getConversation(currentChatUser);
+    if(conv.length === 0){ const p = document.createElement('div'); p.className='no-chat'; p.textContent='No messages yet. Send the first message.'; messagesEl.appendChild(p); return; }
+    conv.forEach(m => {
+      appendMessageToDOM(m, false);
+    });
+    messagesEl.scrollTop = messagesEl.scrollHeight;
+  }
+  function appendMessageToDOM(m, animate = true){
+    noChatNotice.style.display = 'none';
+    const d = document.createElement('div');
+    d.className = 'msg ' + (m.sender_id === currentUser ? 'me' : 'them');
+    if (animate) d.classList.add('drop-init');
+    let content = '';
+    if (m.type === 'text') {
+      content = '<div>' + escapeHtml(m.text) + '</div>';
+    } else if (m.type === 'file') {
+      d.classList.add('file');
+      content = '<div>File: <a href="' + m.file_url + '" target="_blank">' + escapeHtml(m.text) + '</a></div>';
+    } else if (m.type === 'audio') {
+      d.classList.add('audio');
+      content = '<audio controls src="' + m.file_url + '"></audio>';
+    }
+    d.innerHTML = content + '<div class="meta">' + fmtTime(m.created_at) + '</div>';
+    messagesEl.appendChild(d);
+    if (animate) {
+      requestAnimationFrame(() => { d.classList.add('drop-final'); d.classList.remove('drop-init'); });
+    }
+    setTimeout(()=>{ messagesEl.scrollTop = messagesEl.scrollHeight; }, 80);
+  }
+  async function sendMessage(){
+    if(!currentChatUser){ showAlert('Start a conversation or select a person first.'); return; }
+    const text = (messageInput.value || '').trim();
+    if(!text) return;
+    const { data, error } = await supabase.from('messages')
+      .insert([{ sender_id: currentUser, recipient_id: currentChatUser, text, type: 'text', created_at: new Date().toISOString() }])
+      .select()
+      .single();
+    if(error){ showAlert('Message could not be sent: ' + (error.message || error)); return; }
+    messageInput.value = '';
+    appendMessageToDOM(data);
+    try{
+      const { error: notifErr } = await supabase.from('notifications').insert([{ recipient_id: currentChatUser, sender_id: currentUser, type: 'message', related_id: data.id, message: `${currentUserData.username} sent you a message: "${text.slice(0,50)}..."`, is_read: false, created_at: new Date().toISOString() }]);
+      if(notifErr) console.warn('notif err', notifErr);
+    }catch(e){ console.warn(e); }
+  }
+  async function uploadAndSendFile(file, type = 'file') {
+    if (!file || !currentChatUser) return;
+    const fileName = `${Date.now()}_${file.name}`;
+    const { data, error } = await supabase.storage.from('files').upload(fileName, file);
+    if (error) {
+      showAlert('File could not be uploaded: ' + error.message);
+      return;
+    }
+    const { data: publicData } = supabase.storage.from('files').getPublicUrl(fileName);
+    const fileUrl = publicData.publicUrl;
+    const msgType = type === 'audio' ? 'audio' : 'file';
+    const { data: msgData, error: msgError } = await supabase.from('messages')
+      .insert([{ sender_id: currentUser, recipient_id: currentChatUser, text: file.name, file_url: fileUrl, type: msgType, created_at: new Date().toISOString() }])
+      .select()
+      .single();
+    if (msgError) {
+      showAlert('Message could not be sent: ' + msgError.message);
+      return;
+    }
+    appendMessageToDOM(msgData);
+    try{
+      const { error: notifErr } = await supabase.from('notifications').insert([{ recipient_id: currentChatUser, sender_id: currentUser, type: 'message', related_id: msgData.id, message: `${currentUserData.username} sent you a file: "${file.name}"`, is_read: false, created_at: new Date().toISOString() }]);
+      if(notifErr) console.warn('notif err', notifErr);
+    }catch(e){ console.warn(e); }
+  }
+  function setupInboxRealtime(){
+    if(!currentUser) return;
+    if(inboxChannel){
+      try{ supabase.removeChannel(inboxChannel); }catch(e){ console.warn('removeChannel error', e); }
+      inboxChannel = null;
+    }
+    inboxChannel = supabase.channel(`messages:inbox:${currentUser}`, { private: true });
+    inboxChannel.on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages', filter: `recipient_id=eq.${currentUser}` }, (payload) => {
+      const m = payload.new;
+      if(String(currentChatUser) === String(m.sender_id)){
+        appendMessageToDOM(m);
+      } else {
+        console.log('New message (other chat):', m);
+      }
+    });
+    inboxChannel.subscribe(status => {
+      console.log('Inbox realtime subscribed for user', currentUser, status);
+    });
+  }
+  function setupSignalChannel(){
+    if(signalChannel){
+      try{ supabase.removeChannel(signalChannel); }catch(e){ console.warn('removeChannel error', e); }
+      signalChannel = null;
+    }
+    if(!currentChatUser) return;
+    const minId = Math.min(currentUser, currentChatUser);
+    const maxId = Math.max(currentUser, currentChatUser);
+    const channelName = `signals:${minId}-${maxId}`;
+    signalChannel = supabase.channel(channelName, { private: true, config: { broadcast: { self: false } } });
+    signalChannel.on('broadcast', { event: 'webrtc' }, async ({ payload }) => {
+      try {
+        if(!payload) return;
+        const msg = payload;
+        if(String(msg.to) !== String(currentUser)) return;
+        const { from, callType, action, data } = msg;
+        if(String(from) === String(currentUser)) return;
+        if(action === 'offer') {
+          incomingCallType = callType;
+          incomingFrom = from;
+          incomingOfferSDP = data; // Store SDP
+          const { data: caller } = await supabase.from('profiles').select('display_name, username').eq('id', from).single();
+          incomingCaller.textContent = `${caller?.display_name || caller?.username || 'Unknown'} is calling... (${callType === 'video' ? 'Video' : 'Voice'})`;
+          incomingCallModal.style.display = 'block';
+        } else if(action === 'answer') {
+          if(callType === 'video') {
+            if(peerConnection && data) {
+              await peerConnection.setRemoteDescription(new RTCSessionDescription(data));
+            }
+          } else if(callType === 'voice') {
+            if(voicePeerConnection && data) {
+              await voicePeerConnection.setRemoteDescription(new RTCSessionDescription(data));
+              voiceCallStatus.textContent = 'Connected';
+            }
+          }
+        } else if(action === 'candidate') {
+          if(callType === 'video') {
+            if(peerConnection && data) {
+              try{ await peerConnection.addIceCandidate(new RTCIceCandidate(data)); }catch(e){ console.warn('addIceCandidate video err', e); }
+            }
+          } else if(callType === 'voice') {
+            if(voicePeerConnection && data) {
+              try{ await voicePeerConnection.addIceCandidate(new RTCIceCandidate(data)); }catch(e){ console.warn('addIceCandidate voice err', e); }
+            }
+          }
+        } else if(action === 'hangup') {
+          if(callType === 'video') {
+            endVideoCall();
+          } else if(callType === 'voice') {
+            endVoiceCall();
+          }
+        }
+      } catch (err) {
+        console.error('signalChannel handler error', err);
+      }
+    });
+    signalChannel.subscribe(status => {
+      console.log('signal channel status:', status);
+    });
+  }
+  async function sendSignal(message){
+    if(!signalChannel) setupSignalChannel();
+    try {
+      await signalChannel.send({
+        type: 'broadcast',
+        event: 'webrtc',
+        payload: message
+      });
+    } catch (err) {
+      console.error('sendSignal error', err);
+    }
+  }
+  async function handleIncomingOffer(callType, fromUserId, offerSDP) {
+    try {
+      if(!currentChatUser) currentChatUser = fromUserId;
+      setupSignalChannel();
+      let constraints = callType === 'video' ? { video: true, audio: true } : { audio: true };
+      let permissionsToCheck = callType === 'video' ? ['microphone', 'camera'] : ['microphone'];
+      for (let perm of permissionsToCheck) {
+        const state = await checkPermission(perm);
+        if (state === 'denied') {
+          showAlert(`${perm === 'microphone' ? 'Microphone' : 'Camera'} permission denied. Please enable from app settings.`);
+          return;
+        }
+      }
+      localStream = await navigator.mediaDevices.getUserMedia(constraints);
+      if (callType === 'video') {
+        localVideo.srcObject = localStream;
+        localVideoTrackEnabled = true;
+        localAudioTrackEnabled = true;
+        peerConnection = new RTCPeerConnection({ iceServers });
+        localStream.getTracks().forEach(track => peerConnection.addTrack(track, localStream));
+        peerConnection.ontrack = (event) => {
+          remoteVideo.srcObject = event.streams[0];
+        };
+        peerConnection.onicecandidate = (event) => {
+          if(event.candidate){
+            sendSignal({
+              from: currentUser,
+              to: fromUserId,
+              callType: 'video',
+              action: 'candidate',
+              data: event.candidate
+            });
+          }
+        };
+        await peerConnection.setRemoteDescription(new RTCSessionDescription(offerSDP));
+        const answer = await peerConnection.createAnswer();
+        await peerConnection.setLocalDescription(answer);
+        await sendSignal({
+          from: currentUser,
+          to: fromUserId,
+          callType: 'video',
+          action: 'answer',
+          data: peerConnection.localDescription
+        });
+        videoCallModal.style.display = 'flex';
+      } else if(callType === 'voice') {
+        voicePeerConnection = new RTCPeerConnection({ iceServers });
+        localStream.getTracks().forEach(track => voicePeerConnection.addTrack(track, localStream));
+        voicePeerConnection.ontrack = (event) => {
+          const audio = document.createElement('audio');
+          audio.autoplay = true;
+          audio.srcObject = event.streams[0];
+          document.body.appendChild(audio);
+        };
+        voicePeerConnection.onicecandidate = (event) => {
+          if(event.candidate){
+            sendSignal({
+              from: currentUser,
+              to: fromUserId,
+              callType: 'voice',
+              action: 'candidate',
+              data: event.candidate
+            });
+          }
+        };
+        await voicePeerConnection.setRemoteDescription(new RTCSessionDescription(offerSDP));
+        const answer = await voicePeerConnection.createAnswer();
+        await voicePeerConnection.setLocalDescription(answer);
+        await sendSignal({
+          from: currentUser,
+          to: fromUserId,
+          callType: 'voice',
+          action: 'answer',
+          data: voicePeerConnection.localDescription
+        });
+        voiceCallStatus.textContent = 'Connected';
+        voiceCallModal.style.display = 'flex';
+      }
+    } catch (err) {
+      console.error('handleIncomingOffer err', err);
+      let msg = 'Call could not be accepted.';
+      if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+        msg = 'Microphone/camera access denied. Please check your settings.';
+      } else if (err.name === 'NotFoundError') {
+        msg = 'Microphone/camera not found.';
+      } else {
+        msg += ' Error: ' + err.message;
+      }
+      showAlert(msg);
+    }
+  }
+  async function startVideoCall(){
+    if(!currentChatUser) return showAlert('Select a chat first.');
+    try {
+      setupSignalChannel();
+      const micState = await checkPermission('microphone');
+      const camState = await checkPermission('camera');
+      if (micState === 'denied' || camState === 'denied') {
+        showAlert('Microphone or camera permission denied. Please enable from app settings.');
+        return;
+      }
+      localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+      localVideo.srcObject = localStream;
+      localVideoTrackEnabled = true;
+      localAudioTrackEnabled = true;
+      peerConnection = new RTCPeerConnection({ iceServers });
+      localStream.getTracks().forEach(track => peerConnection.addTrack(track, localStream));
+      peerConnection.ontrack = (event) => {
+        remoteVideo.srcObject = event.streams[0];
+      };
+      peerConnection.onicecandidate = (event) => {
+        if(event.candidate){
+          sendSignal({
+            from: currentUser,
+            to: currentChatUser,
+            callType: 'video',
+            action: 'candidate',
+            data: event.candidate
+          });
+        }
+      };
+      const offer = await peerConnection.createOffer();
+      await peerConnection.setLocalDescription(offer);
+      await sendSignal({
+        from: currentUser,
+        to: currentChatUser,
+        callType: 'video',
+        action: 'offer',
+        data: peerConnection.localDescription
+      });
+      videoCallModal.style.display = 'flex';
+    } catch (err){
+      console.error('startVideoCall err', err);
+      let msg = 'Camera/microphone access could not be provided.';
+      if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+        msg = 'Microphone/camera access denied. Please check your settings.';
+      } else if (err.name === 'NotFoundError') {
+        msg = 'Microphone/camera not found.';
+      } else {
+        msg += ' Error: ' + err.message;
+      }
+      showAlert(msg);
+    }
+  }
+  function endVideoCall(){
+    try {
+      if(currentChatUser){
+        sendSignal({
+          from: currentUser,
+          to: currentChatUser,
+          callType: 'video',
+          action: 'hangup',
+          data: null
+        });
+      }
+    } catch (e){}
+    if(localStream){
+      try{ localStream.getTracks().forEach(t => t.stop()); }catch(e){}
+      localStream = null;
+    }
+    if(peerConnection){
+      try{ peerConnection.close(); }catch(e){}
+      peerConnection = null;
+    }
+    localVideo.srcObject = null;
+    remoteVideo.srcObject = null;
+    videoCallModal.style.display = 'none';
+  }
+  async function startVoiceCall(){
+    if(!currentChatUser) return showAlert('Select a chat first.');
+    try {
+      setupSignalChannel();
+      const micState = await checkPermission('microphone');
+      if (micState === 'denied') {
+        showAlert('Microphone permission denied. Please enable from app settings.');
+        return;
+      }
+      localStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      voicePeerConnection = new RTCPeerConnection({ iceServers });
+      localStream.getTracks().forEach(track => voicePeerConnection.addTrack(track, localStream));
+      voicePeerConnection.ontrack = (event) => {
+        const audio = document.createElement('audio');
+        audio.autoplay = true;
+        audio.srcObject = event.streams[0];
+        document.body.appendChild(audio);
+      };
+      voicePeerConnection.onicecandidate = (event) => {
+        if(event.candidate){
+          sendSignal({
+            from: currentUser,
+            to: currentChatUser,
+            callType: 'voice',
+            action: 'candidate',
+            data: event.candidate
+          });
+        }
+      };
+      const offer = await voicePeerConnection.createOffer();
+      await voicePeerConnection.setLocalDescription(offer);
+      await sendSignal({
+        from: currentUser,
+        to: currentChatUser,
+        callType: 'voice',
+        action: 'offer',
+        data: voicePeerConnection.localDescription
+      });
+      voiceCallStatus.textContent = 'Calling...';
+      voiceCallModal.style.display = 'flex';
+    } catch (err){
+      console.error('startVoiceCall err', err);
+      let msg = 'Microphone access could not be provided.';
+      if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+        msg = 'Microphone access denied. Please check your settings.';
+      } else if (err.name === 'NotFoundError') {
+        msg = 'Microphone not found.';
+      } else {
+        msg += ' Error: ' + err.message;
+      }
+      showAlert(msg);
+    }
+  }
+  function endVoiceCall(){
+    try {
+      if(currentChatUser){
+        sendSignal({
+          from: currentUser,
+          to: currentChatUser,
+          callType: 'voice',
+          action: 'hangup',
+          data: null
+        });
+      }
+    } catch (e){}
+    if(localStream){
+      try{ localStream.getTracks().forEach(t => t.stop()); }catch(e){}
+      localStream = null;
+    }
+    if(voicePeerConnection){
+      try{ voicePeerConnection.close(); }catch(e){}
+      voicePeerConnection = null;
+    }
+    voiceCallModal.style.display = 'none';
+    voiceCallStatus.textContent = 'Connecting...';
+  }
+  // toggle camera & mic
+  toggleCamBtn.addEventListener('click', () => {
+    if(!localStream) return;
+    const videoTrack = localStream.getVideoTracks()[0];
+    if(!videoTrack) return;
+    localVideoTrackEnabled = !localVideoTrackEnabled;
+    videoTrack.enabled = localVideoTrackEnabled;
+    toggleCamBtn.innerHTML = localVideoTrackEnabled ? '<i class="fa-solid fa-video"></i>' : '<i class="fa-solid fa-video-slash"></i>';
+  });
+  toggleMicBtn.addEventListener('click', () => {
+    if(!localStream) return;
+    const audioTrack = localStream.getAudioTracks()[0];
+    if(!audioTrack) return;
+    localAudioTrackEnabled = !localAudioTrackEnabled;
+    audioTrack.enabled = localAudioTrackEnabled;
+    toggleMicBtn.innerHTML = localAudioTrackEnabled ? '<i class="fa-solid fa-microphone"></i>' : '<i class="fa-solid fa-microphone-slash"></i>';
+  });
+  // Incoming call handlers
+  acceptCallBtn.addEventListener('click', async () => {
+    incomingCallModal.style.display = 'none';
+    await handleIncomingOffer(incomingCallType, incomingFrom, incomingOfferSDP);
+  });
+  rejectCallBtn.addEventListener('click', () => {
+    incomingCallModal.style.display = 'none';
+    sendSignal({
+      from: currentUser,
+      to: incomingFrom,
+      callType: incomingCallType,
+      action: 'hangup',
+      data: null
+    });
+  });
+  startBtn.addEventListener('click', async () => {
+    const sel = startSelect.value;
+    if(!sel){ showAlert('Please select a user.'); return; }
+    await openChat(sel);
+  });
+  sendBtn.addEventListener('click', sendMessage);
+  messageInput.addEventListener('keydown', e => {
+    if(e.key === 'Enter' && !e.shiftKey){
+      e.preventDefault();
+      sendMessage();
+    }
+  });
+  emojiBtn.addEventListener('click', e => {
+    e.stopPropagation();
+    emojiPicker.style.display = emojiPicker.style.display === 'block' ? 'none' : 'block';
+    emojiPicker.setAttribute('aria-hidden', emojiPicker.style.display !== 'block');
+  });
+  emojiPicker.addEventListener('click', e => {
+    if(e.target && e.target.classList.contains('emoji')){
+      const em = e.target.textContent || '';
+      insertAtCursor(messageInput, em);
+      messageInput.focus();
+    }
+  });
+  document.addEventListener('click', () => { emojiPicker.style.display = 'none'; emojiPicker.setAttribute('aria-hidden', 'true'); });
+  function insertAtCursor(el, text) {
+    const start = el.selectionStart || 0;
+    const end = el.selectionEnd || 0;
+    const val = el.value || '';
+    el.value = val.slice(0, start) + text + val.slice(end);
+    const pos = start + text.length;
+    el.selectionStart = el.selectionEnd = pos;
+  }
+  btnRefreshContacts.addEventListener('click', renderContacts);
+  attachFileBtn.addEventListener('click', () => fileInput.click());
+  fileInput.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (file) uploadAndSendFile(file);
+    e.target.value = '';
+  });
+  let isRecording = false;
+  recordVoiceBtn.addEventListener('click', async () => {
+    if (!isRecording) {
+      try {
+        const micState = await checkPermission('microphone');
+        if (micState === 'denied') {
+          showAlert('Microphone permission denied. Please enable from app settings.');
+          return;
+        }
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        mediaRecorder = new MediaRecorder(stream);
+        mediaRecorder.start();
+        audioChunks = [];
+        mediaRecorder.addEventListener('dataavailable', (event) => {
+          audioChunks.push(event.data);
+        });
+        mediaRecorder.addEventListener('stop', () => {
+          const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+          const file = new File([audioBlob], 'voice_message.webm', { type: 'audio/webm' });
+          uploadAndSendFile(file, 'audio');
+          stream.getTracks().forEach(track => track.stop());
+        });
+        isRecording = true;
+        recordVoiceBtn.style.color = 'red';
+      } catch (err) {
+        console.error('recordVoice err', err);
+        let msg = 'Voice recording could not be started.';
+        if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+          msg = 'Microphone access denied. Please check your settings.';
+        } else if (err.name === 'NotFoundError') {
+          msg = 'Microphone not found.';
+        } else {
+          msg += ' Error: ' + err.message;
+        }
+        showAlert(msg);
+      }
+    } else {
+      mediaRecorder.stop();
+      isRecording = false;
+      recordVoiceBtn.style.color = '#ddd';
+    }
+  });
+  startVideoCallBtn.addEventListener('click', startVideoCall);
+  endVideoCallBtn.addEventListener('click', endVideoCall);
+  startVoiceCallBtn.addEventListener('click', startVoiceCall);
+  endVoiceCallBtn.addEventListener('click', endVoiceCall);
+  window.addEventListener('beforeunload', () => {
+    if(inboxChannel){
+      try{ supabase.removeChannel(inboxChannel); }catch(e){}
+      inboxChannel = null;
+    }
+    if(signalChannel){
+      try{ supabase.removeChannel(signalChannel); }catch(e){}
+      signalChannel = null;
+    }
+    if(localStream){
+      try{ localStream.getTracks().forEach(track => track.stop()); }catch(e){}
+      localStream = null;
+    }
+    if(peerConnection){
+      try{ peerConnection.close(); }catch(e){}
+      peerConnection = null;
+    }
+    if(voicePeerConnection){
+      try{ voicePeerConnection.close(); }catch(e){}
+      voicePeerConnection = null;
+    }
+  });
+  (async function init(){
+    if(!await loadCurrentUser()) return;
+    await renderContacts();
+    setupInboxRealtime();
+    const firstContact = contactsEl.querySelector('.contact');
+    if(firstContact) await openChat(firstContact.dataset.userId);
+  })();
+  const canvas = document.getElementById('starsCanvas');
+  const ctx = canvas.getContext('2d');
+  let DPR = Math.max(1, window.devicePixelRatio || 1);
+  function fitCanvas(){
+    const w = window.innerWidth;
+    const h = window.innerHeight;
+    canvas.width = Math.floor(w * DPR);
+    canvas.height = Math.floor(h * DPR);
+    canvas.style.width = w + 'px';
+    canvas.style.height = h + 'px';
+    ctx.setTransform(DPR,0,0,DPR,0,0);
+  }
+  window.addEventListener('resize', fitCanvas);
+  fitCanvas();
+  class Star {
+    constructor(x,y,opts){
+      opts = opts || {};
+      this.x = x;
+      this.y = y;
+      this.vx = (Math.random()*2 - 1) * (opts.speed || 0.5);
+      this.vy = (Math.random()*0.6 + 0.4) * (opts.speed || 0.7);
+      this.life = (Math.random()*0.8 + 0.6) * (opts.life || 4);
+      this.age = 0;
+      this.size = Math.random()*1.8 + 0.6;
+      this.alpha = Math.random()*0.6 + 0.4;
+      this.hue = opts.hue || (200 + Math.random()*60);
+      this.twinkleSpeed = Math.random()*6 + 2;
+    }
+    update(dt){
+      this.age += dt;
+      this.x += this.vx * dt * 60;
+      this.y += this.vy * dt * 60;
+      this.x += Math.sin(this.age * 2 + this.size) * 0.1;
+    }
+    draw(ctx){
+      const t = this.age;
+      const lifeRatio = Math.max(0, 1 - (this.age / this.life));
+      const alpha = this.alpha * lifeRatio * (0.6 + 0.4*Math.abs(Math.sin(t * this.twinkleSpeed)));
+      ctx.save();
+      ctx.globalAlpha = Math.max(0, alpha);
+      const g = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.size*6);
+      g.addColorStop(0, `hsla(${this.hue},100%,85%,${0.9*alpha})`);
+      g.addColorStop(0.4, `hsla(${this.hue},100%,70%,${0.45*alpha})`);
+      g.addColorStop(1, `hsla(${this.hue},100%,60%,0)`);
+      ctx.fillStyle = g;
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.size*6, 0, Math.PI*2);
+      ctx.fill();
+      ctx.fillStyle = `hsla(${this.hue}, 100%, 95%, ${alpha})`;
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.size, 0, Math.PI*2);
+      ctx.fill();
+      ctx.restore();
+    }
+    isDead(){
+      return this.age >= this.life || this.y > window.innerHeight + 40 || this.x < -40 || this.x > window.innerWidth + 40;
+    }
+  }
+  const starField = {
+    stars: [],
+    accumulator: 0,
+    last: performance.now(),
+    spawnRate: 6,
+    max: 160,
+    running: true,
+    spawnBurst(x, y, opts){
+      opts = opts || {};
+      const count = opts.count || 18;
+      const speed = opts.speed || 1.8;
+      for(let i=0;i<count;i++){
+        const rx = x + (Math.random()*160 - 80);
+        const ry = y + (Math.random()*40 - 20);
+        const s = new Star(rx, ry, {speed: speed, life: 2.2 + Math.random()*1.6, hue: 190 + Math.random()*80});
+        s.vy = Math.abs(s.vy) * (0.6 + Math.random()*1.2);
+        s.vx = (Math.random()*2-1) * (speed * (Math.random()*1.6));
+        this.stars.push(s);
+      }
+    },
+    step(){
+      const now = performance.now();
+      let dt = Math.min(0.05, (now - this.last) / 1000);
+      this.last = now;
+      this.accumulator += dt * this.spawnRate;
+      while(this.accumulator > 1){
+        this.accumulator -= 1;
+        if(this.stars.length < this.max){
+          const x = Math.random() * window.innerWidth;
+          const s = new Star(x, -10, {speed: (0.8 + Math.random()*0.8), life: 6 + Math.random()*4, hue: 190 + Math.random()*80});
+          this.stars.push(s);
+        }
+      }
+      ctx.clearRect(0,0, window.innerWidth, window.innerHeight);
+      for(let i=this.stars.length-1;i>=0;i--){
+        const s = this.stars[i];
+        s.update(dt);
+        s.draw(ctx);
+        if(s.isDead()){
+          this.stars.splice(i,1);
+        }
+      }
+      if(this.running) requestAnimationFrame(this.step.bind(this));
+    },
+    start(){ if(!this.running){ this.running = true; this.last = performance.now(); this.step(); } },
+    stop(){ this.running = false; }
+  };
+  starField.start();
+  setInterval(function(){
+    if(Math.random() < 0.12){
+      const x = Math.random() * window.innerWidth;
+      const y = Math.random() * 80;
+      starField.spawnBurst(x,y,{count: 6, speed: 1.2});
+    }
+  }, 1000);
+  fitCanvas();
+  window._starField = starField;
+  </script>
+</body>
+</html>

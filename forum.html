@@ -1,0 +1,1105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
+<title>Concordia Nova Forum — Full Version</title>
+<meta name="description" content="Concordia Nova Forum — innovative, real-time, voice/video comments, polls, news, articles, theses, image adding, quote, knowledge library and more." />
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+<!-- Font Awesome for icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+  :root{
+    --bg-1:#04050a; --bg-2:#071023; --muted:#9aa6b2;
+    --accent:#00f0ff; --accent-2:#7b2fff; --forum-accent:#ff6b6b;
+    --card:rgba(255,255,255,0.03); --glass-border:rgba(255,255,255,0.04);
+    --radius:14px; --white:#ffffff; --transition:220ms cubic-bezier(.2,.9,.2,1);
+    --success: #78ff8c; --error: #ff5078; --warning: #ffca6b;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0;font-family:'Poppins',system-ui,Segoe UI,Roboto,Arial;
+    color:var(--white); -webkit-font-smoothing:antialiased;
+    /* background image + dark overlay for legibility */
+    background:
+      linear-gradient(rgba(4,5,10,.78), rgba(7,16,35,.78)),
+      url("https://images.unsplash.com/photo-1527443224154-9c1a8c9bdbf5?auto=format&fit=crop&w=1920&q=80");
+    background-size:cover;
+    background-position:center;
+    background-attachment:fixed;
+  }
+  .app{display:flex;height:100vh;overflow:hidden}
+  /* Sidebar */
+  .sidebar{width:300px;padding:28px;background:var(--card);backdrop-filter:blur(14px);border-right:1px solid var(--glass-border);display:flex;flex-direction:column;gap:14px}
+  .logo{font-weight:800;font-size:20px;background:linear-gradient(90deg,var(--accent),var(--accent-2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+  .category-btn{background:transparent;border:1px solid transparent;padding:12px;border-radius:10px;color:var(--muted);text-align:left;cursor:pointer;display:flex;align-items:center;gap:10px;transition:all var(--transition)}
+  .category-btn:hover{transform:translateX(6px);color:var(--accent);border-color:rgba(0,240,255,0.06)}
+  .category-btn.active{background:linear-gradient(90deg,rgba(0,240,255,0.06),rgba(123,47,255,0.03));color:var(--accent)}
+  .sidebar .small{font-size:12px;opacity:.9}
+  /* Main */
+  .main{flex:1;display:flex;flex-direction:column}
+  .header{display:flex;align-items:center;gap:12px;padding:14px 20px;background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0));border-bottom:1px solid var(--glass-border)}
+  .search{flex:1;display:flex;gap:8px;align-items:center}
+  .search input{flex:1;padding:10px 12px;border-radius:10px;border:1px solid var(--glass-border);background:rgba(255,255,255,0.02);color:var(--white)}
+  .controls{display:flex;gap:8px;align-items:center}
+  .btn{padding:10px 14px;border-radius:10px;border:none;background:linear-gradient(90deg,var(--forum-accent),var(--accent-2));color:#020a0f;cursor:pointer;font-weight:700}
+  .btn:hover{transform:scale(1.02);}
+  .btn.secondary{background:transparent;color:var(--white);border:1px solid var(--glass-border)}
+  .content{display:flex;flex:1;overflow:hidden}
+  .left{width:60%;padding:18px;overflow:auto}
+  .right{width:40%;padding:18px;overflow:auto;border-left:1px solid var(--glass-border)}
+  /* Thread list */
+  .thread-card{background:rgba(255,255,255,0.02);padding:12px;border-radius:12px;margin-bottom:12px;border:1px solid transparent;cursor:pointer;transition:all var(--transition)}
+  .thread-card:hover{transform:translateY(-4px);box-shadow:0 10px 30px rgba(0,0,0,0.6);border-color:rgba(0,240,255,0.04)}
+  .thread-title{font-weight:700}
+  .meta{font-size:13px;color:var(--muted);display:flex;gap:12px;margin-top:6px}
+  /* View */
+  .post{background:rgba(255,255,255,0.02);padding:12px;border-radius:10px;margin-bottom:10px;border:1px solid rgba(255,255,255,0.02)}
+  .post-header{display:flex;justify-content:space-between;align-items:center}
+  .post-actions{display:flex;gap:8px;margin-top:8px}
+  .vote-btn{background:transparent;border:1px solid rgba(255,255,255,0.02);padding:6px;border-radius:8px;color:var(--muted);cursor:pointer}
+  .reply-form{display:flex;flex-direction:column;gap:8px;margin-top:12px}
+  textarea{width:100%;min-height:80px;background:rgba(255,255,255,0.02);border:1px solid var(--glass-border);padding:10px;border-radius:8px;color:var(--white)}
+  input[type="text"], input[type="url"]{padding:8px;border-radius:8px;border:1px solid var(--glass-border);background:rgba(255,255,255,0.02);color:var(--white)}
+  .media-actions { display: flex; gap: 8px; margin-top: 8px; align-items:center; }
+  .record-btn { background: var(--accent); padding: 8px; border-radius: 50%; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: var(--transition); border: none }
+  .record-btn.recording { background: var(--error); animation: pulse 1s infinite; }
+  @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.08); } 100% { transform: scale(1); } }
+  .file-btn { background: var(--warning); color: #000; padding: 8px; border-radius: 50%; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: var(--transition); border: none; }
+  .media-preview img, .media-preview video, .media-preview audio { max-width:100%; border-radius:8px; display:block; margin-top:8px; }
+  /* special features list */
+  .feature-list{margin-top:10px;padding:10px;background:linear-gradient(90deg,rgba(0,240,255,0.03),rgba(123,47,255,0.02));border-radius:10px;font-size:14px;color:var(--white)}
+  .small{font-size:12px;color:var(--muted)}
+  /* badges */
+  .badge{display:inline-block;padding:4px 8px;border-radius:999px;background:rgba(255,255,255,0.06);font-weight:700;color:var(--white);margin-right:6px}
+  /* typing indicator */
+  .typing-indicator{font-size:13px;color:var(--muted);margin-top:6px}
+  /* right panel widgets */
+  .widget{background:rgba(255,255,255,0.02);padding:12px;border-radius:10px;margin-bottom:12px;border:1px solid rgba(255,255,255,0.02)}
+  .widget h4{margin:0 0 8px 0;color:var(--accent)}
+  /* code sandbox */
+  .sandbox-frame{width:100%;height:240px;border-radius:8px;border:1px solid var(--glass-border);background:#02030a}
+  /* small util */
+  .muted{color:var(--muted)}
+  .flex{display:flex;gap:8px;align-items:center}
+  .chip{padding:6px 8px;border-radius:999px;background:rgba(255,255,255,0.03);font-size:13px}
+  /* modal */
+  .modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);backdrop-filter: blur(10px);align-items:center;justify-content:center;z-index:2000}
+  .modal .box{background: rgba(8,10,25,0.95);backdrop-filter: blur(18px);padding:22px;border-radius:16px;max-width:900px;width:94%;max-height:86vh;overflow:auto;border:1px solid rgba(255,255,255,0.06)}
+  /* poll */
+  .poll-option{display:flex;justify-content:space-between;align-items:center;padding:8px;border:1px solid var(--glass-border);border-radius:8px;margin-bottom:6px}
+  .poll-bar{background:linear-gradient(90deg,var(--accent),var(--accent-2));height:6px;border-radius:999px; margin-top:6px; }
+  /* image preview */
+  .img-preview{max-width:100%;border-radius:8px;margin-top:8px}
+  /* quote */
+  .quote{background:rgba(255,255,255,0.03);padding:8px;border-left:4px solid var(--accent);margin:8px 0;border-radius:4px}
+  /* responsive */
+  @media (max-width:900px){
+    .app{flex-direction:column}
+    .left{width:100%}
+    .right{width:100%;border-left:none}
+    .sidebar{width:100%;flex-direction:row;overflow:auto}
+    .header{flex-wrap:wrap}
+    .search input{flex-basis:100%}
+  }
+  /* light theme */
+  [data-theme="light"] {
+    --bg-1: #f0f4f8; --bg-2: #e0e8f0; --muted: #6a7a8a; --white: #000000;
+    --card: rgba(0,0,0,0.035); --glass-border: rgba(0,0,0,0.04);
+    --accent: #0080ff; --accent-2: #5b1fff; --forum-accent: #ff6b6b;
+  }
+  [data-theme="light"] body { background: linear-gradient(180deg, var(--bg-1), var(--bg-2)); color: #000000; }
+  [data-theme="light"] .post, [data-theme="light"] .thread-card { background: rgba(0,0,0,0.02); }
+  [data-theme="light"] .btn { color: #ffffff; }
+  [data-theme="light"] .btn.secondary { color: #000000; background: rgba(0,0,0,0.02); }
+  /* small avatar */
+  .avatar {
+    width:36px;height:36px;border-radius:999px;object-fit:cover;border:2px solid rgba(255,255,255,0.06)
+  }
+  .header-right { display:flex;align-items:center;gap:8px }
+  .sticky-top { position: sticky; top: 0; z-index: 5; }
+</style>
+</head>
+<body data-theme="dark">
+  <div class="app" role="application" aria-label="Concordia Nova Forum">
+    <div class="sidebar" aria-hidden="false">
+      <div class="logo">Concordia Nova Forum</div>
+      <div class="small">Innovative discussion platform</div>
+
+      <div>
+        <div class="chip">Real-time (in-tab)</div>
+        <div class="chip">Voice/video comments</div>
+        <div class="chip">Branch & fork</div>
+      </div>
+
+      <div style="margin-top:10px; overflow:auto;">
+        <button class="category-btn active" data-category="general">General</button>
+        <button class="category-btn" data-category="it">IT & Software</button>
+        <button class="category-btn" data-category="design">Design</button>
+        <button class="category-btn" data-category="music">Music & CN</button>
+        <button class="category-btn" data-category="gaming">Gaming</button>
+        <button class="category-btn" data-category="ai">AI & Experiment</button>
+        <button class="category-btn" data-category="news">News</button>
+        <button class="category-btn" data-category="articles">Articles</button>
+        <button class="category-btn" data-category="theses">Theses</button>
+        <button class="category-btn" data-category="polls">Polls</button>
+        <button class="category-btn" data-category="library">Knowledge Library</button>
+        <button class="category-btn" data-category="other">Other</button>
+      </div>
+
+      <div style="margin-top:auto">
+        <div class="small">Data: stored in browser • Export if you want</div>
+        <div style="display:flex;gap:8px;margin-top:8px">
+          <button id="export-btn" class="btn secondary">Export</button>
+          <button id="import-btn" class="btn secondary">Import</button>
+          <button id="theme-toggle" class="btn secondary">Change Theme</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="main" role="main">
+      <div class="header sticky-top">
+        <div class="search" role="search">
+          <input type="text" id="searchInput" placeholder="Search in topic or content..." aria-label="Search">
+          <div class="controls">
+            <button id="newThreadBtn" class="btn"><i class="fa-solid fa-plus"></i> New Topic</button>
+            <button id="toggleAnon" class="btn secondary">Anonymous Mode: Off</button>
+          </div>
+        </div>
+        <div class="header-right" style="margin-left:12px">
+          <img id="headerAvatar" src="" alt="avatar" class="avatar" title="Profile">
+          <div style="display:flex;flex-direction:column;align-items:flex-end">
+            <div id="headerNick" style="font-weight:700">Anon</div>
+            <div style="font-size:12px;color:var(--muted)">Karma: <span id="headerKarma">0</span></div>
+          </div>
+          <button id="profileBtnTop" class="btn secondary" title="Profile">Profile</button>
+        </div>
+      </div>
+
+      <div class="content" aria-live="polite">
+        <div class="left">
+          <div class="feature-list">
+            <strong>Featured features</strong>
+            <ul class="small">
+              <li>Ephemeral topics (timed deletion)</li>
+              <li>Thread Fork / Branch (branch the discussion)</li>
+              <li>Voice & video replies</li>
+              <li>Inline code sandbox (isolated iframe)</li>
+              <li>Realtime in-tab broadcast: new posts appear in other tabs</li>
+              <li>Image/video adding (URL/base64)</li>
+              <li>Quote system</li>
+              <li>Polls & voting</li>
+              <li>Knowledge library (wiki-like pinned threads)</li>
+              <li>Like/quote/comment chain</li>
+              <li>Auto tagging & search improvements</li>
+              <li>User levels (karma based)</li>
+              <li>Moderation tools (report/delete)</li>
+              <li>Dark/light theme</li>
+              <li>Small innovation: Topic pinning (pin) — quick access</li>
+            </ul>
+          </div>
+
+          <div id="threadList" style="margin-top:12px"></div>
+
+          <!-- posts panel (opened topic contents will come here) -->
+          <div id="posts" style="margin-top:8px"></div>
+        </div>
+
+        <div class="right">
+          <div class="widget">
+            <h4>Selected Topic</h4>
+            <div id="selectedInfo" class="small">No topic selected yet</div>
+            <div id="selectedActions" style="margin-top:8px;display:none">
+              <button id="forkBtn" class="btn secondary">Fork (Branch)</button>
+              <button id="summarizeBtn" class="btn secondary">Summarize (Local)</button>
+              <button id="exportThreadBtn" class="btn secondary">Download Topic</button>
+              <button id="pinThreadBtn" class="btn secondary">Pin</button>
+              <button id="deleteThreadBtn" class="btn secondary" style="background:rgba(255,80,120,0.2)">Delete</button>
+              <button id="reportBtn" class="btn secondary">Report</button>
+            </div>
+            <div id="typingIndicator" class="typing-indicator"></div>
+          </div>
+
+          <div class="widget">
+            <h4>Trends</h4>
+            <div id="trending"></div>
+          </div>
+
+          <div class="widget">
+            <h4>Code Sandbox</h4>
+            <div class="small">Run simple HTML/CSS/JS trials in isolated iframe.</div>
+            <div style="margin-top:8px;display:flex;gap:8px">
+              <input id="sandboxTitle" placeholder="Title" style="flex:1;padding:8px;border-radius:8px;border:1px solid var(--glass-border)">
+            </div>
+            <textarea id="sandboxCode" placeholder="&lt;!doctype html&gt;\n&lt;html&gt;...&lt;/html&gt;" style="margin-top:8px;width:100%;min-height:120px;background:#02030a;color:#e6f9ff;padding:8px;border-radius:8px;border:1px solid var(--glass-border)"></textarea>
+            <div style="display:flex;gap:8px;margin-top:8px">
+              <button id="runSandbox" class="btn">Run</button>
+              <button id="resetSandbox" class="btn secondary">Clear</button>
+            </div>
+            <iframe id="sandboxFrame" class="sandbox-frame" sandbox="allow-scripts allow-same-origin"></iframe>
+          </div>
+
+          <div class="widget">
+            <h4>Library Tools</h4>
+            <input id="librarySearch" type="text" placeholder="Search info..." style="margin-bottom:8px">
+            <button id="librarySearchBtn" class="btn secondary">Search</button>
+            <div id="libraryResults" class="small" style="margin-top:8px"></div>
+          </div>
+
+          <div class="widget">
+            <h4>User</h4>
+            <div class="small">Mask: <span id="anonMask"></span></div>
+            <div class="small">Karma: <span id="userKarma">0</span></div>
+            <div style="display:flex;gap:8px;margin-top:8px">
+              <button id="profileBtn" class="btn secondary">Profile</button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- New Thread Modal -->
+  <div id="newThreadModal" class="modal" aria-hidden="true" role="dialog" aria-modal="true">
+    <div class="box">
+      <h3>Create New Topic</h3>
+      <form id="newThreadForm">
+        <label class="small">Type</label>
+        <select id="newType">
+          <option value="normal">Normal Discussion</option>
+          <option value="poll">Poll</option>
+          <option value="article">Article</option>
+          <option value="thesis">Thesis</option>
+          <option value="news">News</option>
+          <option value="library">Library Entry</option>
+        </select>
+        <label class="small">Title</label><input id="newTitle" required type="text"><br>
+        <label class="small">Content</label><textarea id="newContent" required></textarea>
+        <div class="media-actions" style="align-items:center">
+          <button id="recordAudioNew" class="record-btn" type="button" title="Record Audio"><i class="fa-solid fa-microphone"></i></button>
+          <button id="recordVideoNew" class="record-btn" type="button" title="Record Video"><i class="fa-solid fa-video"></i></button>
+          <input type="file" id="fileInputNew" accept="image/*,video/*" style="display: none;">
+          <button id="fileBtnNew" class="file-btn" type="button" title="Add File"><i class="fa-solid fa-image"></i></button>
+
+          <div style="margin-left:8px; display:flex; gap:6px; align-items:center;">
+            <button id="captureImageBtn" class="btn secondary" type="button" title="Take picture with webcam"><i class="fa-solid fa-camera"></i> Take</button>
+            <button id="attachURLBtn" class="btn secondary" type="button" title="Add embed with URL"><i class="fa-solid fa-link"></i> Add URL</button>
+          </div>
+        </div>
+        <div id="mediaPreviewNew" class="media-preview"></div>
+        <div id="upload-status-new" style="margin-top:10px; font-weight:bold; color:var(--success);;"></div>
+        <label class="small">Image/Video URL</label><input id="newMedia" type="url" placeholder="https://...">
+        <div id="pollOptions" style="display:none">
+          <label class="small">Poll Options (comma separated)</label>
+          <input type="text" id="pollOpts" placeholder="Option1,Option2,Option3">
+        </div>
+        <div style="display:flex;gap:8px;margin-top:8px;align-items:center">
+          <label class="small">Category</label>
+          <select id="newCategory">
+            <option value="general">General</option>
+            <option value="it">IT & Software</option>
+            <option value="design">Design</option>
+            <option value="music">Music</option>
+            <option value="gaming">Gaming</option>
+            <option value="ai">AI & Experiment</option>
+            <option value="news">News</option>
+            <option value="articles">Articles</option>
+            <option value="theses">Theses</option>
+            <option value="polls">Polls</option>
+            <option value="library">Knowledge Library</option>
+            <option value="other">Other</option>
+          </select>
+
+          <label class="small">Ephemeral (seconds, 0=permanent)</label>
+          <input id="newTTL" type="number" min="0" value="0" style="width:120px">
+        </div>
+        <div style="display:flex;gap:8px;margin-top:12px">
+          <button class="btn" type="submit">Create</button>
+          <button type="button" id="closeNewThread" class="btn secondary">Close</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Profile Modal -->
+  <div id="profileModal" class="modal" aria-hidden="true">
+    <div class="box">
+      <h3>Profile</h3>
+      <label class="small">Nickname</label><input id="profileNick" type="text"><br>
+      <label class="small">Bio</label><textarea id="profileBio"></textarea>
+      <label class="small">Avatar URL</label><input id="profileAvatar" type="url" placeholder="https://...">
+      <div style="display:flex;gap:8px;margin-top:8px">
+        <button id="saveProfile" class="btn">Save</button>
+        <button id="closeProfile" class="btn secondary">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Modal (thread/reply) -->
+  <div id="editModal" class="modal" aria-hidden="true">
+    <div class="box">
+      <h3>Edit</h3>
+      <form id="editForm">
+        <label class="small">New Content</label><textarea id="editContent" required></textarea>
+        <div style="display:flex;gap:8px;margin-top:12px">
+          <button class="btn" type="submit">Update</button>
+          <button type="button" id="closeEdit" class="btn secondary">Close</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Report Modal -->
+  <div id="reportModal" class="modal" aria-hidden="true">
+    <div class="box">
+      <h3>Report</h3>
+      <textarea id="reportReason" placeholder="Why are you reporting?"></textarea>
+      <div style="display:flex;gap:8px;margin-top:12px">
+        <button id="submitReport" class="btn">Send</button>
+        <button id="closeReport" class="btn secondary">Close</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+/*
+  Concordia Nova Forum - Full Version (client-only)
+  - Updates: modal opaque/blur, background image, fontawesome, profile header, #posts var, media preview/recording fixes
+  - LocalStorage persistence
+  - BroadcastChannel realtime (in-tab)
+  - Ephemeral prune
+  - Pin (fixed) feature
+*/
+
+/* -------------------- Utilities -------------------- */
+const $ = sel => document.querySelector(sel);
+const $$ = sel => Array.from(document.querySelectorAll(sel));
+function uid(prefix='id'){ return prefix + '_' + Math.random().toString(36).slice(2,10); }
+function now(){ return Date.now(); }
+function fmt(t){ return new Date(t).toLocaleString(); }
+function saveState(){ localStorage.setItem('cnf_state', JSON.stringify(store)); }
+function loadState(){ try{ const s = localStorage.getItem('cnf_state'); return s ? JSON.parse(s) : null; }catch(e){ return null; } }
+function showFlash(text, timeout=2500, color='var(--success)'){
+  const el = document.createElement('div'); el.textContent = text;
+  el.style.position='fixed'; el.style.right='18px'; el.style.bottom='18px'; el.style.background=color;
+  el.style.color='#020a0f'; el.style.padding='8px 12px'; el.style.borderRadius='8px'; el.style.zIndex=9999;
+  document.body.appendChild(el);
+  setTimeout(()=> el.remove(), timeout);
+}
+function clamp(v,min,max){ return Math.max(min, Math.min(max, v)); }
+
+/* -------------------- BroadcastChannel -------------------- */
+const BC_NAME = 'cn_forum_channel_v1';
+let bc = null;
+try { bc = new BroadcastChannel(BC_NAME); bc.onmessage = (ev)=> handleRemote(ev.data); } catch(e){ bc = null; console.warn('BroadcastChannel unavailable'); }
+function broadcast(type, payload){
+  const msg = { type, payload, ts: now(), origin: location.href };
+  if(bc) bc.postMessage(msg);
+}
+function handleRemote(msg){
+  if(!msg || !msg.type) return;
+  if(msg.type === 'thread_created'){ store.threads.push(msg.payload); saveState(); renderThreadList(); showFlash('New topic arrived (other tab)', 2500, 'var(--accent)'); }
+  else if(msg.type === 'reply_created'){
+    const { threadId, reply } = msg.payload;
+    const t = store.threads.find(x => x.id === threadId);
+    if(t){ t.replies.push(reply); t.lastActivity = now(); saveState(); if(currentThreadId === threadId) openThread(threadId); }
+  } else if(msg.type === 'typing'){ showTyping(msg.payload.mask); }
+  else if(msg.type === 'thread_deleted'){ store.threads = store.threads.filter(x => x.id !== msg.payload.id); saveState(); renderThreadList(); if(currentThreadId === msg.payload.id) clearSelected(); }
+  else if(msg.type === 'vote_update'){ const { threadId, replyIdx, votes } = msg.payload; const t = store.threads.find(x => x.id === threadId); if(t){ if(replyIdx === -1){ t.votes = votes; } else { t.replies[replyIdx].votes = votes; } saveState(); if(currentThreadId === threadId) openThread(threadId); } }
+  else if(msg.type === 'poll_vote'){ const { threadId, optionIdx } = msg.payload; const t = store.threads.find(x => x.id === threadId); if(t && t.poll){ t.poll.votes[optionIdx]++; saveState(); if(currentThreadId === threadId) openThread(threadId); } }
+  else if(msg.type === 'report'){ showFlash('Report received: ' + msg.payload.reason, 3000, 'var(--warning)'); }
+}
+
+/* -------------------- Data Store -------------------- */
+let store = loadState() || {
+  threads: [],
+  users: {},
+  reports: [],
+  trends: [],
+};
+
+const ANON_KEY = 'cnf_anon_mask';
+let anonMask = localStorage.getItem(ANON_KEY);
+if(!anonMask){ anonMask = 'Anon-' + Math.random().toString(36).slice(2,6); localStorage.setItem(ANON_KEY, anonMask); }
+$('#anonMask').textContent = anonMask;
+
+/* Profile (local) */
+let localProfile = JSON.parse(localStorage.getItem('cnf_profile') || '{}');
+if(!localProfile.nick){ localProfile.nick = anonMask; localProfile.bio = ''; localProfile.badges = []; localProfile.avatar = ''; localStorage.setItem('cnf_profile', JSON.stringify(localProfile)); }
+$('#profileNick').value = localProfile.nick || '';
+$('#profileBio').value = localProfile.bio || '';
+$('#profileAvatar').value = localProfile.avatar || '';
+document.getElementById('headerNick').textContent = localProfile.nick || anonMask;
+document.getElementById('headerKarma').textContent = localProfile.karma || 0;
+document.getElementById('anonMask').textContent = localProfile.nick || anonMask;
+if(localProfile.avatar) { $('#headerAvatar').src = localProfile.avatar; } else { $('#headerAvatar').src = "https://avatars.dicebear.com/api/identicon/" + encodeURIComponent(localProfile.nick||anonMask) + ".svg"; }
+
+/* -------------------- Moderation & Summarizer (client-side mock) -------------------- */
+const bannedRegex = /(spamword1|badword|banthis)/i;
+function moderateText(text){
+  if(!text || text.trim().length < 2) return { ok:false, reason:'Content is too short.' };
+  if(bannedRegex.test(text)) return { ok:false, reason:'Content does not comply with rules (keyword).' };
+  return { ok:true };
+}
+function summarizeText(text){
+  if(!text) return '';
+  const sents = text.split(/(?<=[.?!])\s+/);
+  sents.sort((a,b)=> b.length - a.length);
+  const pick = sents.slice(0,2).join(' ');
+  return pick || text.slice(0,200);
+}
+
+/* -------------------- Persistence helpers -------------------- */
+$('#export-btn').addEventListener('click', ()=>{
+  const blob = new Blob([JSON.stringify(store,null,2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = 'cnf_backup_'+Date.now()+'.json'; a.click(); URL.revokeObjectURL(url);
+});
+$('#import-btn').addEventListener('click', ()=>{
+  const inp = document.createElement('input'); inp.type='file'; inp.accept='application/json'; inp.onchange = ()=>{
+    const f = inp.files[0]; if(!f) return;
+    const reader = new FileReader(); reader.onload = (e)=> {
+      try{ const obj = JSON.parse(e.target.result); store = obj; saveState(); renderThreadList(); showFlash('Import completed',3000); }catch(err){ alert('Invalid JSON') }
+    }; reader.readAsText(f);
+  }; inp.click();
+});
+
+/* -------------------- Render Threads -------------------- */
+let currentCategory = 'general';
+let currentThreadId = null;
+
+function renderThreadList(filter=''){
+  const container = $('#threadList');
+  container.innerHTML = '';
+  pruneExpired();
+  // pinned threads first
+  const pinned = store.threads.filter(t => t.pinned).filter(t => t.category === currentCategory && matchFilter(t,filter));
+  const others = store.threads.filter(t => !t.pinned).filter(t => t.category === currentCategory && matchFilter(t,filter));
+  const arr = pinned.concat(others);
+  arr.sort((a,b)=> {
+    // pinned already first; among them by lastActivity
+    return (b.lastActivity||b.date) - (a.lastActivity||a.date);
+  });
+  if(arr.length===0) container.innerHTML = '<div class="small muted">No topic in this category — be the first to start!</div>';
+  arr.forEach(t=>{
+    const div = document.createElement('div'); div.className='thread-card'; div.dataset.id = t.id;
+    div.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center">
+        <div style="flex:1">
+          <div class="thread-title">${escapeHtml(t.title)} ${t.pinned?'<span class="badge">PIN</span>':''} <span class="badge">${t.type.toUpperCase()}</span></div>
+          <div class="meta"><span>${t.author||'Anon'}</span><span>${fmt(t.date)}</span><span>Replies: ${t.replies?.length||0}</span><span>Votes: ${t.votes||0}</span>${t.expiresAt? '<span style="color:var(--forum-accent)"> • Ephemeral</span>': ''}</div>
+        </div>
+        <div style="margin-left:10px"><button class="btn secondary" data-action="open" data-id="${t.id}">Open</button></div>
+      </div>`;
+    div.addEventListener('click', (e)=> {
+      // if clicked the open button, let delegated handler handle; otherwise open
+      if(e.target && e.target.dataset && e.target.dataset.action === 'open') { openThread(t.id); return; }
+      openThread(t.id);
+    });
+    container.appendChild(div);
+  });
+  renderTrending();
+}
+function matchFilter(t,filter){
+  if(!filter) return true;
+  filter = filter.toLowerCase();
+  return (t.title || '').toLowerCase().includes(filter) || (t.content||'').toLowerCase().includes(filter) || (t.tags||[]).join(' ').toLowerCase().includes(filter);
+}
+
+/* -------------------- Open Thread -------------------- */
+function clearSelected(){
+  currentThreadId = null;
+  $('#selectedInfo').textContent = 'No topic selected yet';
+  $('#selectedActions').style.display = 'none';
+  $('#posts').innerHTML = '';
+}
+function openThread(id){
+  const t = store.threads.find(x=>x.id===id); if(!t) return;
+  currentThreadId = id;
+  $('#selectedInfo').innerHTML = `<strong>${escapeHtml(t.title)}</strong><div class="small muted">By ${t.author||'Anon'} • ${fmt(t.date)} • Category: ${t.category} ${t.expiresAt? ' • Expires: '+fmt(t.expiresAt):''}</div>`;
+  $('#selectedActions').style.display = 'block';
+
+  // build posts area
+  const postsContainer = document.createElement('div');
+  postsContainer.innerHTML = '';
+
+  // main thread card
+  const threadHtml = document.createElement('div'); threadHtml.className='post';
+  threadHtml.innerHTML = `<div class="post-header"><div style="display:flex;gap:8px;align-items:center"><img src="${t.authorAvatar||getAvatarFor(t.author)}" class="avatar" style="width:36px;height:36px"><strong>${escapeHtml(t.author||'Anon')}</strong></div><span>${fmt(t.date)}</span></div>
+    <div class="post-content">${renderPostContent(t)}</div>
+    <div class="post-actions">
+      <button class="vote-btn" data-action="up-thread">👍 ${t.votes||0}</button>
+      <button class="vote-btn" data-action="down-thread">👎</button>
+      <button class="vote-btn" data-action="fork">🔀 Fork</button>
+      <button class="vote-btn" data-action="edit">✏️ Edit</button>
+    </div>
+    <div class="small muted">Edits: ${t.edits?.length||0} • Branches: ${t.forks?.length||0}</div>`;
+  postsContainer.appendChild(threadHtml);
+
+  // poll
+  if(t.type === 'poll' && t.poll){
+    const pollDiv = document.createElement('div'); pollDiv.className='widget';
+    pollDiv.innerHTML = '<h4>Poll Results</h4>';
+    t.poll.options.forEach((opt, idx)=>{
+      const votes = t.poll.votes[idx] || 0;
+      const total = Math.max(1, t.poll.votes.reduce((a,b)=>a+b,0));
+      const pct = (votes / total * 100).toFixed(1);
+      pollDiv.innerHTML += `<div class="poll-option"><span>${escapeHtml(opt)}</span><span>${votes} votes (${pct}%)</span></div><div class="poll-bar" style="width:${pct}%"></div>`;
+    });
+    pollDiv.innerHTML += '<button id="votePollBtn" class="btn secondary" style="margin-top:8px">Vote</button>';
+    postsContainer.appendChild(pollDiv);
+  }
+
+  // replies
+  (t.replies || []).forEach((r, idx)=>{
+    const rDiv = document.createElement('div'); rDiv.className='post';
+    rDiv.innerHTML = `<div class="post-header"><div style="display:flex;gap:8px;align-items:center"><img src="${r.authorAvatar||getAvatarFor(r.author)}" class="avatar" style="width:36px;height:36px"><span>${escapeHtml(r.author||'Anon')}</span></div><span>${fmt(r.date)}</span></div>
+      <div class="post-content">${renderPostContent(r)}</div>
+      <div class="post-actions">
+        <button class="vote-btn" data-action="up-reply" data-idx="${idx}">👍 ${r.votes||0}</button>
+        <button class="vote-btn" data-action="down-reply" data-idx="${idx}">👎</button>
+        <button class="vote-btn" data-action="quote-reply" data-idx="${idx}">📝 Quote</button>
+        <button class="vote-btn" data-action="edit-reply" data-idx="${idx}">✏️</button>
+      </div>`;
+    postsContainer.appendChild(rDiv);
+  });
+
+  // reply form
+  const replyForm = document.createElement('form'); replyForm.className='reply-form';
+  replyForm.innerHTML = `<textarea id="replyContent" placeholder="Write comment..."></textarea>
+    <div class="media-actions">
+      <button id="recordAudioReply" class="record-btn" type="button" title="Record Audio"><i class="fa-solid fa-microphone"></i></button>
+      <button id="recordVideoReply" class="record-btn" type="button" title="Record Video"><i class="fa-solid fa-video"></i></button>
+      <input type="file" id="fileInputReply" accept="image/*,video/*" style="display: none;">
+      <button id="fileBtnReply" class="file-btn" type="button" title="Add File"><i class="fa-solid fa-image"></i></button>
+    </div>
+    <div id="mediaPreviewReply" class="media-preview"></div>
+    <div id="upload-status-reply" style="margin-top:10px; font-weight:bold; color:var(--success);;"></div>
+    <div style="display:flex;gap:8px"><button class="btn" type="submit">Send</button><button type="button" id="ttsBtn" class="btn secondary">🔊 Read</button></div>`;
+  postsContainer.appendChild(replyForm);
+
+  $('#posts').innerHTML = '';
+  $('#posts').appendChild(postsContainer);
+
+  // reply submit
+  replyForm.addEventListener('submit', (e)=>{
+    e.preventDefault();
+    const content = $('#replyContent').value.trim();
+    const media = getMediaFromPreview('reply');
+    if (!content && !media) { showFlash('Enter content or media', 3000, 'var(--error)'); return; }
+    const mod = moderateText(content || (media ? 'medial content' : ''));
+    if(!mod.ok) { showFlash('Moderation: '+mod.reason, 3000, 'var(--error)'); return; }
+    const reply = { id: uid('r'), author: localProfile.nick || anonMask, authorAvatar: localProfile.avatar || null, content, date: now(), votes:0, media };
+    t.replies.push(reply); t.lastActivity = now(); saveState(); broadcast('reply_created', { threadId: t.id, reply }); openThread(id);
+  });
+
+  // audio/video record for reply
+  setupMediaRecord($('#recordAudioReply'), 'audio', t, 'reply');
+  setupMediaRecord($('#recordVideoReply'), 'video', t, 'reply');
+
+  // file input for reply
+  const fileBtnReply = $('#fileBtnReply');
+  const fileInputReply = $('#fileInputReply');
+  fileBtnReply.addEventListener('click', () => fileInputReply.click());
+  fileInputReply.addEventListener('change', (e) => handleFileSelect(e, 'reply'));
+
+  // tts
+  postsContainer.querySelector('#ttsBtn').addEventListener('click', ()=>{
+    let msg = t.title + '. ' + t.content + ' ' + (t.replies||[]).map(r=> r.content).join(' ');
+    speakText(msg);
+  });
+
+  // poll vote handler
+  if(t.type === 'poll'){
+    const voteBtn = postsContainer.querySelector('#votePollBtn');
+    voteBtn.addEventListener('click', ()=>{
+      const opt = prompt('Option number to vote (1-'+t.poll.options.length+'):');
+      const idx = Number(opt)-1;
+      if(isNaN(idx) || idx<0 || idx>=t.poll.options.length) return showFlash('Invalid option', 3000, 'var(--error)');
+      t.poll.votes[idx] = (t.poll.votes[idx]||0) + 1; saveState(); broadcast('poll_vote', { threadId: t.id, optionIdx: idx }); openThread(id);
+    });
+  }
+
+  // delegated actions inside posts container
+  postsContainer.addEventListener('click', (ev)=>{
+    const action = ev.target.closest('button') && ev.target.closest('button').dataset.action;
+    if(!action) return;
+    const btn = ev.target.closest('button');
+    const idx = Number(btn.dataset.idx);
+    if(action === 'up-thread'){ t.votes = (t.votes||0)+1; updateKarma(t.author, 1); broadcast('vote_update', { threadId: t.id, replyIdx: -1, votes: t.votes }); }
+    else if(action === 'down-thread'){ t.votes = (t.votes||0)-1; updateKarma(t.author, -1); broadcast('vote_update', { threadId: t.id, replyIdx: -1, votes: t.votes }); }
+    else if(action === 'up-reply'){ t.replies[idx].votes = (t.replies[idx].votes||0)+1; updateKarma(t.replies[idx].author, 1); broadcast('vote_update', { threadId: t.id, replyIdx: idx, votes: t.replies[idx].votes }); }
+    else if(action === 'down-reply'){ t.replies[idx].votes = (t.replies[idx].votes||0)-1; updateKarma(t.replies[idx].author, -1); broadcast('vote_update', { threadId: t.id, replyIdx: idx, votes: t.replies[idx].votes }); }
+    else if(action === 'quote-reply'){ quoteReply(t.replies[idx]); }
+    else if(action === 'edit-reply'){ openEditReplyModal(t.id, idx); }
+    else if(action === 'edit'){ openEditThreadModal(t.id); }
+    else if(action === 'fork'){ createFork(t.id); }
+    saveState(); openThread(id);
+  });
+
+  // show branches count
+  $('#selectedInfo').innerHTML += `<div style="margin-top:8px" class="small muted">Branches: ${t.forks?.length || 0}</div>`;
+}
+
+/* -------------------- Render Helpers -------------------- */
+function renderPostContent(p){
+  let html = escapeHtml(p.content || '');
+  if(p.quote){
+    html = `<div class="quote"><strong>Quote: </strong>${escapeHtml(p.quote)}</div>` + html;
+  }
+  if(p.media){
+    html += `<div class="media-preview">${renderMedia(p.media)}</div>`;
+  }
+  if(p.type === 'article' && p.excerpt){
+    html = `<div style="font-style:italic;margin-bottom:8px">${escapeHtml(p.excerpt)}</div>` + html;
+  }
+  return html;
+}
+function renderMedia(media){
+  if(!media) return '';
+  if(media.type === 'image') return `<img src="${media.url}" alt="embedded image" class="img-preview">`;
+  if(media.type === 'video') return `<div class="video-wrapper"><video src="${media.url}" controls style="max-width:100%;border-radius:8px"></video></div>`;
+  if(media.type === 'audio') return `<div class="audio-wrapper"><audio src="${media.url}" controls></audio></div>`;
+  return '';
+}
+function getAvatarFor(name){
+  const seed = encodeURIComponent(name || anonMask);
+  return "https://avatars.dicebear.com/api/identicon/" + seed + ".svg";
+}
+
+/* -------------------- Media Recording -------------------- */
+let newMedia = null;
+let replyMediaPreview = null;
+
+/*
+  setupMediaRecord(btn, type, t, formType)
+  - btn: DOM element
+  - type: 'audio'|'video'
+  - t: thread object (optional)
+  - formType: 'new' or 'reply'
+*/
+function setupMediaRecord(btn, type, t=null, formType='new'){
+  let mediaRecorder = null;
+  let chunks = [];
+  let isRecording = false;
+  btn.addEventListener('click', async ()=>{
+    if (isRecording) {
+      mediaRecorder.stop();
+      btn.classList.remove('recording');
+      btn.innerHTML = type === 'audio' ? '<i class="fa-solid fa-microphone"></i>' : '<i class="fa-solid fa-video"></i>';
+      isRecording = false;
+    } else {
+      try{
+        const constraints = type === 'audio' ? {audio:true} : {audio:true, video:true};
+        const stream = await navigator.mediaDevices.getUserMedia(constraints);
+        mediaRecorder = new MediaRecorder(stream);
+        chunks = [];
+        mediaRecorder.ondataavailable = e => { if(e.data && e.data.size) chunks.push(e.data); };
+        mediaRecorder.onstop = () => {
+          const mime = type === 'audio' ? 'audio/webm' : 'video/webm';
+          const blob = new Blob(chunks, { type: mime });
+          const url = URL.createObjectURL(blob);
+          const mediaObj = { type: type, url };
+          if(formType === 'new'){ newMedia = mediaObj; } else { replyMediaPreview = mediaObj; }
+          renderMediaPreview(blob, type, formType);
+          // stop tracks
+          stream.getTracks().forEach(s => s.stop());
+        };
+        mediaRecorder.start();
+        btn.classList.add('recording');
+        btn.innerHTML = '<i class="fa-solid fa-stop"></i>';
+        isRecording = true;
+      }catch(err){ showFlash('Media access error: '+err.message, 3000, 'var(--error)'); }
+    }
+  });
+}
+
+function renderMediaPreview(blobOrUrl, type, formType){
+  const previewId = formType === 'new' ? 'mediaPreviewNew' : 'mediaPreviewReply';
+  const preview = $(`#${previewId}`);
+  preview.innerHTML = '';
+  let url = null;
+  if(typeof blobOrUrl === 'string') url = blobOrUrl;
+  else if(blobOrUrl instanceof Blob) url = URL.createObjectURL(blobOrUrl);
+  else if(blobOrUrl && blobOrUrl.url) url = blobOrUrl.url;
+
+  if(!url) return;
+  if(type === 'audio'){
+    const audio = document.createElement('audio'); audio.controls = true; audio.src = url; preview.appendChild(audio);
+  } else if(type === 'video'){
+    const video = document.createElement('video'); video.controls = true; video.src = url; video.style.maxWidth='100%'; preview.appendChild(video);
+  } else {
+    // image (should not reach here)
+    const img = document.createElement('img'); img.src = url; img.alt = 'Preview'; img.className = 'img-preview'; preview.appendChild(img);
+  }
+}
+
+/* -------------------- File select handler -------------------- */
+function handleFileSelect(e, formType = 'new'){
+  const file = e.target.files[0];
+  if (!file) return;
+  const type = getMediaType(file);
+  if (!type) return showFlash('Invalid file type', 3000, 'var(--error)');
+  const previewId = formType === 'new' ? 'mediaPreviewNew' : 'mediaPreviewReply';
+  const preview = $(`#${previewId}`);
+  preview.innerHTML = '';
+  const url = URL.createObjectURL(file);
+  const mediaObj = { type, url };
+  if(formType === 'new'){ newMedia = mediaObj; } else { replyMediaPreview = mediaObj; }
+  if(type === 'image'){
+    const img = document.createElement('img'); img.src = url; img.alt = 'Preview'; preview.appendChild(img);
+  } else if(type === 'video'){
+    const video = document.createElement('video'); video.controls = true; video.src = url; video.style.maxWidth='100%'; preview.appendChild(video);
+  }
+}
+function getMediaFromPreview(formType = 'new'){
+  const previewId = formType === 'new' ? 'mediaPreviewNew' : 'mediaPreviewReply';
+  const preview = $(`#${previewId}`);
+  if(preview && preview.innerHTML) {
+    return formType === 'new' ? newMedia : replyMediaPreview;
+  }
+  // fallback: URL input
+  if(formType === 'new'){ const url = $('#newMedia').value.trim(); if(url) return inferMediaFromURL(url); }
+  return null;
+}
+function getMediaType(file){
+  if (!file.type) return null;
+  if(file.type.startsWith('image/')) return 'image';
+  if(file.type.startsWith('video/')) return 'video';
+  if(file.type.startsWith('audio/')) return 'audio';
+  return null;
+}
+function inferMediaFromURL(url){
+  // simple inference by extension
+  if(!url) return null;
+  const u = url.split('?')[0].toLowerCase();
+  if(u.match(/\.(jpg|jpeg|png|gif|webp)$/)) return { type:'image', url };
+  if(u.match(/\.(mp4|webm|ogg)$/)) return { type:'video', url };
+  if(u.match(/\.(mp3|wav|m4a|aac)$/)) return { type:'audio', url };
+  // fallback: image attempt
+  return { type:'image', url };
+}
+
+/* -------------------- New Thread flow -------------------- */
+$('#newThreadBtn').addEventListener('click', ()=> openNewThreadModal());
+$('#closeNewThread').addEventListener('click', ()=> closeModal($('#newThreadModal')));
+$('#newThreadForm').addEventListener('submit', (e)=>{
+  e.preventDefault();
+  const type = $('#newType').value;
+  const title = $('#newTitle').value.trim();
+  const content = $('#newContent').value.trim();
+  const category = $('#newCategory').value;
+  const ttl = Number($('#newTTL').value) || 0;
+  const media = getMediaFromPreview('new') || ( $('#newMedia').value.trim() ? inferMediaFromURL($('#newMedia').value.trim()) : null );
+  if(!title && !media) { alert('Title or media required'); return; }
+  const mod = moderateText(title + ' ' + content);
+  if(!mod.ok) return alert('Moderation: '+mod.reason);
+
+  // if poll type, build poll object
+  let thread = {
+    id: uid('t'),
+    type,
+    title,
+    content,
+    category,
+    author: localProfile.nick || anonMask,
+    authorAvatar: localProfile.avatar || null,
+    date: now(),
+    votes:0,
+    replies:[],
+    forks:[],
+    edits:[],
+    ttl: ttl,
+    expiresAt: ttl>0 ? now() + ttl*1000 : null,
+    media,
+    tags: [],
+    lastActivity: now()
+  };
+
+  if(type === 'poll'){
+    const opts = ($('#pollOpts').value || '').split(',').map(s=>s.trim()).filter(Boolean);
+    thread.poll = { options: opts, votes: opts.map(()=>0) };
+  }
+
+  store.threads.push(thread); saveState(); closeModal($('#newThreadModal')); renderThreadList(); broadcast('thread_created', thread);
+  showFlash('Topic created', 2000, 'var(--success)');
+  // reset
+  $('#newTitle').value = ''; $('#newContent').value=''; $('#newTTL').value='0'; $('#mediaPreviewNew').innerHTML=''; newMedia = null; $('#newMedia').value='';
+});
+
+// show poll options on type change
+$('#newType').addEventListener('change', ()=>{ $('#pollOptions').style.display = $('#newType').value === 'poll' ? 'block' : 'none'; });
+
+// setup media buttons for new thread
+const recordAudioNew = $('#recordAudioNew');
+setupMediaRecord(recordAudioNew, 'audio', null, 'new');
+const recordVideoNew = $('#recordVideoNew');
+setupMediaRecord(recordVideoNew, 'video', null, 'new');
+const fileBtnNew = $('#fileBtnNew');
+const fileInputNew = $('#fileInputNew');
+fileBtnNew.addEventListener('click', () => fileInputNew.click());
+fileInputNew.addEventListener('change', (e) => handleFileSelect(e, 'new'));
+
+// capture image from webcam (simple)
+$('#captureImageBtn').addEventListener('click', async ()=>{
+  try{
+    const stream = await navigator.mediaDevices.getUserMedia({ video:true });
+    const video = document.createElement('video'); video.autoplay = true; video.srcObject = stream;
+    const ok = confirm('Webcam image will open. Say OK to take a photo from the camera image, Cancel to close.');
+    if(!ok){ stream.getTracks().forEach(t=>t.stop()); return; }
+    // create canvas and snapshot immediately
+    await new Promise(res => setTimeout(res, 500));
+    const canvas = document.createElement('canvas'); canvas.width = video.videoWidth || 640; canvas.height = video.videoHeight || 480;
+    const ctx = canvas.getContext('2d'); ctx.drawImage(video,0,0,canvas.width,canvas.height);
+    const dataUrl = canvas.toDataURL('image/png');
+    newMedia = { type:'image', url: dataUrl };
+    $('#mediaPreviewNew').innerHTML = `<img src="${dataUrl}" class="img-preview" alt="capture">`;
+    stream.getTracks().forEach(t=>t.stop());
+    showFlash('Photo taken', 2000, 'var(--success)');
+  }catch(err){ showFlash('Camera error: '+err.message, 3000, 'var(--error)'); }
+});
+
+// attach url embed
+$('#attachURLBtn').addEventListener('click', ()=>{
+  const url = prompt('Enter embed URL (image, video or audio):');
+  if(!url) return;
+  const media = inferMediaFromURL(url);
+  newMedia = media;
+  $('#mediaPreviewNew').innerHTML = renderPreviewHtml(media);
+});
+
+function renderPreviewHtml(media){
+  if(!media) return '';
+  if(media.type === 'image') return `<img src="${media.url}" class="img-preview" alt="embed">`;
+  if(media.type === 'video') return `<video src="${media.url}" controls style="max-width:100%;border-radius:8px"></video>`;
+  if(media.type === 'audio') return `<audio src="${media.url}" controls></audio>`;
+  return '';
+}
+
+/* -------------------- Prune expired ephemeral entries -------------------- */
+function pruneExpired(){
+  const nowTs = now();
+  const before = store.threads.length;
+  store.threads = store.threads.filter(t=> {
+    if(t.expiresAt && t.expiresAt < nowTs){
+      broadcast('thread_deleted', { id: t.id });
+      return false;
+    }
+    return true;
+  });
+  if(store.threads.length !== before) { saveState(); renderThreadList(); }
+}
+
+/* -------------------- Fork / Branch -------------------- */
+function createFork(threadId){
+  const original = store.threads.find(t=>t.id === threadId);
+  if(!original) return;
+  const newThread = JSON.parse(JSON.stringify(original));
+  newThread.id = uid('t');
+  newThread.title = original.title + ' (Fork)';
+  newThread.date = now();
+  newThread.author = localProfile.nick || anonMask;
+  newThread.authorAvatar = localProfile.avatar || null;
+  original.forks = original.forks || [];
+  original.forks.push(newThread.id);
+  store.threads.push(newThread); saveState(); renderThreadList();
+  broadcast('thread_created', newThread);
+  showFlash('Fork created', 2000, 'var(--accent)');
+}
+
+/* -------------------- Edit history -------------------- */
+function openEditThreadModal(id){
+  const t = store.threads.find(x=>x.id===id);
+  if(!t) return;
+  const newTitle = prompt('New title:', t.title);
+  if(newTitle === null) return;
+  const newContent = prompt('New content (no HTML):', t.content);
+  if(newContent === null) return;
+  t.edits = t.edits || [];
+  t.edits.push({ title: t.title, content: t.content, at: t.date, by: t.author });
+  t.title = newTitle; t.content = newContent; t.date = now(); saveState(); openThread(id);
+}
+function openEditReplyModal(threadId, idx){
+  const t = store.threads.find(x => x.id === threadId);
+  const r = t.replies[idx];
+  const newContent = prompt('New comment content:', r.content);
+  if(newContent === null) return;
+  r.content = newContent; r.editedAt = now(); saveState(); openThread(threadId);
+}
+
+/* -------------------- TTS -------------------- */
+function speakText(txt){
+  if(!window.speechSynthesis) return alert('Browser has no speech support');
+  const ut = new SpeechSynthesisUtterance(txt);
+  ut.lang = 'en-US';
+  window.speechSynthesis.cancel();
+  window.speechSynthesis.speak(ut);
+}
+
+/* -------------------- Summarizer -------------------- */
+$('#summarizeBtn').addEventListener('click', ()=>{
+  if(!currentThreadId) return alert('Select topic first');
+  const t = store.threads.find(x=>x.id===currentThreadId);
+  if(!t) return;
+  const summary = summarizeText(t.title + '. ' + t.content + ' ' + (t.replies||[]).map(r=> r.content).join(' '));
+  alert('Summary: '+summary);
+});
+
+/* -------------------- Sandbox runner -------------------- */
+$('#runSandbox').addEventListener('click', ()=>{
+  const code = $('#sandboxCode').value || '';
+  const blob = new Blob([code], { type: 'text/html' });
+  const url = URL.createObjectURL(blob);
+  $('#sandboxFrame').src = url;
+});
+$('#resetSandbox').addEventListener('click', () => { $('#sandboxFrame').src = 'about:blank'; $('#sandboxCode').value = ''; $('#sandboxTitle').value = ''; });
+
+/* -------------------- Profile modal -------------------- */
+$('#profileBtn').addEventListener('click', ()=> openModal($('#profileModal')));
+$('#profileBtnTop').addEventListener('click', ()=> openModal($('#profileModal')));
+$('#closeProfile').addEventListener('click', ()=> closeModal($('#profileModal')));
+$('#saveProfile').addEventListener('click', ()=> {
+  localProfile.nick = $('#profileNick').value || localProfile.nick;
+  localProfile.bio = $('#profileBio').value || '';
+  localProfile.avatar = $('#profileAvatar').value || '';
+  // small karma store
+  localProfile.karma = Number(localProfile.karma || 0);
+  localStorage.setItem('cnf_profile', JSON.stringify(localProfile));
+  $('#anonMask').textContent = localProfile.nick;
+  document.getElementById('headerNick').textContent = localProfile.nick;
+  document.getElementById('headerKarma').textContent = localProfile.karma || 0;
+  if(localProfile.avatar) $('#headerAvatar').src = localProfile.avatar;
+  closeModal($('#profileModal'));
+  showFlash('Profile updated',2000,'var(--success)');
+});
+
+/* -------------------- Modal helpers & body lock -------------------- */
+function openModal(el){ el.style.display = 'flex'; el.setAttribute('aria-hidden','false'); document.body.style.overflow='hidden'; }
+function closeModal(el){ el.style.display = 'none'; el.setAttribute('aria-hidden','true'); document.body.style.overflow='auto'; }
+function openNewThreadModal(){ $('#newTitle').value=''; $('#newContent').value=''; $('#newTTL').value='0'; $('#mediaPreviewNew').innerHTML=''; newMedia = null; $('#upload-status-new').textContent=''; openModal($('#newThreadModal')); }
+
+/* -------------------- Voting / typing / realtime smalls -------------------- */
+document.addEventListener('click', (e)=>{
+  const el = e.target;
+  if(el.classList.contains('vote-btn')){ /* handled within openThread delegation */ }
+});
+document.addEventListener('input', (e)=>{
+  if(e.target && e.target.tagName === 'TEXTAREA'){
+    const isReply = e.target.closest('.reply-form');
+    if(isReply){
+      broadcast('typing', { mask: localProfile.nick || anonMask });
+    }
+  }
+});
+
+function showTyping(mask){
+  const node = $('#typingIndicator');
+  node.textContent = mask ? `${mask} is typing...` : '';
+  setTimeout(()=> node.textContent = '', 3000);
+}
+
+/* -------------------- Trending computation -------------------- */
+function renderTrending(){
+  const container = $('#trending'); container.innerHTML = '';
+  const list = store.threads.map(t=> ({ t, score: (t.votes||0) + ((t.replies||[]).length)*2 - ((now()-t.date)/1000/3600) }));
+  list.sort((a,b)=> b.score - a.score);
+  list.slice(0,5).forEach(item=>{
+    const el = document.createElement('div'); el.className='small'; el.innerHTML = `<strong>${escapeHtml(item.t.title)}</strong> <div class="muted">${item.t.category} • ${item.t.replies?.length||0} replies</div>`;
+    el.style.marginBottom='8px';
+    container.appendChild(el);
+  });
+}
+
+/* -------------------- Fork button & thread export -------------------- */
+$('#forkBtn').addEventListener('click', ()=>{ if(!currentThreadId) return alert('Select topic first'); createFork(currentThreadId); });
+$('#exportThreadBtn').addEventListener('click', ()=>{ if(!currentThreadId) return alert('Select topic first'); const t = store.threads.find(x=>x.id===currentThreadId); if(!t) return; const blob = new Blob([JSON.stringify(t, null, 2)], { type:'application/json' }); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = 'thread_'+t.id+'.json'; a.click(); URL.revokeObjectURL(url); });
+
+/* -------------------- Open thread from params -------------------- */
+function openFromParams(){
+  const p = new URLSearchParams(location.search);
+  if(p.has('thread')){
+    const id = p.get('thread');
+    const t = store.threads.find(x=>x.id === id);
+    if(t){ currentCategory = t.category; $$('.category-btn').forEach(b => b.classList.toggle('active', b.dataset.category === currentCategory)); renderThreadList(); openThread(id); }
+  }
+}
+
+/* -------------------- Category buttons & search -------------------- */
+$$('.category-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{ $$('.category-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); currentCategory = btn.dataset.category; renderThreadList($('#searchInput').value || ''); });
+});
+$('#searchInput').addEventListener('input', (e)=> renderThreadList(e.target.value));
+
+/* -------------------- Toggle anonymous -------------------- */
+$('#toggleAnon').addEventListener('click', ()=>{
+  const on = $('#toggleAnon').textContent.includes('Off');
+  $('#toggleAnon').textContent = 'Anonymous Mode: ' + (on? 'On' : 'Off');
+});
+
+/* -------------------- Moderation: report modal -------------------- */
+$('#reportBtn').addEventListener('click', ()=> openModal($('#reportModal')));
+$('#closeReport').addEventListener('click', ()=> closeModal($('#reportModal')));
+$('#submitReport').addEventListener('click', ()=>{
+  const reason = $('#reportReason').value || 'Not specified';
+  store.reports.push({ threadId: currentThreadId, reason, date: now() });
+  saveState();
+  broadcast('report', { reason });
+  closeModal($('#reportModal'));
+  showFlash('Report saved',2000,'var(--warning)');
+});
+
+/* -------------------- Pin thread -------------------- */
+$('#pinThreadBtn').addEventListener('click', ()=>{
+  if(!currentThreadId) return alert('Select topic first');
+  const t = store.threads.find(x=>x.id===currentThreadId);
+  if(!t) return;
+  t.pinned = !t.pinned;
+  saveState(); renderThreadList();
+  showFlash(t.pinned ? 'Topic pinned' : 'Pin removed', 1500, 'var(--accent)');
+});
+
+/* -------------------- Small helpers -------------------- */
+function escapeHtml(str){
+  if(!str) return '';
+  return String(str).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;');
+}
+function updateKarma(nick, delta){
+  if(!nick) return;
+  if(localProfile.nick === nick) { localProfile.karma = (localProfile.karma||0) + delta; localStorage.setItem('cnf_profile', JSON.stringify(localProfile)); document.getElementById('headerKarma').textContent = localProfile.karma; }
+}
+
+/* -------------------- Quote helper -------------------- */
+function quoteReply(r){
+  openNewThreadModal();
+  $('#newTitle').value = 'Quote: ' + (r.content.slice(0,40) + '...');
+  $('#newContent').value = `> ${r.content}\n\n`;
+  showFlash('Quote prepared (New Topic)',2000,'var(--accent)');
+}
+
+/* -------------------- Init sample data if empty -------------------- */
+if(store.threads.length===0){
+  store.threads.push({
+    id: uid('t'), type:'normal', title: 'Welcome to Concordia Nova Forum!', content: 'This is a demo topic. Try voice/video replies, fork, open ephemeral topics.', category:'general', author:'Moderator', authorAvatar: getAvatarFor('Moderator'), date: now(), votes: 5, replies:[], forks:[], edits:[], ttl:0, expiresAt:null, media: null, pinned:true, lastActivity: now()
+  });
+  saveState();
+}
+renderThreadList();
+renderTrending();
+openFromParams();
+
+/* -------------------- Accessibility: keyboard close modals ESC -------------------- */
+document.addEventListener('keydown', (e)=>{
+  if(e.key === 'Escape'){ // close any open modal
+    $$('.modal').forEach(m => { if(m.style.display === 'flex') closeModal(m); });
+  }
+});
+
+/* -------------------- Final small UX fixes -------------------- */
+(function attachMisc(){
+  // fix missing header avatar
+  if(!$('#headerAvatar').src) $('#headerAvatar').src = getAvatarFor(localProfile.nick || anonMask);
+})();
+
+</script>
+</body>
+</html>

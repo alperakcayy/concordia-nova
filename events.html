@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Concordia Nova — Events</title>
+
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+
+  <meta name="description" content="Concordia Nova Events: Community events and online meetings." />
+
+  <style>
+    :root {
+      --bg-1: #04050a;
+      --bg-2: #071023;
+      --glass: rgba(255,255,255,0.03);
+      --muted: #9aa6b2;
+      --accent: #00f0ff;
+      --accent-2: #7b2fff;
+      --neon: #00f0ff;
+      --card: rgba(255,255,255,0.035);
+      --glass-2: rgba(255,255,255,0.02);
+      --glass-3: rgba(255,255,255,0.015);
+      --white: #ffffff;
+      --radius: 14px;
+      --shadow: 0 8px 30px rgba(2,6,23,0.6);
+      --glass-border: rgba(255,255,255,0.04);
+      --focus: 0 0 18px rgba(0,240,255,0.12);
+      --btn-gap: 16px;
+      --max-width: 1200px;
+      --transition: 280ms cubic-bezier(.2,.9,.2,1);
+      --events-accent: #00f0ff;
+      --hover-glow: rgba(0,240,255,0.18);
+    }
+
+    * { box-sizing: border-box; }
+    html, body { height: 100%; margin: 0; }
+    body {
+      font-family: 'Poppins', system-ui, sans-serif;
+      background: linear-gradient(180deg, var(--bg-1) 0%, var(--bg-2) 100%);
+      color: var(--white);
+      overflow-x: hidden;
+    }
+
+    .container {
+      max-width: var(--max-width);
+      margin: 36px auto;
+      padding: 28px;
+      position: relative;
+      z-index: 20;
+      display: grid;
+      gap: 20px;
+    }
+
+    header.hub {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 12px 14px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border-radius: 12px;
+      border: 1px solid var(--glass-border);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(6px);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand .logo {
+      width: 52px;
+      height: 52px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--accent-2), var(--accent));
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 18px;
+      color: #020a0f;
+      box-shadow: 0 6px 20px rgba(123,47,255,0.14), 0 2px 10px rgba(0,240,255,0.06) inset;
+    }
+
+    .brand h1 {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: 0.2px;
+    }
+
+    .brand p {
+      margin: 0;
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .header-actions {
+      margin-left: auto;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    /* Mini Profile Box */
+    .mini-profile {
+      background: rgba(0,0,0,0.6);
+      padding: 16px;
+      border-radius: 12px;
+      margin: 20px auto;
+      max-width: 500px;
+      border: 1px solid rgba(0,240,255,0.2);
+      box-shadow: 0 8px 30px rgba(0,240,255,0.12);
+      display: none;
+    }
+
+    .mini-profile .top {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .mini-profile img {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      border: 3px solid var(--events-accent);
+      object-fit: cover;
+    }
+
+    .mini-profile .info {
+      flex: 1;
+    }
+
+    .mini-profile .info strong {
+      font-size: 18px;
+      color: var(--white);
+    }
+
+    .mini-profile .info .username {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .mini-profile .bio {
+      color: var(--muted);
+      font-size: 13px;
+      margin-top: 8px;
+      line-height: 1.4;
+    }
+
+    .mini-profile .stats {
+      margin-top: 12px;
+      display: flex;
+      gap: 24px;
+      justify-content: center;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .mini-profile .stats strong {
+      color: var(--white);
+    }
+
+    .mini-profile a {
+      margin-top: 12px;
+      display: inline-block;
+      background: var(--events-accent);
+      color: white;
+      padding: 8px 16px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: background 0.3s;
+    }
+
+    .mini-profile a:hover {
+      background: #00d0e0;
+    }
+
+    /* Search & Filters */
+    .search-section {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      padding: 16px;
+      background: var(--glass);
+      border-radius: var(--radius);
+      border: 1px solid var(--glass-border);
+      box-shadow: var(--shadow);
+    }
+
+    .search-input {
+      flex: 1;
+      padding: 12px 16px;
+      border-radius: 10px;
+      border: 1px solid var(--glass-border);
+      background: var(--glass-2);
+      color: var(--white);
+      font-size: 14px;
+    }
+
+    .search-input::placeholder { color: var(--muted); }
+
+    .search-btn {
+      padding: 12px 20px;
+      border-radius: 10px;
+      background: linear-gradient(90deg, var(--events-accent), var(--accent-2));
+      color: #020a0f;
+      font-weight: 700;
+      border: none;
+      cursor: pointer;
+      transition: transform 0.3s;
+    }
+
+    .search-btn:hover { transform: scale(1.02); }
+
+    .filters {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+      flex-wrap: wrap;
+    }
+
+    .filter-btn {
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: var(--glass-3);
+      border: 1px solid var(--glass-border);
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 13px;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    .filter-btn.active {
+      background: rgba(0,240,255,0.12);
+      color: var(--white);
+    }
+
+    /* Categories */
+    .categories {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin: 20px 0;
+    }
+
+    .category-btn {
+      padding: 10px 18px;
+      border-radius: 999px;
+      background: var(--glass);
+      border: 1px solid var(--glass-border);
+      color: var(--white);
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background 0.3s, box-shadow 0.3s;
+    }
+
+    .category-btn:hover {
+      background: rgba(0,240,255,0.08);
+      box-shadow: 0 6px 20px rgba(0,240,255,0.12);
+    }
+
+    .category-btn.active {
+      background: linear-gradient(90deg, var(--events-accent), var(--accent-2));
+      color: #020a0f;
+    }
+
+    /* Event Grid */
+    .event-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: var(--btn-gap);
+      margin-top: 20px;
+    }
+
+    .event-card {
+      position: relative;
+      min-height: 320px;
+      border-radius: var(--radius);
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      cursor: pointer;
+      border: 1px solid rgba(255,255,255,0.03);
+      background: linear-gradient(135deg, rgba(255,255,255,0.018) 0%, rgba(255,255,255,0.01) 100%);
+      transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
+      box-shadow: var(--shadow);
+    }
+
+    .event-card:hover {
+      transform: translateY(-6px);
+      border-color: var(--hover-glow);
+      box-shadow: 0 22px 60px rgba(8,12,30,0.7);
+    }
+
+    .event-image {
+      height: 180px;
+      border-radius: 12px;
+      background-size: cover;
+      background-position: center;
+      margin-bottom: 16px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+    }
+
+    .event-title {
+      font-size: 16px;
+      font-weight: 700;
+      margin: 0 0 8px 0;
+    }
+
+    .event-desc {
+      font-size: 13px;
+      color: var(--muted);
+      margin: 0 0 12px 0;
+    }
+
+    .event-details {
+      margin-top: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .event-detail {
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .event-detail strong {
+      color: var(--white);
+    }
+
+    .join-btn {
+      margin-top: 12px;
+      padding: 10px 14px;
+      border-radius: 10px;
+      background: linear-gradient(90deg, rgba(0,240,255,0.08), rgba(123,47,255,0.06));
+      color: var(--white);
+      font-weight: 700;
+      text-decoration: none;
+      border: 1px solid rgba(0,240,255,0.06);
+      transition: transform 0.3s, box-shadow 0.3s;
+      text-align: center;
+    }
+
+    .join-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0,240,255,0.12);
+    }
+
+    /* Hero */
+    .hero {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+      padding: 26px;
+      border-radius: 14px;
+      background: linear-gradient(120deg, rgba(255,255,255,0.012), rgba(255,255,255,0.008));
+      border: 1px solid rgba(255,255,255,0.03);
+      box-shadow: 0 20px 50px rgba(2,6,23,0.6);
+    }
+
+    .hero-left { flex: 1; min-width: 300px; }
+    .hero-right { width: 360px; display: flex; justify-content: center; align-items: center; }
+
+    .hero h2 { margin: 0; font-size: 28px; line-height: 1.02; }
+    .hero p { margin: 12px 0 0 0; color: var(--muted); font-size: 14px; }
+
+    /* Background */
+    #bgCanvas {
+      position: fixed;
+      left: 0; top: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+      mix-blend-mode: screen;
+    }
+
+    .floating-planet {
+      position: absolute;
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      filter: blur(12px);
+      opacity: 0.12;
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    .planet-1 { right: 8%; top: 12%; background: radial-gradient(circle at 30% 30%, rgba(123,47,255,0.95), rgba(0,240,255,0.6)); transform: rotate(12deg); }
+    .planet-2 { left: 6%; bottom: 8%; background: radial-gradient(circle at 70% 70%, rgba(255,80,120,0.9), rgba(255,200,80,0.6)); transform: rotate(-14deg); }
+
+    .animated-lines {
+      position: absolute; inset: 0; z-index: 1; pointer-events: none;
+      background-image:
+        linear-gradient(transparent 30%, rgba(255,255,255,0.006) 31%, transparent 32%),
+        linear-gradient(90deg, transparent 40%, rgba(255,255,255,0.006) 41%, transparent 42%);
+      background-size: 100% 80px, 80px 100%;
+      opacity: 0.9;
+      mix-blend-mode: overlay;
+      animation: linesMove 18s linear infinite;
+    }
+
+    @keyframes linesMove { from { background-position: 0 0, 0 0; } to { background-position: 0 -720px, -720px 0; } }
+
+    .top-glow {
+      position: fixed; left: 0; right: 0; top: 0; height: 120px;
+      pointer-events: none; z-index: 2;
+      background: radial-gradient(ellipse at center, rgba(123,47,255,0.06), transparent 40%);
+      mix-blend-mode: screen;
+    }
+
+    footer.hub-note {
+      margin-top: 18px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 13px;
+      opacity: 0.95;
+    }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+      .hero { flex-direction: column; align-items: flex-start; gap: 14px; }
+      .hero-right { width: 100%; }
+      .event-grid { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+    }
+
+    @media (max-width: 480px) {
+      .container { padding: 16px; }
+      .mini-profile { padding: 12px; max-width: 90%; }
+      .mini-profile img { width: 56px; height: 56px; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Background -->
+  <canvas id="bgCanvas" aria-hidden="true"></canvas>
+  <div class="floating-planet planet-1" aria-hidden="true"></div>
+  <div class="floating-planet planet-2" aria-hidden="true"></div>
+  <div class="animated-lines" aria-hidden="true"></div>
+  <div class="top-glow" aria-hidden="true"></div>
+
+  <main class="container" role="main" aria-labelledby="eventsTitle">
+
+    <header class="hub" role="banner">
+      <div class="brand" aria-hidden="false">
+        <div class="logo" aria-hidden="true">CN</div>
+        <div>
+          <h1 id="eventsTitle">Concordia Nova Events</h1>
+          <p>Community events and online meetings.</p>
+        </div>
+      </div>
+
+      <div class="header-actions" role="navigation" aria-label="Quick actions">
+        <button id="darkToggle" title="Change theme" aria-pressed="false" class="neon-badge" style="background:transparent;border:none;cursor:pointer;">Theme</button>
+        <a href="index.html" class="neon-badge" style="text-decoration:none;">Back to Hub</a>
+      </div>
+    </header>
+
+    <!-- Mini Profile Box -->
+    <div class="mini-profile" id="miniProfile">
+      <div class="top">
+        <img id="miniAvatar" src="https://via.placeholder.com/64" alt="Profile Picture">
+        <div class="info">
+          <strong id="miniName">Loading...</strong><br>
+          <span id="miniUsername" class="username"></span><br>
+          <small id="miniBio" class="bio">Loading bio...</small>
+        </div>
+        <a href="profile.html">Edit Profile</a>
+      </div>
+      <div class="stats">
+        <span><strong id="miniFollowing">0</strong> Following</span>
+        <span><strong id="miniFollowers">0</strong> Followers</span>
+      </div>
+    </div>
+
+    <section class="hero" aria-labelledby="heroHeading" role="region">
+      <div class="hero-left">
+        <h2 id="heroHeading">Join Events</h2>
+        <p>Community events, online meetings and more. Discover or create events.</p>
+      </div>
+      <div class="hero-right" aria-hidden="true">
+        <div style="width:280px; height:280px; border-radius:16px; display:flex;align-items:center;justify-content:center; background: linear-gradient(135deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border:1px solid rgba(255,255,255,0.03); box-shadow: 0 18px 50px rgba(2,6,23,0.6);">
+          <div style="text-align:center; padding:18px;">
+            <div style="font-size:42px; font-weight:800; letter-spacing:0.6px; color:transparent; -webkit-text-stroke: 0.8px rgba(255,255,255,0.06);">EV</div>
+            <div style="color:var(--muted); margin-top:8px; font-size:13px;">Events</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="search-section" role="search">
+      <input type="text" class="search-input" placeholder="Search event... (e.g., Tech Meetup)" aria-label="Event search">
+      <button class="search-btn">Search</button>
+    </section>
+
+    <div class="filters">
+      <button class="filter-btn active">Online</button>
+      <button class="filter-btn">Offline</button>
+      <button class="filter-btn">Upcoming</button>
+      <button class="filter-btn">Past</button>
+      <button class="filter-btn">Free</button>
+    </div>
+
+    <nav class="categories" aria-label="Event Categories">
+      <button class="category-btn active" data-category="online">Online Meetings</button>
+      <button class="category-btn" data-category="offline">Face-to-Face Events</button>
+      <button class="category-btn" data-category="workshop">Workshops</button>
+      <button class="category-btn" data-category="meetup">Meetups</button>
+      <button class="category-btn" data-category="webinar">Webinars</button>
+      <button class="category-btn" data-category="conference">Conferences</button>
+      <button class="category-btn" data-category="social">Social Events</button>
+      <button class="category-btn" data-category="educational">Educational</button>
+      <button class="category-btn" data-category="networking">Networking</button>
+      <button class="category-btn" data-category="other">Other</button>
+    </nav>
+
+    <div class="decor-line"></div>
+
+    <section class="event-grid category-online" aria-label="Events">
+      <!-- Event 1 -->
+      <div class="event-card" role="article" tabindex="0">
+        <div class="event-image" style="background-image:url('https://via.placeholder.com/280x180?text=Tech+Meetup');"></div>
+        <h3 class="event-title">Tech Meetup Online</h3>
+        <p class="event-desc">Discussion on technology trends. Join and share.</p>
+        <div class="event-details">
+          <div class="event-detail"><strong>Date:</strong> December 15, 2025</div>
+          <div class="event-detail"><strong>Time:</strong> 20:00</div>
+          <div class="event-detail"><strong>Location:</strong> Online (Zoom)</div>
+          <div class="event-detail"><strong>Organizer:</strong> CN Community</div>
+        </div>
+        <a href="https://join-link.com/event1" class="join-btn" title="Join">Join</a>
+        <span class="upcoming-event">Upcoming</span>
+      </div>
+
+      <!-- Event 2 -->
+      <div class="event-card" role="article" tabindex="0">
+        <div class="event-image" style="background-image:url('https://via.placeholder.com/280x180?text=AI+Workshop');"></div>
+        <h3 class="event-title">AI Workshop</h3>
+        <p class="event-desc">Introduction to artificial intelligence workshop. Online participation.</p>
+        <div class="event-details">
+          <div class="event-detail"><strong>Date:</strong> December 20, 2025</div>
+          <div class="event-detail"><strong>Time:</strong> 18:00</div>
+          <div class="event-detail"><strong>Location:</strong> Online (Google Meet)</div>
+          <div class="event-detail"><strong>Organizer:</strong> AI Enthusiasts</div>
+        </div>
+        <a href="https://join-link.com/event2" class="join-btn" title="Join">Join</a>
+      </div>
+
+      <!-- Other event cards... (you can copy from previous code) -->
+    </section>
+
+    <div class="pagination" aria-label="Pagination">
+      <button class="page-btn active">1</button>
+      <button class="page-btn">2</button>
+      <button class="page-btn">3</button>
+      <button class="page-btn">...</button>
+    </div>
+
+    <div class="rich-ornament" aria-hidden="true"></div>
+
+    <footer class="hub-note" role="contentinfo">
+      Events are organized by the community; participation is free. © Concordia Nova Events
+    </footer>
+
+  </main>
+
+  <script type="module">
+    // Supabase connection
+    import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+
+    const SUPABASE_URL = 'https://shkttorkfcnvkrwnkixf.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNoa3R0b3JrZmNudmtyd25raXhmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY2NzY2ODAsImV4cCI6MjA3MjI1MjY4MH0.GgDA8tSgQoMhCt_BYZU3mCkKaErUs_SQVNeWdCGQOgI';
+
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // Load mini profile
+    async function loadMiniProfile() {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        window.location.href = 'register.html';
+        return;
+      }
+
+      const { data: profile, error } = await supabase
+        .from('profiles')
+        .select('avatar_url, display_name, username, bio')
+        .eq('id', user.id)
+        .single();
+
+      if (error || !profile) {
+        console.error('Profile could not be loaded:', error);
+        return;
+      }
+
+      document.getElementById('miniAvatar').src = profile.avatar_url || 'https://via.placeholder.com/64';
+      document.getElementById('miniName').textContent = profile.display_name || profile.username || 'User';
+      document.getElementById('miniUsername').textContent = '@' + (profile.username || 'none');
+      document.getElementById('miniBio').textContent = profile.bio || 'Bio not added';
+
+      const { count: following } = await supabase
+        .from('follows')
+        .select('*', { count: 'exact', head: true })
+        .eq('follower', user.id);
+
+      const { count: followers } = await supabase
+        .from('follows')
+        .select('*', { count: 'exact', head: true })
+        .eq('following', user.id);
+
+      document.getElementById('miniFollowing').textContent = following || 0;
+      document.getElementById('miniFollowers').textContent = followers || 0;
+
+      document.getElementById('miniProfile').style.display = 'block';
+    }
+
+    // Run on page load
+    loadMiniProfile();
+
+    // Canvas starfield (from previous code)
+    (function(){
+      const canvas = document.getElementById('bgCanvas');
+      const ctx = canvas.getContext('2d');
+      let DPR = Math.max(1, window.devicePixelRatio || 1);
+      let W = 0, H = 0;
+
+      function fit(){
+        W = window.innerWidth;
+        H = window.innerHeight;
+        canvas.width = Math.floor(W * DPR);
+        canvas.height = Math.floor(H * DPR);
+        canvas.style.width = W + 'px';
+        canvas.style.height = H + 'px';
+        ctx.setTransform(DPR,0,0,DPR,0,0);
+      }
+
+      const stars = [];
+      const maxStars = 160;
+
+      class Star {
+        constructor(){
+          this.reset(true);
+        }
+        reset(initial){
+          this.x = Math.random() * W;
+          this.y = Math.random() * H;
+          this.size = (Math.random() * 1.8 + 0.4) * (Math.random() < 0.1 ? 1.6 : 1);
+          this.hue = 190 + Math.random() * 70;
+          this.alpha = 0.3 + Math.random() * 0.7;
+          this.vy = 0.2 + Math.random() * 0.9;
+          this.age = 0;
+          this.life = 6 + Math.random() * 6;
+          if(!initial){
+            this.y = -10 - Math.random() * 40;
+            this.x = Math.random() * W;
+          }
+        }
+        update(dt){
+          this.age += dt;
+          this.y += this.vy * dt * 60;
+          this.x += Math.sin(this.age * 2 + this.size) * 0.3;
+          if(this.y > H + 40 || this.age > this.life){
+            this.reset(false);
+          }
+        }
+        draw(ctx){
+          const lifeRatio = Math.max(0, 1 - (this.age / this.life));
+          const alpha = this.alpha * lifeRatio * (0.5 + 0.5*Math.abs(Math.sin(this.age * 3)));
+          ctx.save();
+          ctx.globalAlpha = Math.max(0, alpha);
+          const g = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.size * 6);
+          g.addColorStop(0, `hsla(${this.hue},100%,85%,${0.9*alpha})`);
+          g.addColorStop(0.4, `hsla(${this.hue},100%,70%,${0.45*alpha})`);
+          g.addColorStop(1, `hsla(${this.hue},100%,60%,0)`);
+          ctx.fillStyle = g;
+          ctx.beginPath();
+          ctx.arc(this.x, this.y, this.size*6, 0, Math.PI*2);
+          ctx.fill();
+          ctx.fillStyle = `hsla(${this.hue}, 100%, 95%, ${alpha})`;
+          ctx.beginPath();
+          ctx.arc(this.x, this.y, this.size, 0, Math.PI*2);
+          ctx.fill();
+          ctx.restore();
+        }
+      }
+
+      function spawnInitial(){
+        stars.length = 0;
+        for(let i=0;i<Math.min(maxStars, 80 + Math.floor(Math.random()*80)); i++){
+          stars.push(new Star());
+        }
+      }
+
+      let last = performance.now();
+      function step(){
+        const now = performance.now();
+        let dt = Math.min(0.05, (now - last) / 1000);
+        last = now;
+        ctx.clearRect(0,0,W,H);
+        for(let i=0;i<stars.length;i++){
+          stars[i].update(dt);
+          stars[i].draw(ctx);
+        }
+        if(stars.length < maxStars && Math.random() < 0.05){
+          stars.push(new Star());
+        }
+        requestAnimationFrame(step);
+      }
+
+      window.addEventListener('resize', () => {
+        fit();
+      });
+
+      fit();
+      spawnInitial();
+      step();
+    })();
+  </script>
+</body>
+</html>

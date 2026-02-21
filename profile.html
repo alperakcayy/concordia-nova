@@ -1,0 +1,1181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Profile - Concordia Nova</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+<style>
+:root{ --accent:#1da1f2; --card:#101010; --glass:rgba(0,0,0,.8); --muted:#cfcfcf; --danger:#e0245e; --yellow: #ffc107; }
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Poppins',sans-serif;background:linear-gradient(180deg,#0b1220 0%,#111 100%);color:#fff}
+header{position:sticky;top:0;z-index:1000;display:flex;justify-content:space-between;align-items:center;padding:10px 20px;background:rgba(0,0,0,.7);backdrop-filter:blur(6px)}
+nav ul{list-style:none;display:flex;gap:20px}
+nav ul li a{color:#fff;text-decoration:none;font-weight:600}
+.auth-buttons button{margin-left:10px;padding:6px 12px;font-size:14px;border-radius:6px;border:none;cursor:pointer;background:var(--accent);color:#fff;font-weight:700}
+.cover-photo{position:relative;width:100%;height:220px;overflow:hidden;background:#222}
+.cover-photo img{width:100%;height:100%;object-fit:cover}
+.edit-cover-btn{position:absolute;right:12px;bottom:12px;padding:8px 12px;border-radius:8px;border:none;background:rgba(0,0,0,0.6);color:#fff;cursor:pointer}
+.profile-info{position:relative;padding:22px;background:linear-gradient(180deg, rgba(0,0,0,.4), rgba(0,0,0,.6))}
+.profile-pic{width:120px;height:120px;border-radius:50%;border:4px solid #000;position:absolute;top:-60px;left:22px;object-fit:cover;background:#222}
+.edit-profile-btn{margin-left:10px;padding:6px 10px;font-size:13px;border-radius:8px;border:none;cursor:pointer;background:var(--accent);color:#fff}
+.profile-info h2{margin:70px 0 6px 0;display:inline-block}
+.username{color:#aaa;display:block;margin-bottom:10px}
+.bio,.details{margin:8px 0;color:#ddd}
+.follow-stats{margin-top:12px}
+.follow-stats table{width:100%;text-align:center}
+.follow-stats table td{padding:6px;cursor:pointer}
+.tweet-box{padding:18px;background:rgba(0,0,0,0.45);margin:18px;border-radius:12px;display:flex;flex-direction:column;gap:10px}
+.tweet-box textarea{width:100%;padding:12px;border-radius:10px;border:none;resize:none;font-size:15px;background:rgba(0,0,0,0.7);color:#fff}
+.tweet-box button{padding:8px 16px;background:var(--accent);border:none;color:#fff;border-radius:999px;cursor:pointer;align-self:flex-end}
+.tweets{margin:18px;padding:16px;background:rgba(0,0,0,0.45);border-radius:12px;display:flex;flex-direction:column;gap:12px}
+.tweet{padding:12px;border-radius:10px;background:var(--card);border:1px solid rgba(255,255,255,.04)}
+.tweet .top{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.tweet .top img{width:40px;height:40px;border-radius:50%;object-fit:cover}
+.tweet .meta{font-size:13px;color:var(--muted);margin-left:auto}
+.tweet .actions{margin-top:8px;display:flex;gap:12px;align-items:center}
+.tweet .actions button{background:transparent;border:none;color:#fff;cursor:pointer;padding:6px;border-radius:8px}
+.tweet .comment-section{margin-top:12px;display:none;flex-direction:column;gap:8px}
+.tweet .comment-section textarea{padding:8px;border-radius:8px;background:rgba(0,0,0,0.7);color:#fff;border:none}
+.tweet .comment-section button{padding:6px 12px;background:var(--accent);border:none;color:#fff;border-radius:999px;align-self:flex-start}
+.tweet .comment-item{padding:8px;background:rgba(0,0,0,0.5);border-radius:8px;display:flex;justify-content:space-between;align-items:center}
+.tweet .comment-item .comment-top{display:flex;align-items:center;gap:8px}
+.tweet .comment-item .comment-top img{width:30px;height:30px;border-radius:50%}
+.tweet .comment-item button{background:none;border:none;color:var(--danger);cursor:pointer;padding:0}
+.small-muted{color:var(--muted);font-size:13px}
+.modal{display:none;position:fixed;z-index:2000;left:0;top:0;width:100%;height:100%;overflow:auto;background:rgba(0,0,0,0.7);backdrop-filter:blur(4px)}
+.modal-content{background:rgba(14,14,14,0.98);margin:6% auto;padding:18px;border-radius:10px;width:360px;color:#fff;display:flex;flex-direction:column;gap:10px}
+.modal-content input,.modal-content textarea{width:100%;padding:8px;border-radius:8px;border:none;background:rgba(0,0,0,0.6);color:#fff}
+.modal-content button{padding:10px;width:100%;border-radius:8px;border:none;background:var(--accent);color:#fff;cursor:pointer}
+.list-item{display:flex;align-items:center;gap:10px;padding:8px;border-radius:8px;background:rgba(255,255,255,0.02);cursor:pointer}
+.list-item img{border-radius:50%}
+.tweet-actions { display: flex; gap: 8px; margin-top: 8px; }
+.record-btn, .file-btn { background: var(--accent); padding: 8px; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: .18s ease; }
+.file-btn { background: var(--yellow); color: #000; }
+.record-btn.recording { background: var(--danger); animation: pulse 1s infinite; }
+@keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
+.media-preview { margin-top: 8px; max-width: 100%; position: relative; overflow: hidden; border-radius: 12px; }
+.media-preview img, .media-preview video { max-width: 100%; height: auto; display: block; border-radius: 12px; }
+.video-wrapper { position: relative; width: 100%; max-width: 100%; border-radius: 8px; overflow: hidden; }
+.video-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; opacity: 1; transition: opacity 0.3s; pointer-events: none; border-radius: 8px; }
+.video-overlay.playing { opacity: 0; pointer-events: none; }
+.play-btn { background: rgba(255,255,255,0.9); border: none; border-radius: 50%; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; cursor: pointer; pointer-events: all; font-size: 20px; color: #000; transition: transform 0.2s; }
+.play-btn:hover { transform: scale(1.1); }
+.play-btn i { margin-left: 2px; }
+.waveform-player { display:flex; gap:14px; align-items:center; background: rgba(6,6,6,0.75); padding:12px; border-radius:14px; width:100%; box-sizing:border-box; border: 1px solid rgba(255,255,255,0.03); box-shadow: 0 8px 30px rgba(0,0,0,0.45); }
+.wf-left { display:flex; flex-direction:column; align-items:center; gap:8px; min-width:78px; }
+.wf-play-btn { width:48px; height:48px; border-radius:12px; display:flex; align-items:center; justify-content:center; background: rgba(0,0,0,0.35); border: 1px solid rgba(255,255,255,0.05); cursor:pointer; font-size:18px; }
+.wf-time { font-size:14px; color:#d0d0d0; font-weight:600; }
+.wf-canvas-wrap { flex:1; position:relative; height:64px; display:flex; align-items:center; }
+.wf-canvas { width:100%; height:64px; display:block; border-radius:10px; background: rgba(0,0,0,0.08); }
+</style>
+</head>
+<body>
+
+<header>
+  <nav>
+    <ul>
+      <li><a href="social.html">Home</a></li>
+      <li><a href="profile.html">Profile</a></li>
+    </ul>
+  </nav>
+  <div class="auth-buttons">
+    <button id="logoutBtn">Log Out</button>
+  </div>
+</header>
+
+<div class="cover-photo">
+  <img id="coverImage" src="https://via.placeholder.com/1200x300" alt="Cover Photo"/>
+  <button class="edit-cover-btn" id="editCoverBtn">Edit Cover</button>
+  <input type="file" id="coverInput" accept="image/*" style="display:none"/>
+</div>
+
+<div class="profile-info">
+  <img id="profilePic" class="profile-pic" src="https://via.placeholder.com/160" alt="Profile Picture"/>
+  <button class="edit-profile-btn" id="editProfileBtn">Edit Profile</button>
+  <h2 id="displayName">User</h2>
+  <span class="username" id="username">@user</span>
+  <p class="bio" id="bio"></p>
+  <p class="details" id="details"></p>
+  <div class="follow-stats">
+    <table>
+      <tr>
+        <td id="followingCell"><span id="followingCount" class="badge">0</span><br><span class="small-muted">Following</span></td>
+        <td id="followersCell"><span id="followersCount" class="badge">0</span><br><span class="small-muted">Followers</span></td>
+      </tr>
+    </table>
+  </div>
+</div>
+
+<div class="tweet-box" id="tweetBoxSection">
+  <textarea id="tweetInput" rows="3" placeholder="What's on your mind?"></textarea>
+  <div class="tweet-actions">
+    <button id="recordBtn" class="record-btn" title="Record Voice"><i class="fa-solid fa-microphone"></i></button>
+    <input type="file" id="fileInput" accept="image/*,video/*" style="display: none;">
+    <button id="fileBtn" class="file-btn" title="Add File"><i class="fa-solid fa-image"></i></button>
+  </div>
+  <div id="mediaPreview" class="media-preview"></div>
+  <button id="tweetBtn">Tweet</button>
+</div>
+
+<section class="tweets" id="tweetList">
+  <h3>Tweets</h3>
+</section>
+
+<div id="editModal" class="modal">
+  <div class="modal-content">
+    <label>Profile Picture</label>
+    <input type="file" id="modalProfileInput" accept="image/*"/>
+    <label>Cover Photo</label>
+    <input type="file" id="modalCoverInput" accept="image/*"/>
+    <label>Full Name</label>
+    <input id="modalDisplayName" type="text"/>
+    <label>Username</label>
+    <input id="modalUsername" type="text"/>
+    <label>Bio</label>
+    <textarea id="modalBio" rows="3"></textarea>
+    <label>Details</label>
+    <textarea id="modalDetails" rows="2"></textarea>
+    <button id="modalSaveBtn">Save</button>
+    <button id="modalCloseBtn" style="background:rgba(255,255,255,0.06);margin-top:6px;">Close</button>
+  </div>
+</div>
+
+<div id="followersModal" class="modal">
+  <div class="modal-content">
+    <h3>Followers</h3>
+    <div id="followersList"></div>
+    <button id="followersCloseBtn" style="background:rgba(255,255,255,0.06);margin-top:6px;">Close</button>
+  </div>
+</div>
+
+<div id="followingModal" class="modal">
+  <div class="modal-content">
+    <h3>Following</h3>
+    <div id="followingList"></div>
+    <button id="followingCloseBtn" style="background:rgba(255,255,255,0.06);margin-top:6px;">Close</button>
+  </div>
+</div>
+
+<script type="module">
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+
+// Supabase connection information
+const SUPABASE_URL = 'https://shkttorkfcnvkrwnkixf.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNoa3R0b3JrZmNudmtyd25raXhmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY2NzY2ODAsImV4cCI6MjA3MjI1MjY4MH0.GgDA8tSgQoMhCt_BYZU3mCkKaErUs_SQVNeWdCGQOgI';
+
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+let currentUser = null;
+let viewingProfile = null;
+let viewingProfileId = null;
+let isOwnProfile = false;
+let mediaRecorder = null;
+let recordedChunks = [];
+let isRecording = false;
+let selectedFile = null;
+let mediaType = null;
+
+const coverImageEl = document.getElementById('coverImage');
+const profilePicEl = document.getElementById('profilePic');
+const displayNameEl = document.getElementById('displayName');
+const usernameEl = document.getElementById('username');
+const bioEl = document.getElementById('bio');
+const detailsEl = document.getElementById('details');
+const followersCountEl = document.getElementById('followersCount');
+const followingCountEl = document.getElementById('followingCount');
+const tweetListEl = document.getElementById('tweetList');
+const tweetBoxSection = document.getElementById('tweetBoxSection');
+const tweetInputEl = document.getElementById('tweetInput');
+const tweetBtn = document.getElementById('tweetBtn');
+const editModal = document.getElementById('editModal');
+const modalProfileInput = document.getElementById('modalProfileInput');
+const modalCoverInput = document.getElementById('modalCoverInput');
+const modalDisplayName = document.getElementById('modalDisplayName');
+const modalUsername = document.getElementById('modalUsername');
+const modalBio = document.getElementById('modalBio');
+const modalDetails = document.getElementById('modalDetails');
+const modalSaveBtn = document.getElementById('modalSaveBtn');
+const modalCloseBtn = document.getElementById('modalCloseBtn');
+const followersModal = document.getElementById('followersModal');
+const followersList = document.getElementById('followersList');
+const followersCloseBtn = document.getElementById('followersCloseBtn');
+const followingModal = document.getElementById('followingModal');
+const followingList = document.getElementById('followingList');
+const followingCloseBtn = document.getElementById('followingCloseBtn');
+
+function qs(name){ return new URLSearchParams(window.location.search).get(name); }
+function fmtTime(ts){ return new Date(ts).toLocaleString(); }
+function showAlert(msg){ alert(msg); }
+function escapeHTML(str) { return (str || '').replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[m]); }
+function fallbackAvatar(username){
+  const c = (username || 'U')[0].toUpperCase();
+  const svg = encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' width='80' height='80'><rect width='100%' height='100%' fill='#222'/><text x='50%' y='56%' font-family='Arial' font-size='38' fill='#fff' text-anchor='middle' dominant-baseline='middle'>${c}</text></svg>`);
+  return `data:image/svg+xml;charset=utf-8,${svg}`;
+}
+function getMediaType(file) {
+  if (!file || !file.type) return null;
+  const type = file.type;
+  if (type.startsWith('audio/')) return 'audio';
+  if (type.startsWith('image/')) return 'image';
+  if (type.startsWith('video/')) return 'video';
+  return null;
+}
+async function generateVideoThumbnail(videoUrl, maxWidth = 300) {
+  return new Promise((resolve, reject) => {
+    const video = document.createElement('video');
+    video.src = videoUrl;
+    video.muted = true;
+    video.preload = 'metadata';
+    video.crossOrigin = 'anonymous';
+    video.addEventListener('loadedmetadata', () => {
+      video.currentTime = Math.min(1, video.duration * 0.1);
+    });
+    video.addEventListener('seeked', () => {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      const thumbWidth = Math.min(maxWidth, video.videoWidth / 2);
+      const thumbHeight = (video.videoHeight / video.videoWidth) * thumbWidth;
+      canvas.width = thumbWidth;
+      canvas.height = thumbHeight;
+      ctx.drawImage(video, 0, 0, thumbWidth, thumbHeight);
+      const thumbnailUrl = canvas.toDataURL('image/jpeg', 0.8);
+      video.remove();
+      resolve(thumbnailUrl);
+    });
+    video.addEventListener('error', (e) => {
+      video.remove();
+      reject(new Error('Video thumbnail could not be created: ' + e.message));
+    });
+    video.load();
+  });
+}
+async function createVideoPreview(container, srcObj, isPlayable = true) {
+  const wrapper = document.createElement('div');
+  wrapper.className = 'video-wrapper media-preview';
+  container.appendChild(wrapper);
+  let videoSrc;
+  const isBlob = srcObj instanceof File || srcObj instanceof Blob;
+  if (isBlob) {
+    videoSrc = URL.createObjectURL(srcObj);
+  } else {
+    videoSrc = srcObj;
+  }
+  const video = document.createElement('video');
+  video.src = videoSrc;
+  video.muted = true;
+  video.preload = 'metadata';
+  video.style.display = 'none';
+  wrapper.appendChild(video);
+  try {
+    const thumbnailUrl = await generateVideoThumbnail(videoSrc);
+    const img = document.createElement('img');
+    img.src = thumbnailUrl;
+    img.alt = 'Video Thumbnail';
+    img.style.width = '100%';
+    img.style.height = 'auto';
+    img.style.borderRadius = '8px';
+    img.style.display = 'block';
+    wrapper.appendChild(img);
+    if (isBlob && videoSrc.startsWith('blob:')) {
+      URL.revokeObjectURL(videoSrc);
+    }
+  } catch (err) {
+    console.error('Thumbnail creation error:', err);
+    const img = document.createElement('img');
+    img.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjE2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjMjIyIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxOCIgZmlsbD0iI2ZmZiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSI+Video Preview</dGV4dD48L3N2Zz4=';
+    img.style.width = '100%';
+    img.style.height = 'auto';
+    img.style.borderRadius = '8px';
+    img.style.display = 'block';
+    wrapper.appendChild(img);
+  }
+  video.addEventListener('loadedmetadata', () => {
+    video.currentTime = 0;
+  });
+  if (isPlayable) {
+    const overlay = document.createElement('div');
+    overlay.className = 'video-overlay';
+    const playBtn = document.createElement('button');
+    playBtn.className = 'play-btn';
+    playBtn.innerHTML = '<i class="fa-solid fa-play"></i>';
+    overlay.appendChild(playBtn);
+    wrapper.appendChild(overlay);
+    const progress = document.createElement('input');
+    progress.type = 'range';
+    progress.className = 'video-progress';
+    progress.value = 0;
+    progress.max = 100;
+    progress.style.display = 'none';
+    wrapper.appendChild(progress);
+    function playVideo() {
+      const img = wrapper.querySelector('img');
+      if (img) img.style.display = 'none';
+      overlay.classList.add('playing');
+      video.style.display = 'block';
+      progress.style.display = 'block';
+      video.play().catch(e => console.warn('Video playback error:', e));
+    }
+    function pauseVideo() {
+      const img = wrapper.querySelector('img');
+      if (img) img.style.display = 'block';
+      overlay.classList.remove('playing');
+      video.style.display = 'none';
+      progress.style.display = 'none';
+      video.pause();
+    }
+    playBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (video.paused) {
+        playVideo();
+      } else {
+        pauseVideo();
+      }
+    });
+    video.addEventListener('timeupdate', () => {
+      if (!video.paused && video.duration) {
+        progress.value = (video.currentTime / video.duration) * 100;
+      }
+    });
+    video.addEventListener('ended', () => {
+      pauseVideo();
+      progress.value = 0;
+      video.currentTime = 0;
+    });
+    video.addEventListener('pause', () => {
+      if (video.currentTime < video.duration) {
+        pauseVideo();
+      }
+    });
+    progress.addEventListener('input', (e) => {
+      const pct = e.target.value / 100;
+      if (video.duration) {
+        video.currentTime = pct * video.duration;
+      }
+    });
+    wrapper.addEventListener('click', (e) => {
+      if (overlay.contains(e.target) && e.target !== playBtn) return;
+      if (video.paused) {
+        playVideo();
+      } else {
+        pauseVideo();
+      }
+    });
+  }
+  video.load();
+}
+async function createWaveformPlayer(container, source, opts = {}) {
+  const options = Object.assign({
+    height: 64,
+    barGap: 2,
+    barWidth: 1,
+    barColor: '#1da1f2',
+    placeholderColor: 'rgba(255,255,255,0.06)'
+  }, opts);
+  container.innerHTML = '';
+  container.classList.add('waveform-player');
+  const left = document.createElement('div'); left.className = 'wf-left';
+  const playBtn = document.createElement('button'); playBtn.className = 'wf-play-btn'; playBtn.type = 'button';
+  playBtn.innerHTML = '<i class="fa-solid fa-play"></i>';
+  const timeSpan = document.createElement('div'); timeSpan.className = 'wf-time'; timeSpan.textContent = '00:00';
+  left.appendChild(playBtn);
+  left.appendChild(timeSpan);
+  container.appendChild(left);
+  const wrap = document.createElement('div'); wrap.className = 'wf-canvas-wrap';
+  const canvas = document.createElement('canvas'); canvas.className = 'wf-canvas'; canvas.setAttribute('tabindex','0');
+  wrap.appendChild(canvas);
+  container.appendChild(wrap);
+  playBtn.setAttribute('aria-label','Play/Pause');
+  canvas.setAttribute('role','slider');
+  canvas.setAttribute('aria-label','Audio waveform — click to seek position');
+  const audio = new Audio();
+  audio.preload = 'auto';
+  audio.crossOrigin = 'anonymous';
+  let objectUrl = null;
+  let audioSrc;
+  if (typeof source === 'string') {
+    if ((source.startsWith('file://') || source.startsWith('content://')) && window.Capacitor && window.Capacitor.convertFileSrc) {
+      audioSrc = await window.Capacitor.convertFileSrc(source);
+    } else {
+      audioSrc = source;
+    }
+  } else if (source instanceof Blob || source instanceof File) {
+    objectUrl = URL.createObjectURL(source);
+    audioSrc = objectUrl;
+  } else if (window.Capacitor && source.path) {
+    audioSrc = await window.Capacitor.convertFileSrc(source.path);
+  } else {
+    console.warn('Unsupported audio source', source);
+    audioSrc = null;
+  }
+  audio.src = audioSrc;
+  const ctx = canvas.getContext('2d');
+  let buffer = null;
+  function drawFullWaveform() {
+    if (!buffer) return;
+    const data = buffer.getChannelData(0);
+    const step = Math.floor(data.length / (canvas.width / (options.barWidth + options.barGap)));
+    const amp = canvas.height / 2;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = options.barColor;
+    let x = 0;
+    for (let i = 0; i < data.length; i += step) {
+      const min = Math.min(...data.slice(i, i + step));
+      const max = Math.max(...data.slice(i, i + step));
+      ctx.fillRect(x, (1 + min) * amp, options.barWidth, Math.max(1, (max - min) * amp));
+      x += options.barWidth + options.barGap;
+    }
+  }
+  function drawWaveform(progress = 0) {
+    if (!buffer) return;
+    const data = buffer.getChannelData(0);
+    const step = Math.floor(data.length / (canvas.width / (options.barWidth + options.barGap)));
+    const amp = canvas.height / 2;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    let x = 0;
+    const maxBars = Math.floor((canvas.width / (options.barWidth + options.barGap)) * progress);
+    for (let i = 0; i < maxBars * step; i += step) {
+      const min = Math.min(...data.slice(i, i + step));
+      const max = Math.max(...data.slice(i, i + step));
+      ctx.fillStyle = options.barColor;
+      ctx.fillRect(x, (1 + min) * amp, options.barWidth, Math.max(1, (max - min) * amp));
+      x += options.barWidth + options.barGap;
+    }
+  }
+  function resizeCanvas() {
+    const dpr = window.devicePixelRatio || 1;
+    const rect = canvas.getBoundingClientRect();
+    canvas.style.height = options.height + 'px';
+    canvas.width = Math.max(300, Math.floor(rect.width * dpr));
+    canvas.height = Math.max(40, Math.floor(options.height * dpr));
+    const progress = audio.duration ? (audio.currentTime / audio.duration) : 0;
+    drawWaveform(progress);
+  }
+  window.addEventListener('resize', resizeCanvas);
+  function formatTime(s) {
+    if (!isFinite(s)) return '00:00';
+    const mm = Math.floor(s/60), ss = Math.floor(s%60);
+    return `${String(mm).padStart(2,'0')}:${String(ss).padStart(2,'0')}`;
+  }
+  const timeupdateHandler = () => {
+    const progress = audio.duration ? (audio.currentTime / audio.duration) : 0;
+    timeSpan.textContent = formatTime(audio.currentTime);
+    drawWaveform(progress);
+  };
+  audio.addEventListener('timeupdate', timeupdateHandler);
+  audio.addEventListener('loadeddata', () => {
+    drawFullWaveform();
+  });
+  canvas.addEventListener('click', (ev) => {
+    if (!audio.duration) return;
+    const rect = canvas.getBoundingClientRect();
+    const x = ev.clientX - rect.left;
+    const pct = Math.max(0, Math.min(1, x / rect.width));
+    audio.currentTime = pct * audio.duration;
+    drawWaveform(pct);
+  });
+  playBtn.addEventListener('click', async () => {
+    try {
+      if (audio.paused) await audio.play();
+      else audio.pause();
+    } catch (e) { console.warn('play error', e); }
+  });
+  audio.addEventListener('play', () => { playBtn.innerHTML = '<i class="fa-solid fa-pause"></i>'; });
+  audio.addEventListener('pause', () => { 
+    playBtn.innerHTML = '<i class="fa-solid fa-play"></i>'; 
+    const progress = audio.duration ? (audio.currentTime / audio.duration) : 0;
+    drawWaveform(progress);
+  });
+  audio.addEventListener('ended', () => { 
+    playBtn.innerHTML = '<i class="fa-solid fa-play"></i>'; 
+    drawFullWaveform();
+    timeSpan.textContent = '00:00'; 
+    audio.currentTime = 0; 
+  });
+  async function buildPeaks() {
+    try {
+      const AudioContext = window.AudioContext || window.webkitAudioContext;
+      if (!AudioContext) throw new Error('Web Audio API not available');
+      const ac = new AudioContext();
+      let arrayBuffer;
+      if (typeof source === 'string') {
+        const fetchUrl = (source.startsWith('file://') || source.startsWith('content://')) && window.Capacitor && window.Capacitor.convertFileSrc ? await window.Capacitor.convertFileSrc(source) : source;
+        const resp = await fetch(fetchUrl);
+        arrayBuffer = await resp.arrayBuffer();
+      } else {
+        arrayBuffer = await source.arrayBuffer();
+      }
+      const audioBuffer = await ac.decodeAudioData(arrayBuffer);
+      buffer = audioBuffer;
+      resizeCanvas();
+      drawFullWaveform();
+      ac.close && ac.close();
+    } catch (e) {
+      console.warn('buildPeaks failed -> fallback', e);
+      container.innerHTML = `<audio controls src="${audio.src}" style="width:100%"></audio>`;
+    }
+  }
+  setTimeout(resizeCanvas,50);
+  await buildPeaks().catch(()=>{});
+  function destroy(){
+    try { audio.pause(); audio.src=''; if (objectUrl) URL.revokeObjectURL(objectUrl); container.innerHTML=''; } catch(e){console.warn(e);}
+  }
+  return { audio, destroy };
+}
+async function resolveFileForUpload(file) {
+  if (!file) return null;
+  if (file instanceof File || file instanceof Blob) {
+    if (file instanceof Blob && !(file instanceof File)) {
+      return new File([file], file.name || 'upload', { type: file.type || 'application/octet-stream' });
+    }
+    return file;
+  }
+  if (window.Capacitor && file.path) {
+    try {
+      const webPath = await window.Capacitor.convertFileSrc(file.path);
+      const resp = await fetch(webPath);
+      if (!resp.ok) throw new Error(`Fetch failed: ${resp.status}`);
+      const blob = await resp.blob();
+      return new File([blob], file.name || (file.path.split('/').pop()), { type: file.mimeType || blob.type || 'audio/webm' });
+    } catch (e) {
+      console.error('resolveFileForUpload Capacitor error:', e);
+      throw new Error('File conversion error: ' + e.message);
+    }
+  }
+  if (file.data && typeof file.data === 'string') {
+    try {
+      let b64 = file.data;
+      if (b64.startsWith('data:')) b64 = b64.split(',')[1];
+      const binary = atob(b64);
+      const arr = new Uint8Array(binary.length);
+      for (let i = 0; i < binary.length; i++) arr[i] = binary.charCodeAt(i);
+      const blob = new Blob([arr.buffer], { type: file.mimeType || 'audio/webm' });
+      return new File([blob], file.name || 'upload.webm', { type: file.mimeType || blob.type });
+    } catch (e) {
+      console.warn('resolveFileForUpload: base64 -> blob failed', e);
+    }
+  }
+  if (typeof file === 'object' && file.name && file.size) return file;
+  return null;
+}
+async function renderMediaPreview(file, type) {
+  const preview = document.getElementById('mediaPreview');
+  preview.innerHTML = '';
+  try {
+    if (type === 'audio') {
+      const playerContainer = document.createElement('div');
+      preview.appendChild(playerContainer);
+      await createWaveformPlayer(playerContainer, file);
+    } else if (type === 'image') {
+      const img = document.createElement('img');
+      img.src = URL.createObjectURL(file);
+      img.alt = 'Preview';
+      preview.appendChild(img);
+    } else if (type === 'video') {
+      createVideoPreview(preview, file, false);
+    }
+  } catch (err) {
+    console.error('Media preview error:', err);
+    preview.innerHTML = '<p style="color: var(--danger);">Media preview error</p>';
+  }
+}
+function startRecording() {
+  navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
+    mediaRecorder = new MediaRecorder(stream);
+    recordedChunks = [];
+    mediaRecorder.ondataavailable = e => {
+      if (e.data.size > 0) recordedChunks.push(e.data);
+    };
+    mediaRecorder.onstop = () => {
+      const blob = new Blob(recordedChunks, { type: 'audio/webm' });
+      const file = new File([blob], 'recording.webm', { type: 'audio/webm' });
+      selectedFile = null;
+      mediaType = 'audio';
+      renderMediaPreview(file, mediaType);
+    };
+    mediaRecorder.start();
+    isRecording = true;
+    document.getElementById('recordBtn').classList.add('recording');
+    document.getElementById('recordBtn').innerHTML = '<i class="fa-solid fa-stop"></i>';
+  }).catch(err => {
+    if (err.name === 'NotFoundError' || err.name === 'DevicesNotFoundError') {
+      showAlert('Microphone device not found. Please connect a microphone or check device settings.');
+    } else if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+      showAlert('Microphone access permission denied. Please grant permission from browser settings.');
+    } else if (err.name === 'NotReadableError' || err.name === 'TrackStartError') {
+      showAlert('Microphone inaccessible. It may be in use by another application.');
+    } else {
+      showAlert('Voice recording error: ' + err.message);
+    }
+  });
+}
+function stopRecording() {
+  if (mediaRecorder && isRecording) {
+    mediaRecorder.stop();
+    mediaRecorder.stream.getTracks().forEach(track => track.stop());
+    isRecording = false;
+    document.getElementById('recordBtn').classList.remove('recording');
+    document.getElementById('recordBtn').innerHTML = '<i class="fa-solid fa-microphone"></i>';
+  }
+}
+function handleFileSelect(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const type = getMediaType(file);
+  if (!type || (type !== 'image' && type !== 'video')) {
+    showAlert('Only image and video files are supported.');
+    return;
+  }
+  selectedFile = file;
+  recordedChunks = [];
+  mediaType = type;
+  renderMediaPreview(file, type);
+}
+
+// Init
+async function init(){
+  // get session
+  const { data: { user } } = await supabase.auth.getUser();
+  currentUser = user || null;
+  if(!currentUser) { window.location.href = 'register.html'; return; }
+
+  const idParam = qs('id');
+  viewingProfileId = idParam || currentUser.id;
+
+  await loadProfile(viewingProfileId);
+
+  isOwnProfile = currentUser.id === viewingProfileId;
+  tweetBoxSection.style.display = isOwnProfile ? 'block' : 'none';
+  document.getElementById('editProfileBtn').style.display = isOwnProfile ? 'inline-block' : 'none';
+  document.getElementById('editCoverBtn').style.display = isOwnProfile ? 'inline-block' : 'none';
+
+  document.getElementById('logoutBtn').addEventListener('click', async ()=>{
+    await supabase.auth.signOut();
+    window.location.href='social.html';
+  });
+
+  document.getElementById('editProfileBtn').addEventListener('click', onOpenEditModal);
+  document.getElementById('editCoverBtn').addEventListener('click', ()=> document.getElementById('coverInput').click());
+  document.getElementById('coverInput').addEventListener('change', async e=>{
+    const file = e.target.files[0];
+    if(file){
+      try {
+        const { publicUrl } = await uploadFile('covers', file);
+        await supabase.from('profiles').update({ cover_image: publicUrl }).eq('id', currentUser.id);
+        coverImageEl.src = publicUrl;
+      } catch(err){
+        console.error(err); showAlert('Cover could not be uploaded: ' + err.message);
+      }
+    }
+  });
+
+  modalSaveBtn.addEventListener('click', async ()=>{
+    modalSaveBtn.disabled = true;
+    try {
+      await saveProfile();
+      editModal.style.display='none';
+    } catch(e){
+      console.error(e);
+      showAlert('Error during save: ' + (e.message || e));
+    } finally {
+      modalSaveBtn.disabled = false;
+    }
+  });
+
+  modalCloseBtn.addEventListener('click', ()=> editModal.style.display='none');
+  followersCloseBtn.addEventListener('click', ()=> followersModal.style.display='none');
+  followingCloseBtn.addEventListener('click', ()=> followingModal.style.display='none');
+
+  modalProfileInput.addEventListener('change', e=>{
+    const f = e.target.files[0];
+    if(f){
+      const url = URL.createObjectURL(f);
+      profilePicEl.src = url;
+    }
+  });
+  modalCoverInput.addEventListener('change', e=>{
+    const f = e.target.files[0];
+    if(f){
+      const url = URL.createObjectURL(f);
+      coverImageEl.src = url;
+    }
+  });
+
+  tweetBtn.addEventListener('click', tweetAt);
+
+  document.getElementById('followersCell').addEventListener('click', async () => {
+    await loadFollowers();
+    followersModal.style.display = 'block';
+  });
+
+  document.getElementById('followingCell').addEventListener('click', async () => {
+    await loadFollowing();
+    followingModal.style.display = 'block';
+  });
+
+  await loadTweets();
+
+  const recordBtn = document.getElementById('recordBtn');
+  if (recordBtn) {
+    recordBtn.addEventListener('click', () => {
+      if (isRecording) {
+        stopRecording();
+      } else {
+        startRecording();
+      }
+    });
+  }
+
+  const fileBtn = document.getElementById('fileBtn');
+  const fileInput = document.getElementById('fileInput');
+  if (fileBtn && fileInput) {
+    fileBtn.addEventListener('click', () => {
+      fileInput.click();
+    });
+    fileInput.addEventListener('change', handleFileSelect);
+  }
+}
+
+async function loadProfile(profileId){
+  const { data, error } = await supabase.from('profiles').select('*').eq('id', profileId).maybeSingle();
+  if(error){ console.error(error); showAlert('Error while loading profile'); return; }
+  if(!data){ showAlert('Profile not found'); return; }
+
+  viewingProfile = data;
+  displayNameEl.textContent = data.display_name || data.username || 'User';
+  usernameEl.textContent = '@' + (data.username || '');
+  bioEl.textContent = data.bio || '';
+  detailsEl.textContent = data.details || '';
+  profilePicEl.src = data.avatar_url || fallbackAvatar(data.username);
+  coverImageEl.src = data.cover_image || 'https://via.placeholder.com/1200x300';
+
+  const followersRes = await supabase.from('follows').select('*', { count:'exact', head:true }).eq('following', profileId);
+  const followingRes = await supabase.from('follows').select('*', { count:'exact', head:true }).eq('follower', profileId);
+  followersCountEl.textContent = followersRes.count ?? 0;
+  followingCountEl.textContent = followingRes.count ?? 0;
+}
+
+async function uploadFile(bucket, file){
+  const ext = file.name.split('.').pop();
+  const filePath = `${currentUser.id}/${Date.now()}.${ext}`;
+  const { data, error } = await supabase.storage.from(bucket).upload(filePath, file, { cacheControl: '3600', upsert: false });
+  if(error){
+    console.error('upload error', error);
+    throw error;
+  }
+  const { data: publicData } = supabase.storage.from(bucket).getPublicUrl(filePath);
+  return { publicUrl: publicData.publicUrl, path: filePath };
+}
+
+async function saveProfile(){
+  const updates = {
+    display_name: modalDisplayName.value || null,
+    username: modalUsername.value || null,
+    bio: modalBio.value || null,
+    details: modalDetails.value || null
+  };
+
+  const avatarFile = modalProfileInput.files[0];
+  const coverFile = modalCoverInput.files[0];
+
+  if(avatarFile){
+    const { publicUrl } = await uploadFile('avatars', avatarFile);
+    updates.avatar_url = publicUrl;
+  }
+  if(coverFile){
+    const { publicUrl } = await uploadFile('covers', coverFile);
+    updates.cover_image = publicUrl;
+  }
+
+  const { error } = await supabase.from('profiles').update(updates).eq('id', currentUser.id);
+  if(error) throw error;
+
+  await loadProfile(currentUser.id);
+}
+
+async function tweetAt(){
+  const text = tweetInputEl.value.trim();
+  if(!text && recordedChunks.length === 0 && !selectedFile) return showAlert('Enter text or media');
+  tweetBtn.disabled = true;
+  tweetBtn.textContent = 'Sending...';
+  try {
+    const createdAt = new Date().toISOString();
+    let publicMediaUrl = null;
+    let mediaPath = null;
+    let finalMediaType = null;
+    if (recordedChunks.length > 0) {
+      const blob = new Blob(recordedChunks, { type: 'audio/webm' });
+      const rawFile = new File([blob], 'recording.webm', { type: 'audio/webm' });
+      finalMediaType = 'audio';
+      const MAX_AUDIO_MB = 50;
+      if (rawFile.size > MAX_AUDIO_MB * 1024 * 1024) {
+        showAlert(`Audio file is too large. Max: ${MAX_AUDIO_MB} MB.`);
+        return;
+      }
+      let uploadFile = await resolveFileForUpload(rawFile);
+      if (!uploadFile) {
+        showAlert('Audio could not be retrieved. Please record again.');
+        return;
+      }
+      const uuid = (crypto && crypto.randomUUID) ? crypto.randomUUID() : String(Date.now());
+      const safeFileName = 'recording.webm';
+      const path = `${currentUser.id}/${uuid}-${safeFileName}`;
+      mediaPath = path;
+      const { data: uploadData, error: uploadErr } = await supabase.storage.from('tweet_images').upload(path, uploadFile, {
+        contentType: uploadFile.type,
+        upsert: true
+      });
+      if (uploadErr) throw uploadErr;
+      const { data: urlData } = supabase.storage.from('tweet_images').getPublicUrl(path);
+      publicMediaUrl = urlData?.publicUrl || null;
+      if (!publicMediaUrl) {
+        const { data: signedData, error: signedErr } = await supabase.storage.from('tweet_images').createSignedUrl(path, 3600);
+        if (signedErr) throw signedErr;
+        publicMediaUrl = signedData?.signedUrl || null;
+      }
+      if (!publicMediaUrl) throw new Error('Audio URL could not be retrieved.');
+    } else if (selectedFile) {
+      finalMediaType = mediaType;
+      const MAX_MEDIA_MB = 100;
+      if (selectedFile.size > MAX_MEDIA_MB * 1024 * 1024) {
+        showAlert(`Media file is too large. Max: ${MAX_MEDIA_MB} MB.`);
+        return;
+      }
+      let uploadFile = await resolveFileForUpload(selectedFile);
+      if (!uploadFile) {
+        showAlert('File could not be retrieved. Please select again.');
+        return;
+      }
+      const uuid = (crypto && crypto.randomUUID) ? crypto.randomUUID() : String(Date.now());
+      const safeFileName = selectedFile.name.replace(/[^a-zA-Z0-9.-]/g, '_');
+      const path = `${currentUser.id}/${uuid}-${safeFileName}`;
+      mediaPath = path;
+      const { data: uploadData, error: uploadErr } = await supabase.storage.from('tweet_images').upload(path, uploadFile, {
+        contentType: uploadFile.type,
+        upsert: true
+      });
+      if (uploadErr) throw uploadErr;
+      const { data: urlData } = supabase.storage.from('tweet_images').getPublicUrl(path);
+      publicMediaUrl = urlData?.publicUrl || null;
+      if (!publicMediaUrl) {
+        const { data: signedData, error: signedErr } = await supabase.storage.from('tweet_images').createSignedUrl(path, 3600);
+        if (signedErr) throw signedErr;
+        publicMediaUrl = signedData?.signedUrl || null;
+      }
+      if (!publicMediaUrl) throw new Error('Media URL could not be retrieved.');
+    }
+    const insertObj = {
+      user_id: currentUser.id,
+      text: text || null,
+      media_url: publicMediaUrl,
+      media_type: finalMediaType,
+      media_path: mediaPath,
+      created_at: createdAt,
+      likes_count: 0,
+      comments_count: 0,
+      quotes_count: 0
+    };
+    const { error: insertErr } = await supabase.from('tweets').insert([insertObj]);
+    if (insertErr) throw insertErr;
+    tweetInputEl.value='';
+    document.getElementById('mediaPreview').innerHTML = '';
+    recordedChunks = [];
+    selectedFile = null;
+    mediaType = null;
+    await loadTweets();
+  } catch (err) {
+    console.error(err);
+    showAlert('Error while posting tweet: ' + (err.message || err));
+  } finally {
+    tweetBtn.disabled = false;
+    tweetBtn.textContent = 'Tweet';
+  }
+}
+
+async function getLikesCount(tweetId) {
+  const { count } = await supabase.from('likes').select('*', { count: 'exact', head: true }).eq('tweet_id', tweetId);
+  return count || 0;
+}
+
+async function getIsLiked(tweetId) {
+  if (!currentUser) return false;
+  const { count } = await supabase.from('likes').select('*', { count: 'exact', head: true }).eq('tweet_id', tweetId).eq('user_id', currentUser.id);
+  return count > 0;
+}
+
+async function getCommentsCount(tweetId) {
+  const { count } = await supabase.from('comments').select('*', { count: 'exact', head: true }).eq('tweet_id', tweetId);
+  return count || 0;
+}
+
+async function deleteComment(commentId, commentEl, tweetId) {
+  if (!currentUser) { showAlert('You need to log in!'); return; }
+  const { data: c, error: cErr } = await supabase.from('comments').select('user_id').eq('id', commentId).single();
+  if (cErr) { showAlert('Error while checking comment: ' + cErr.message); return; }
+  if (!c || c.user_id !== currentUser.id) { showAlert('You can only delete your own comments.'); return; }
+  if (!confirm('Are you sure you want to delete this comment?')) return;
+
+  const { error: delErr } = await supabase.from('comments').delete().eq('id', commentId);
+  if (delErr) { showAlert('Error while deleting comment: ' + delErr.message); return; }
+
+  if (commentEl) commentEl.remove();
+
+  const { count } = await supabase.from('comments').select('*', { count: 'exact', head: false }).eq('tweet_id', tweetId);
+  await supabase.from('tweets').update({ comments_count: count }).eq('id', tweetId);
+
+  const cnt = document.querySelector(`[data-tweet-id="${tweetId}"] .actions button:nth-child(2) span`);
+  if (cnt) cnt.textContent = count;
+}
+
+async function loadComments(container, tweetId) {
+  container.innerHTML = '';
+  const commentsSection = document.createElement('div');
+  commentsSection.className = 'comments-list';
+  const { data: comments, error } = await supabase.from('comments').select('*, profiles(display_name, username, avatar_url)').eq('tweet_id', tweetId).order('created_at', { ascending: true });
+  if (error || !comments) {
+    commentsSection.innerHTML = '<p class="small-muted">Comments could not be loaded.</p>';
+    container.appendChild(commentsSection);
+    return;
+  }
+  if (comments.length === 0) {
+    commentsSection.innerHTML = '<p class="small-muted">No comments yet.</p>';
+  }
+  comments.forEach(c => {
+    const commentDiv = document.createElement('div');
+    commentDiv.className = 'comment-item';
+    commentDiv.dataset.commentId = c.id;
+    const commentTop = document.createElement('div');
+    commentTop.className = 'comment-top';
+    const img = document.createElement('img');
+    img.src = c.profiles.avatar_url || fallbackAvatar(c.profiles.username);
+    const strong = document.createElement('strong');
+    strong.textContent = c.profiles.display_name || c.profiles.username || 'User';
+    const span = document.createElement('span');
+    span.className = 'small-muted';
+    span.textContent = '@' + (c.profiles.username || '');
+    const meta = document.createElement('span');
+    meta.className = 'small-muted';
+    meta.textContent = fmtTime(c.created_at);
+    meta.style.marginLeft = 'auto';
+    commentTop.appendChild(img);
+    commentTop.appendChild(strong);
+    commentTop.appendChild(span);
+    commentTop.appendChild(meta);
+    const p = document.createElement('p');
+    p.textContent = c.text;
+    commentDiv.appendChild(commentTop);
+    commentDiv.appendChild(p);
+
+    if (c.user_id === currentUser?.id) {
+      const delBtn = document.createElement('button');
+      delBtn.innerHTML = '<i class="fa-solid fa-trash"></i>';
+      delBtn.addEventListener('click', () => deleteComment(c.id, commentDiv, tweetId));
+      commentDiv.appendChild(delBtn);
+    }
+
+    commentsSection.appendChild(commentDiv);
+  });
+  container.appendChild(commentsSection);
+}
+
+async function loadTweets(){
+  const { data: tweets, error } = await supabase.from('tweets').select('*, profiles(display_name, username, avatar_url)').eq('user_id', viewingProfileId).order('created_at',{ ascending:false });
+  tweetListEl.innerHTML = '<h3>Tweets</h3>';
+  if(error){ console.error(error); tweetListEl.innerHTML += '<div class="small-muted">Tweets could not be loaded.</div>'; return; }
+  if(!tweets || tweets.length===0){ tweetListEl.innerHTML+='<div class="small-muted">No tweets yet.</div>'; return; }
+
+  for (const t of tweets) {
+    const div = document.createElement('div'); div.className='tweet';
+    div.dataset.tweetId = t.id;
+    const top = document.createElement('div'); top.className='top';
+    const avatar = document.createElement('img'); avatar.src = t.profiles.avatar_url || fallbackAvatar(t.profiles.username);
+    const strong = document.createElement('strong'); strong.textContent = t.profiles.display_name || t.profiles.username || 'User';
+    const uname = document.createElement('span'); uname.className='small-muted'; uname.textContent = '@' + (t.profiles.username || '');
+    const meta = document.createElement('div'); meta.className='meta'; meta.textContent = fmtTime(t.created_at);
+
+    top.appendChild(avatar);
+    top.appendChild(strong);
+    top.appendChild(uname);
+    top.appendChild(meta);
+
+    const text = document.createElement('p'); text.textContent = escapeHTML(t.text || '');
+
+    let mediaDiv = null;
+    if (t.media_url && t.media_type) {
+      mediaDiv = document.createElement('div');
+      mediaDiv.style.marginTop = '8px';
+      if (t.media_type === 'audio') {
+        const playerContainer = document.createElement('div');
+        mediaDiv.appendChild(playerContainer);
+        createWaveformPlayer(playerContainer, t.media_url);
+      } else if (t.media_type === 'image') {
+        const img = document.createElement('img');
+        img.src = t.media_url;
+        img.alt = 'Media';
+        mediaDiv.appendChild(img);
+      } else if (t.media_type === 'video') {
+        createVideoPreview(mediaDiv, t.media_url, true);
+      }
+    }
+
+    const actions = document.createElement('div'); actions.className = 'actions';
+
+    const likesCount = await getLikesCount(t.id);
+    const isLiked = await getIsLiked(t.id);
+    const commentsCount = await getCommentsCount(t.id);
+
+    const likeBtn = document.createElement('button');
+    likeBtn.innerHTML = `<i class="${isLiked ? 'fas' : 'far'} fa-heart"></i> <span>${likesCount}</span>`;
+    likeBtn.addEventListener('click', async () => {
+      if (isLiked) {
+        await supabase.from('likes').delete().eq('tweet_id', t.id).eq('user_id', currentUser.id);
+      } else {
+        await supabase.from('likes').insert({ tweet_id: t.id, user_id: currentUser.id });
+      }
+      await loadTweets();
+    });
+
+    const commentBtn = document.createElement('button');
+    commentBtn.innerHTML = `<i class="far fa-comment"></i> <span>${commentsCount}</span>`;
+
+    actions.appendChild(likeBtn);
+    actions.appendChild(commentBtn);
+
+    const commentSection = document.createElement('div');
+    commentSection.className = 'comment-section';
+    commentSection.style.display = 'none';
+
+    const commentInput = document.createElement('textarea');
+    commentInput.rows = 2;
+    commentInput.placeholder = 'Write a comment...';
+
+    const postCommentBtn = document.createElement('button');
+    postCommentBtn.textContent = 'Comment';
+    postCommentBtn.addEventListener('click', async () => {
+      const text = commentInput.value.trim();
+      if (!text) return;
+      await supabase.from('comments').insert({ tweet_id: t.id, user_id: currentUser.id, text, created_at: new Date().toISOString() });
+      commentInput.value = '';
+      await loadComments(commentSection, t.id);
+      await loadTweets();
+    });
+
+    commentSection.appendChild(commentInput);
+    commentSection.appendChild(postCommentBtn);
+
+    commentBtn.addEventListener('click', async () => {
+      commentSection.style.display = commentSection.style.display === 'none' ? 'block' : 'none';
+      if (commentSection.style.display === 'block') {
+        await loadComments(commentSection, t.id);
+      }
+    });
+
+    div.appendChild(top);
+    div.appendChild(text);
+    if (mediaDiv) div.appendChild(mediaDiv);
+    div.appendChild(actions);
+    div.appendChild(commentSection);
+    tweetListEl.appendChild(div);
+  }
+}
+
+async function loadFollowers(){
+  followersList.innerHTML = '';
+  const { data: follows, error } = await supabase.from('follows').select('follower').eq('following', viewingProfileId);
+  if(error || !follows) {
+    followersList.innerHTML = '<p class="small-muted">An error occurred while loading.</p>';
+    return;
+  }
+  const followerIds = follows.map(f => f.follower);
+  if(followerIds.length === 0) {
+    followersList.innerHTML = '<p class="small-muted">No followers yet.</p>';
+    return;
+  }
+  const { data: users, error: uerr } = await supabase.from('profiles').select('*').in('id', followerIds);
+  if(uerr || !users) {
+    followersList.innerHTML = '<p class="small-muted">An error occurred while loading.</p>';
+    return;
+  }
+  users.forEach(u => {
+    const div = document.createElement('div');
+    div.className = 'list-item';
+    const img = document.createElement('img');
+    img.src = u.avatar_url || fallbackAvatar(u.username);
+    img.width = 50;
+    img.height = 50;
+    const strong = document.createElement('strong');
+    strong.textContent = u.display_name || u.username || 'User';
+    const span = document.createElement('span');
+    span.className = 'small-muted';
+    span.textContent = '@' + (u.username || '');
+    div.appendChild(img);
+    div.appendChild(strong);
+    div.appendChild(span);
+    div.addEventListener('click', () => {
+      window.location.href = `profile.html?id=${u.id}`;
+    });
+    followersList.appendChild(div);
+  });
+}
+
+async function loadFollowing(){
+  followingList.innerHTML = '';
+  const { data: follows, error } = await supabase.from('follows').select('following').eq('follower', viewingProfileId);
+  if(error || !follows) {
+    followingList.innerHTML = '<p class="small-muted">An error occurred while loading.</p>';
+    return;
+  }
+  const followingIds = follows.map(f => f.following);
+  if(followingIds.length === 0) {
+    followingList.innerHTML = '<p class="small-muted">No following yet.</p>';
+    return;
+  }
+  const { data: users, error: uerr } = await supabase.from('profiles').select('*').in('id', followingIds);
+  if(uerr || !users) {
+    followingList.innerHTML = '<p class="small-muted">An error occurred while loading.</p>';
+    return;
+  }
+  users.forEach(u => {
+    const div = document.createElement('div');
+    div.className = 'list-item';
+    const img = document.createElement('img');
+    img.src = u.avatar_url || fallbackAvatar(u.username);
+    img.width = 50;
+    img.height = 50;
+    const strong = document.createElement('strong');
+    strong.textContent = u.display_name || u.username || 'User';
+    const span = document.createElement('span');
+    span.className = 'small-muted';
+    span.textContent = '@' + (u.username || '');
+    div.appendChild(img);
+    div.appendChild(strong);
+    div.appendChild(span);
+    div.addEventListener('click', () => {
+      window.location.href = `profile.html?id=${u.id}`;
+    });
+    followingList.appendChild(div);
+  });
+}
+
+function onOpenEditModal(){
+  if(!viewingProfile) return;
+  modalDisplayName.value = viewingProfile.display_name || '';
+  modalUsername.value = viewingProfile.username || '';
+  modalBio.value = viewingProfile.bio || '';
+  modalDetails.value = viewingProfile.details || '';
+  modalProfileInput.value = '';
+  modalCoverInput.value = '';
+  editModal.style.display = 'block';
+}
+
+window.addEventListener('click', (e)=>{
+  if([editModal, followersModal, followingModal].includes(e.target)) {
+    e.target.style.display = 'none';
+  }
+});
+
+init();
+</script>
+</body>
+</html>

@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Concordia Nova | Moderation</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+<script type="module" src="supabaseClient.js"></script> <!-- Supabase client import -->
+<style>
+:root {
+  --bg: #0b0f1a;
+  --card: #141a2e;
+  --glass: rgba(255, 255, 255, .05);
+  --border: rgba(255, 255, 255, .08);
+  --accent: #00e5ff;
+  --text: #ffffff;
+  --muted: #9aa4c7;
+  --radius: 16px;
+  --snow-color: #fff;
+  --yellow-text: #ffff00;
+  --reject-color: #ff4d4d; /* Red color for reject button */
+}
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+body {
+  font-family: Poppins, sans-serif;
+  background: url('https://images.unsplash.com/photo-1540979388789-6cee28a1cdc9?q=80&w=1920') no-repeat center center fixed;
+  background-size: cover;
+  color: var(--text);
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+}
+.snow-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: -1;
+  overflow: hidden;
+}
+.snowflake {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background: var(--snow-color);
+  border-radius: 50%;
+  opacity: 0.8;
+  animation: fall linear infinite;
+}
+@keyframes fall {
+  0% {
+    transform: translateY(-10vh) rotate(0deg);
+  }
+  100% {
+    transform: translateY(110vh) rotate(360deg);
+  }
+}
+.container {
+  max-width: 1200px;
+  margin: auto;
+  padding: 24px;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: var(--radius);
+}
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--glass);
+  border: 1px solid var(--border);
+  padding: 18px 24px;
+  border-radius: var(--radius);
+  margin-bottom: 32px;
+}
+header h1 {
+  font-size: 20px;
+}
+header a {
+  text-decoration: none;
+  color: var(--text);
+  background: var(--glass);
+  padding: 10px 16px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  cursor: pointer;
+  margin-left: 10px;
+}
+.hero {
+  text-align: center;
+  margin-bottom: 32px;
+}
+.hero h2 {
+  font-size: 32px;
+  margin-bottom: 10px;
+}
+.hero p {
+  color: var(--muted);
+}
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 24px;
+}
+.card {
+  background: var(--card);
+  border-radius: var(--radius);
+  overflow: hidden;
+  border: 1px solid var(--border);
+  transition: .3s;
+  cursor: pointer;
+  position: relative;
+}
+.card:hover {
+  transform: translateY(-6px);
+}
+.card img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  background: #000;
+}
+.card-body {
+  padding: 16px;
+}
+.card-body h3 {
+  font-size: 18px;
+  margin-bottom: 8px;
+}
+.card-body p {
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 12px;
+}
+.price-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+.platform {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.platform img {
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  background: #fff;
+}
+.price {
+  color: var(--accent);
+  font-weight: 600;
+}
+.actions {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 16px 16px;
+}
+.actions button {
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+}
+.actions .approve {
+  background: var(--accent);
+  color: #000;
+}
+.actions .reject {
+  background: var(--reject-color);
+  color: #fff;
+}
+</style>
+</head>
+<body>
+<div class="snow-container"></div>
+<div class="container">
+<header>
+<h1>Concordia Nova Moderation</h1>
+<a href="marketplace.html">Back to Marketplace</a>
+<a href="index.html">Back to Hub</a>
+</header>
+<div class="hero">
+<h2>Pending Products</h2>
+<p>Review and approve/reject products added by users.</p>
+</div>
+<div class="grid" id="grid"></div>
+</div>
+<script>
+const CATEGORY_IMAGES = {
+  electronics: "https://plus.unsplash.com/premium_photo-1679079456083-9f288e224e96?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8ZWxlY3Ryb25pY3N8ZW58MHx8MHx8fDA%3D",
+  fashion: "https://images.unsplash.com/photo-1483985988355-763728e1935b?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8c2hvcHBpbmd8ZW58MHx8MHx8fDA%3D",
+  home: "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8aG9tZSUyMGludGVyaW9yfGVufDB8fDB8fHww",
+  sports: "https://plus.unsplash.com/premium_photo-1671631630555-1cb3ffa7dfe6?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8Z3ltJTIwZXF1aXBtZW50fGVufDB8fDB8fHww",
+  books: "https://plus.unsplash.com/premium_photo-1669652639356-f5cb1a086976?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTN8fGJvb2tzfGVufDB8fDB8fHww",
+  beauty: "https://plus.unsplash.com/premium_photo-1661769021743-7139c6fc4ab9?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8YmVhdXR5JTIwcHJvZHVjdHxlbnwwfHwwfHx8MA%3D%3D",
+  automotive: "https://plus.unsplash.com/premium_photo-1737182592549-0c83f93e2903?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8cmVkJTIwc3BvcnRzJTIwY2FyfGVufDB8fDB8fHww",
+  food: "https://images.unsplash.com/photo-1534723452862-4c874018d66d?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8Z3JvY2VyeXxlbnwwfHwwfHx8MA%3D%3D",
+  toys: "https://images.unsplash.com/photo-1545558014-8692077e9b5c?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8a2lkcyUyMHRveXN8ZW58MHx8MHx8fDA%3D",
+  health: "https://plus.unsplash.com/premium_photo-1730578183644-d6bc6d308851?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8dml0YW1pbnMlMjBhbmQlMjBzdXBwbGVtZW50c3xlbnwwfHwwfHx8MA%3D%3D",
+  global: "https://images.unsplash.com/photo-1570549717489-460d7d73ce05?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8Z2xvYmFsJTIwc2hvcHBpbmd8ZW58MHx8MHx8fDA%3D",
+  default: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?q=80&w=800"
+};
+const STORE_LOGOS = {
+  amazon: "https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg",
+  ebay: "https://upload.wikimedia.org/wikipedia/commons/1/1b/EBay_logo.svg",
+  trendyol: "https://cdn-icons-png.flaticon.com/512/5968/5968776.png",
+  hepsiburada: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9c/Hepsiburada_logo.svg/2560px-Hepsiburada_logo.svg.png",
+  n11: "https://upload.wikimedia.org/wikipedia/commons/9/9e/N11_logo.png",
+  default: "https://cdn-icons-png.flaticon.com/512/34/34568.png"
+};
+let pendingProducts = [];
+
+function logoFor(store) {
+  store = store.toLowerCase();
+  if (store.includes("amazon")) return STORE_LOGOS.amazon;
+  if (store.includes("ebay")) return STORE_LOGOS.ebay;
+  if (store.includes("trendyol")) return STORE_LOGOS.trendyol;
+  if (store.includes("hepsiburada")) return STORE_LOGOS.hepsiburada;
+  if (store.includes("n11")) return STORE_LOGOS.n11;
+  return STORE_LOGOS.default;
+}
+function imageFor(cat) {
+  return CATEGORY_IMAGES[cat] || CATEGORY_IMAGES.default;
+}
+async function getPendingProducts() {
+  const { data, error } = await supabase
+    .from('products')
+    .select('*')
+    .eq('status', 'pending')
+    .order('created', { ascending: false });
+  if (error) {
+    console.error('Error loading pending products:', error);
+    return [];
+  }
+  return data;
+}
+async function loadPendingProducts() {
+  pendingProducts = await getPendingProducts();
+  renderPendingProducts(pendingProducts);
+}
+function renderPendingProducts(products) {
+  const grid = document.getElementById("grid");
+  grid.innerHTML = "";
+  products.forEach(p => {
+    const card = document.createElement("div");
+    card.className = "card";
+    card.innerHTML = `
+      <img src="${p.image || imageFor(p.cat)}">
+      <div class="card-body">
+        <h3>${p.name}</h3>
+        <p>${p.cat.charAt(0).toUpperCase() + p.cat.slice(1)}</p>
+        <div class="price-row">
+          <div class="platform">
+            <img src="${logoFor(p.store)}">
+            <span>${p.store}</span>
+          </div>
+          <span class="price">${p.price}</span>
+        </div>
+        <p><a href="${p.link}" target="_blank">Product Link</a></p>
+      </div>
+      <div class="actions">
+        <button class="approve" onclick="approveProduct('${p.id}')">Approve</button>
+        <button class="reject" onclick="rejectProduct('${p.id}')">Reject</button>
+      </div>`;
+    grid.appendChild(card);
+  });
+}
+async function approveProduct(id) {
+  const { error } = await supabase
+    .from('products')
+    .update({ status: 'approved' })
+    .eq('id', id);
+  if (error) {
+    console.error('Approval error:', error);
+    return alert('Approval failed: ' + error.message);
+  }
+  alert('Product approved.');
+  await loadPendingProducts();
+}
+async function rejectProduct(id) {
+  const { error } = await supabase
+    .from('products')
+    .delete()
+    .eq('id', id);
+  if (error) {
+    console.error('Rejection error:', error);
+    return alert('Rejection failed: ' + error.message);
+  }
+  alert('Product rejected and deleted.');
+  await loadPendingProducts();
+}
+function createSnowflakes() {
+  const snowContainer = document.querySelector(".snow-container");
+  for (let i = 0; i < 200; i++) {
+    const snowflake = document.createElement("div");
+    snowflake.className = "snowflake";
+    snowflake.style.left = `${Math.random() * 100}vw`;
+    snowflake.style.animationDuration = `${Math.random() * 3 + 2}s`;
+    snowflake.style.animationDelay = `${Math.random() * 5}s`;
+    snowflake.style.width = `${Math.random() * 5 + 5}px`;
+    snowflake.style.height = snowflake.style.width;
+    snowflake.style.opacity = Math.random() * 0.5 + 0.3;
+    snowContainer.appendChild(snowflake);
+  }
+}
+// Initialize
+createSnowflakes();
+loadPendingProducts();
+</script>
+</body>
+</html>
