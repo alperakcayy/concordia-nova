@@ -48,8 +48,8 @@
       --bg-1: #04050a;
       --bg-2: #071023;
       --bg-overlay: rgba(4, 5, 10, 0.85);
-      --glass: rgba(255, 255, 255, 0.03);
-      --glass-hover: rgba(255, 255, 255, 0.06);
+      --glass: rgba(0, 0, 0, 0.8);
+      --glass-hover: rgba(0, 0, 0, 0.9);
       --muted: #9aa6b2;
       --muted-hover: #b0bdc9;
       --accent: #00f0ff;
@@ -62,12 +62,12 @@
       --neon: #00f0ff;
       --neon-glow: rgba(0, 240, 255, 0.3);
       --neon-glow-strong: rgba(0, 240, 255, 0.5);
-      --card: rgba(0, 0, 0, 0.6);
-      --card-hover: rgba(0, 0, 0, 0.7);
-      --glass-2: rgba(255, 255, 255, 0.02);
-      --glass-3: rgba(255, 255, 255, 0.015);
-      --glass-4: rgba(255, 255, 255, 0.01);
-      --white: #ffffff;
+      --card: #000000;
+      --card-hover: #111111;
+      --glass-2: rgba(0, 0, 0, 0.7);
+      --glass-3: rgba(0, 0, 0, 0.6);
+      --glass-4: rgba(0, 0, 0, 0.5);
+      --white: #ffff00;
       --black: #000000;
       --error: #ff1744;
       --success: #00e676;
@@ -118,7 +118,8 @@
     }
     body {
       font-family: var(--font-primary);
-      background: var(--bg-1);
+      background: var(--bg-1) url('https://cdn.mos.cms.futurecdn.net/QUojE4LDBrcRnS7wn7DA9B.jpg') no-repeat center center fixed;
+      background-size: cover;
       color: var(--white);
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
@@ -153,8 +154,8 @@
        ========================================================================== */
     .container {
       max-width: var(--max-width);
-      margin: 48px auto;
-      padding: 32px;
+      margin: 32px auto;
+      padding: 24px;
       position: relative;
       z-index: var(--z-index-content);
       display: grid;
@@ -203,8 +204,8 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 20px;
-      padding: 16px 20px;
+      gap: 16px;
+      padding: 12px 16px;
       background: linear-gradient(180deg, var(--glass), var(--glass-2));
       border-radius: var(--radius-md);
       border: 1px solid var(--glass-border);
@@ -225,11 +226,11 @@
     .brand {
       display: flex;
       align-items: center;
-      gap: 16px;
+      gap: 12px;
     }
     .brand .logo {
-      width: 60px;
-      height: 60px;
+      width: 48px;
+      height: 48px;
       border-radius: var(--radius-sm);
       background: linear-gradient(135deg, var(--accent-2), var(--accent));
       display: inline-flex;
@@ -237,7 +238,7 @@
       justify-content: center;
       font-family: var(--font-futuristic);
       font-weight: 900;
-      font-size: 24px;
+      font-size: 20px;
       color: var(--bg-1);
       box-shadow: 0 8px 24px rgba(123, 47, 255, 0.18), 0 4px 12px rgba(0, 240, 255, 0.08) inset;
       transition: transform var(--transition-fast), box-shadow var(--transition-md), background var(--transition-slow);
@@ -249,14 +250,14 @@
     }
     .brand h1 {
       margin: 0;
-      font-size: 22px;
+      font-size: 20px;
       font-weight: 800;
       letter-spacing: 0.3px;
       font-family: var(--font-futuristic);
     }
     .brand p {
       margin: 0;
-      font-size: 14px;
+      font-size: 13px;
       color: var(--muted);
       margin-top: 4px;
       transition: color var(--transition-fast);
@@ -340,9 +341,10 @@
       overflow: hidden;
       cursor: pointer;
       border: 1px solid var(--glass-border);
-      background: linear-gradient(135deg, var(--card), var(--card-hover));
+      background: var(--card);
       transition: transform var(--transition-md), box-shadow var(--transition-md), border-color var(--transition-md), background var(--transition-md);
       box-shadow: var(--shadow-md);
+      backdrop-filter: blur(10px);
     }
     .card:focus {
       outline: none;
@@ -353,7 +355,7 @@
     .card:hover {
       transform: translateY(-8px) scale(1.02);
       border-color: var(--glass-border-hover);
-      background: linear-gradient(135deg, var(--card-hover), var(--card));
+      background: var(--card-hover);
       box-shadow: var(--shadow-lg);
     }
     .card::after {
@@ -566,7 +568,7 @@
        ========================================================================== */
     .neon-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
       gap: 20px;
       margin-top: 16px;
     }
@@ -578,19 +580,21 @@
       padding: 18px 20px;
       border-radius: var(--radius-md);
       border: 1px solid var(--glass-border);
-      background: linear-gradient(180deg, var(--glass), var(--glass-2));
+      background: var(--card);
       color: var(--white);
       text-decoration: none;
       font-weight: 700;
       transition: transform var(--transition-md), box-shadow var(--transition-md), background var(--transition-md), border-color var(--transition-md);
-      box-shadow: var(--shadow-md);
+      box-shadow: var(--shadow-md), 0 0 20px var(--neon-glow);
       overflow: hidden;
-      min-height: 92px;
-      animation: neon-pulse 3s infinite alternate;
+      cursor: grab;
+      backdrop-filter: blur(10px);
     }
-    @keyframes neon-pulse {
-      0% { border-color: rgba(255, 255, 255, 0.04); }
-      100% { border-color: rgba(255, 255, 255, 0.08); }
+    .neon-btn:active {
+      cursor: grabbing;
+    }
+    .neon-btn.dragging {
+      opacity: 0.5;
     }
     .neon-btn .icon {
       min-width: 72px;
@@ -619,66 +623,41 @@
       margin: 0;
       font-size: 16px;
       font-family: var(--font-futuristic);
+      color: #ffff00;
+      text-shadow: 0 0 5px #ffff00, 0 0 10px #ffff00;
     }
     .neon-btn p {
       margin: 8px 0 0 0;
-      color: var(--muted);
-      font-size: 13px;
+      color: #ffea00;
+      font-size: 14px;
       line-height: 1.4;
       white-space: normal;
       word-wrap: break-word;
+      text-shadow: 0 0 3px #ffea00;
     }
     /* Neon glow variants with more colors */
     .neon-btn[data-variant="social"] { border-color: rgba(123, 47, 255, 0.14); }
-    .neon-btn[data-variant="social"]:hover { box-shadow: 0 20px 70px rgba(123, 47, 255, 0.22); border-color: rgba(123, 47, 255, 0.2); }
+    .neon-btn[data-variant="social"]:hover { box-shadow: 0 20px 70px rgba(123, 47, 255, 0.22), 0 0 20px var(--neon-glow); border-color: rgba(123, 47, 255, 0.2); }
     .neon-btn[data-variant="market"] { border-color: rgba(0, 240, 255, 0.12); }
-    .neon-btn[data-variant="market"]:hover { box-shadow: 0 20px 70px rgba(0, 240, 255, 0.2); border-color: rgba(0, 240, 255, 0.18); }
+    .neon-btn[data-variant="market"]:hover { box-shadow: 0 20px 70px rgba(0, 240, 255, 0.2), 0 0 20px var(--neon-glow); border-color: rgba(0, 240, 255, 0.18); }
     .neon-btn[data-variant="music"] { border-color: rgba(255, 100, 200, 0.1); }
-    .neon-btn[data-variant="music"]:hover { box-shadow: 0 20px 70px rgba(255, 100, 200, 0.16); border-color: rgba(255, 100, 200, 0.14); }
+    .neon-btn[data-variant="music"]:hover { box-shadow: 0 20px 70px rgba(255, 100, 200, 0.16), 0 0 20px var(--neon-glow); border-color: rgba(255, 100, 200, 0.14); }
     .neon-btn[data-variant="forum"] { border-color: rgba(120, 255, 140, 0.1); }
-    .neon-btn[data-variant="forum"]:hover { box-shadow: 0 20px 70px rgba(120, 255, 140, 0.16); border-color: rgba(120, 255, 140, 0.14); }
+    .neon-btn[data-variant="forum"]:hover { box-shadow: 0 20px 70px rgba(120, 255, 140, 0.16), 0 0 20px var(--neon-glow); border-color: rgba(120, 255, 140, 0.14); }
     .neon-btn[data-variant="business"] { border-color: rgba(255, 200, 80, 0.11); }
-    .neon-btn[data-variant="business"]:hover { box-shadow: 0 20px 70px rgba(255, 200, 80, 0.18); border-color: rgba(255, 200, 80, 0.16); }
+    .neon-btn[data-variant="business"]:hover { box-shadow: 0 20px 70px rgba(255, 200, 80, 0.18), 0 0 20px var(--neon-glow); border-color: rgba(255, 200, 80, 0.16); }
     .neon-btn[data-variant="ai"] { border-color: rgba(255, 64, 200, 0.1); }
-    .neon-btn[data-variant="ai"]:hover { box-shadow: 0 20px 70px rgba(255, 64, 200, 0.16); border-color: rgba(255, 64, 200, 0.14); }
+    .neon-btn[data-variant="ai"]:hover { box-shadow: 0 20px 70px rgba(255, 64, 200, 0.16), 0 0 20px var(--neon-glow); border-color: rgba(255, 64, 200, 0.14); }
     .neon-btn[data-variant="events"] { border-color: rgba(0, 255, 140, 0.1); }
-    .neon-btn[data-variant="events"]:hover { box-shadow: 0 20px 70px rgba(0, 255, 140, 0.16); border-color: rgba(0, 255, 140, 0.14); }
+    .neon-btn[data-variant="events"]:hover { box-shadow: 0 20px 70px rgba(0, 255, 140, 0.16), 0 0 20px var(--neon-glow); border-color: rgba(0, 255, 140, 0.14); }
     .neon-btn[data-variant="learning"] { border-color: rgba(255, 200, 0, 0.1); }
-    .neon-btn[data-variant="learning"]:hover { box-shadow: 0 20px 70px rgba(255, 200, 0, 0.16); border-color: rgba(255, 200, 0, 0.14); }
+    .neon-btn[data-variant="learning"]:hover { box-shadow: 0 20px 70px rgba(255, 200, 0, 0.16), 0 0 20px var(--neon-glow); border-color: rgba(255, 200, 0, 0.14); }
     .neon-btn[data-variant="jobs"] { border-color: rgba(80, 255, 200, 0.1); }
-    .neon-btn[data-variant="jobs"]:hover { box-shadow: 0 20px 70px rgba(80, 255, 200, 0.16); border-color: rgba(80, 255, 200, 0.14); }
+    .neon-btn[data-variant="jobs"]:hover { box-shadow: 0 20px 70px rgba(80, 255, 200, 0.16), 0 0 20px var(--neon-glow); border-color: rgba(80, 255, 200, 0.14); }
     .neon-btn[data-variant="tools"] { border-color: rgba(200, 80, 255, 0.1); }
-    .neon-btn[data-variant="tools"]:hover { box-shadow: 0 20px 70px rgba(200, 80, 255, 0.16); border-color: rgba(200, 80, 255, 0.14); }
+    .neon-btn[data-variant="tools"]:hover { box-shadow: 0 20px 70px rgba(200, 80, 255, 0.16), 0 0 20px var(--neon-glow); border-color: rgba(200, 80, 255, 0.14); }
     .neon-btn[data-variant="health"] { border-color: rgba(255, 64, 129, 0.1); }
-    .neon-btn[data-variant="health"]:hover { box-shadow: 0 20px 70px rgba(255, 64, 129, 0.16); border-color: rgba(255, 64, 129, 0.14); }
-    /* Decorative animated gradient overlay on buttons */
-    .neon-btn::before {
-      content: '';
-      position: absolute;
-      left: -40%;
-      top: -50%;
-      width: 180%;
-      height: 220%;
-      background: radial-gradient(circle at 10% 10%, rgba(255, 255, 255, 0.03), transparent 12%),
-                  radial-gradient(circle at 90% 90%, rgba(255, 255, 255, 0.02), transparent 12%);
-      transform: rotate(10deg);
-      transform-origin: center;
-      opacity: 0.85;
-      pointer-events: none;
-      animation: rotate-gradient 15s linear infinite;
-    }
-    @keyframes rotate-gradient {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-    .neon-btn::after {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(90deg, rgba(255, 255, 255, 0.01), rgba(255, 255, 255, 0.005));
-      mix-blend-mode: overlay;
-      pointer-events: none;
-    }
+    .neon-btn[data-variant="health"]:hover { box-shadow: 0 20px 70px rgba(255, 64, 129, 0.16), 0 0 20px var(--neon-glow); border-color: rgba(255, 64, 129, 0.14); }
     /* ==========================================================================
        RESPONSIVE DESIGN
        ========================================================================== */
@@ -697,10 +676,11 @@
     }
     @media (max-width: 600px) {
       .container { padding: 16px; margin: 32px auto; }
-      .neon-btn { padding: 14px; min-height: 80px; gap: 12px; }
+      .neon-grid { grid-template-columns: 1fr; gap: 12px; }
+      .neon-btn { padding: 14px; gap: 12px; }
       .neon-btn .icon { min-width: 64px; height: 64px; }
       .neon-btn h4 { font-size: 15px; }
-      .neon-btn p { font-size: 12px; }
+      .neon-btn p { font-size: 14px; }
       .grid { gap: 12px; grid-template-columns: 1fr; }
       .hero h2 { font-size: 28px; }
       .hero p { font-size: 14px; }
@@ -718,9 +698,6 @@
         display: none;
       }
       .animated-lines, .top-glow, .bottom-glow, .rich-ornament {
-        display: none;
-      }
-      .neon-btn::before, .neon-btn::after {
         display: none;
       }
       .neon-btn {
@@ -790,7 +767,7 @@
        PAGE FOOTER NOTE
        ========================================================================== */
     footer.hub-note {
-      margin-top: 24px;
+      margin-top: 16px;
       text-align: center;
       color: var(--muted);
       font-size: 14px;
@@ -830,14 +807,14 @@
       --bg-1: #f0f4f8;
       --bg-2: #e0e8f0;
       --bg-overlay: rgba(240, 244, 248, 0.85);
-      --glass: rgba(0, 0, 0, 0.03);
-      --glass-hover: rgba(0, 0, 0, 0.06);
+      --glass: rgba(255, 255, 255, 0.8);
+      --glass-hover: rgba(255, 255, 255, 0.9);
       --muted: #5a6a7a;
       --muted-hover: #4a5a6a;
       --white: #202020;
       --black: #ffffff;
-      --card: rgba(255, 255, 255, 0.8);
-      --card-hover: rgba(255, 255, 255, 0.9);
+      --card: #ffffff;
+      --card-hover: #f0f0f0;
       --glass-border: rgba(0, 0, 0, 0.04);
       --glass-border-hover: rgba(0, 0, 0, 0.08);
       --neon-glow: rgba(0, 240, 255, 0.2);
@@ -988,7 +965,7 @@
     }
     /* Mini Profile Box */
     .mini-profile {
-      background: rgba(20,25,45,0.9);
+      background: var(--card);
       padding: 16px;
       border-radius: 12px;
       margin: 20px auto;
@@ -996,6 +973,7 @@
       border: 1px solid rgba(0,240,255,0.2);
       box-shadow: 0 8px 30px rgba(0,240,255,0.12);
       display: none;
+      backdrop-filter: blur(10px);
     }
     .mini-profile .top {
       display: flex;
@@ -1309,84 +1287,6 @@
         </div>
       </div>
     </section>
-    <section class="grid grid-3" aria-label="Featured modules">
-      <div class="card animate-slide-up" role="article" tabindex="0" aria-labelledby="card1">
-        <div>
-          <div class="title">
-            <div class="ic" aria-hidden="true">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                <path d="M12 2v20" stroke="rgba(255,255,255,0.95)" stroke-width="1.5" stroke-linecap="round"/>
-              </svg>
-            </div>
-            <div>
-              <h3 id="card1">Quick Start</h3>
-              <p>Instant access to any module, perfect on every device with mobile-friendly design.</p>
-            </div>
-          </div>
-        </div>
-        <div style="display:flex; gap:14px; align-items:center;">
-          <a href="ai.html" class="cta" role="button" aria-label="Go to AI Hub"><span>Explore</span><span class="arrow">→</span></a>
-          <span class="neon-badge">New!</span>
-        </div>
-      </div>
-      <div class="card animate-slide-up" role="article" tabindex="0" aria-labelledby="card2" style="animation-delay: 0.2s;">
-        <div>
-          <div class="title">
-            <div class="ic" aria-hidden="true">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                <path d="M3 12h18" stroke="rgba(255,255,255,0.95)" stroke-width="1.5" stroke-linecap="round"/>
-              </svg>
-            </div>
-            <div>
-              <h3 id="card2">Market Place</h3>
-              <p>Find the best prices, shop with affiliate links, and save.</p>
-            </div>
-          </div>
-        </div>
-        <div style="display:flex; gap:14px; align-items:center;">
-          <a href="market.html" class="cta" role="button" aria-label="Go to Marketplace"><span>Shopping</span><span class="arrow">→</span></a>
-          <span class="neon-badge">Popular</span>
-        </div>
-      </div>
-      <div class="card animate-slide-up" role="article" tabindex="0" aria-labelledby="card3" style="animation-delay: 0.4s;">
-        <div>
-          <div class="title">
-            <div class="ic" aria-hidden="true">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                <path d="M12 2l6 10-6 10-6-10 6-10z" stroke="rgba(255,255,255,0.95)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-            </div>
-            <div>
-              <h3 id="card3">Music & Visuals</h3>
-              <p>Elevate your music experience with rhythmic animations and space-themed visuals.</p>
-            </div>
-          </div>
-        </div>
-        <div style="display:flex; gap:14px; align-items:center;">
-          <a href="music.html" class="cta" role="button" aria-label="Go to Music"><span>Listen</span><span class="arrow">→</span></a>
-          <span class="neon-badge">Fun</span>
-        </div>
-      </div>
-      <div class="card animate-slide-up" role="article" tabindex="0" aria-labelledby="card4" style="animation-delay: 0.6s;">
-        <div>
-          <div class="title">
-            <div class="ic" aria-hidden="true">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                <circle cx="12" cy="12" r="9" stroke="rgba(255,255,255,0.95)" stroke-width="1.5"/>
-              </svg>
-            </div>
-            <div>
-              <h3 id="card4">AI Innovations</h3>
-              <p>Create creative content with artificial intelligence, bring your ideas to life.</p>
-            </div>
-          </div>
-        </div>
-        <div style="display:flex; gap:14px; align-items:center;">
-          <a href="ai.html" class="cta" role="button" aria-label="Go to AI"><span>Create</span><span class="arrow">→</span></a>
-          <span class="neon-badge">Smart</span>
-        </div>
-      </div>
-    </section>
     <div class="rich-ornament" aria-hidden="true"></div>
     <footer class="hub-note" role="contentinfo">
       This platform is for information and guidance purposes; transactions are done on external sites. © 2025 Concordia Nova — All rights reserved.
@@ -1415,8 +1315,7 @@
     async function loadMiniProfile() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
-        // Redirect to register if not logged in
-        window.location.href = 'register.html';
+        // No redirect, just don't show profile
         return;
       }
       const { data: profile, error } = await supabase
@@ -1446,6 +1345,54 @@
     }
     // Load mini profile on page load
     loadMiniProfile();
+    // Add auth check to neon buttons
+    const neonBtns = document.querySelectorAll('.neon-btn');
+    neonBtns.forEach(btn => {
+      btn.addEventListener('click', async (e) => {
+        e.preventDefault();
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) {
+          window.location.href = 'register.html';
+        } else {
+          window.location.href = btn.getAttribute('href');
+        }
+      });
+    });
+    // Drag and drop for neon-grid
+    const grid = document.querySelector('.neon-grid');
+    let draggedItem = null;
+    neonBtns.forEach(btn => {
+      btn.draggable = true;
+      btn.addEventListener('dragstart', (e) => {
+        draggedItem = btn;
+        e.dataTransfer.setData('text/plain', '');
+        setTimeout(() => btn.classList.add('dragging'), 0);
+      });
+      btn.addEventListener('dragend', (e) => {
+        setTimeout(() => btn.classList.remove('dragging'), 0);
+      });
+    });
+    grid.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      const afterElement = getDragAfterElement(grid, e.clientX, e.clientY);
+      if (afterElement == null) {
+        grid.appendChild(draggedItem);
+      } else {
+        grid.insertBefore(draggedItem, afterElement);
+      }
+    });
+    function getDragAfterElement(container, x, y) {
+      const draggableElements = [...container.querySelectorAll('.neon-btn:not(.dragging)')];
+      return draggableElements.reduce((closest, child) => {
+        const box = child.getBoundingClientRect();
+        const offset = y - box.top - box.height / 2;
+        if (offset < 0 && offset > closest.offset) {
+          return { offset: offset, element: child };
+        } else {
+          return closest;
+        }
+      }, { offset: Number.NEGATIVE_INFINITY }).element;
+    }
     // ===========================================================================
     // INTERACTIVITY & ACCESSIBILITY
     // ===========================================================================
@@ -1689,7 +1636,7 @@
         }
       }
       const stars = [];
-      for (let i = 0; i < 100; i++) {
+      for (let i = 0; i < 50; i++) {
         stars.push(new Star());
       }
       function animate() {

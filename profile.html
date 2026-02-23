@@ -116,11 +116,11 @@ nav ul li a{color:#fff;text-decoration:none;font-weight:600}
     <button id="fileBtn" class="file-btn" title="Add File"><i class="fa-solid fa-image"></i></button>
   </div>
   <div id="mediaPreview" class="media-preview"></div>
-  <button id="tweetBtn">Tweet</button>
+  <button id="tweetBtn">Concord</button>
 </div>
 
 <section class="tweets" id="tweetList">
-  <h3>Tweets</h3>
+  <h3>Concords</h3>
 </section>
 
 <div id="editModal" class="modal">
@@ -886,10 +886,10 @@ async function tweetAt(){
     await loadTweets();
   } catch (err) {
     console.error(err);
-    showAlert('Error while posting tweet: ' + (err.message || err));
+    showAlert('Error while posting concord: ' + (err.message || err));
   } finally {
     tweetBtn.disabled = false;
-    tweetBtn.textContent = 'Tweet';
+    tweetBtn.textContent = 'Concord';
   }
 }
 
@@ -981,9 +981,9 @@ async function loadComments(container, tweetId) {
 
 async function loadTweets(){
   const { data: tweets, error } = await supabase.from('tweets').select('*, profiles(display_name, username, avatar_url)').eq('user_id', viewingProfileId).order('created_at',{ ascending:false });
-  tweetListEl.innerHTML = '<h3>Tweets</h3>';
-  if(error){ console.error(error); tweetListEl.innerHTML += '<div class="small-muted">Tweets could not be loaded.</div>'; return; }
-  if(!tweets || tweets.length===0){ tweetListEl.innerHTML+='<div class="small-muted">No tweets yet.</div>'; return; }
+  tweetListEl.innerHTML = '<h3>Concords</h3>';
+  if(error){ console.error(error); tweetListEl.innerHTML += '<div class="small-muted">Concords could not be loaded.</div>'; return; }
+  if(!tweets || tweets.length===0){ tweetListEl.innerHTML+='<div class="small-muted">No concords yet.</div>'; return; }
 
   for (const t of tweets) {
     const div = document.createElement('div'); div.className='tweet';
