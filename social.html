@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="tr">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
-  <title>Concordia Nova — Home</title>
+  <title>Concordia Nova — Anasayfa</title>
 
-  <!-- Google Fonts + Font Awesome icons -->
+  <!-- Google font + icons -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 
@@ -44,7 +44,7 @@
       padding-bottom: var(--bottom-bar-height);
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
-      -webkit-tap-highlight-color: transparent; /* Remove tap highlight on mobile */
+      -webkit-tap-highlight-color: transparent; /* Mobil tap highlight'ı kaldır */
     }
     nav {
       position: sticky;
@@ -507,13 +507,13 @@
       height: auto;
       display: block;
       border-radius: 12px;
-      touch-action: manipulation;
+      touch-action: manipulation; /* Mobil dokunma için optimize */
     }
     .media-preview video {
-      max-height: 400px;
+      max-height: 400px; /* Mobil için sınırlı yükseklik */
       object-fit: cover;
     }
-    /* Video player controls */
+    /* Video styles */
     .video-wrapper { 
       position: relative; 
       width: 100%; 
@@ -593,7 +593,7 @@
     .media-preview:active .media-overlay {
       opacity: 1;
     }
-    /* Founder badge styling */
+    /* Founder Badge */
     .founder-badge {
       display: inline-flex;
       align-items: center;
@@ -609,7 +609,7 @@
     .name .founder-badge {
       margin-left: 6px;
     }
-    /* Responsive adjustments */
+    /* Mobil için iyileştirmeler */
     @media (max-width: 900px) {
       .search-wrapper { width: 200px; }
       nav { justify-content: space-between; padding: calc(8px + var(--safe-area-top)) 8px 8px 8px; gap: 4px; }
@@ -680,7 +680,7 @@
       .record-btn, .file-btn { width: 36px; height: 36px; padding: 6px; }
       .actions { flex-wrap: nowrap; overflow-x: auto; }
       .action { font-size: 10px; padding: 3px 5px; }
-      .bottom-bar a span { display: none; } /* Hide text on very small screens, show icons only */
+      .bottom-bar a span { display: none; } /* Çok küçük ekranlarda span'ı gizle, sadece ikon */
       .bottom-bar a i { font-size: 18px; }
       .modal-content { padding: 12px; }
       .modal-comment-form input { font-size: 12px; }
@@ -688,119 +688,125 @@
       .video-progress { height: 2px; }
       .bottom-bar a { padding: 8px 2px; }
     }
-    /* Waveform player styling - closer to modern audio players */
+    /*  -> fotoğrafa daha yakın stil patch'ı <- */
     .waveform-player {
-      display: flex;
-      gap: 14px;
-      align-items: center;
-      background: rgba(6,6,6,0.75);
-      padding: 12px;
-      border-radius: 14px;
-      width: 100%;
-      box-sizing: border-box;
+      display:flex;
+      gap:14px;
+      align-items:center;
+      background: rgba(6,6,6,0.75); /* daha koyu, glass görünümü */
+      padding:12px;
+      border-radius:14px;
+      width:100%;
+      box-sizing:border-box;
       border: 1px solid rgba(255,255,255,0.03);
       box-shadow: 0 8px 30px rgba(0,0,0,0.45);
     }
-    .wf-left { display: flex; flex-direction: column; align-items: center; gap: 8px; min-width: 78px; }
+    .wf-left { display:flex; flex-direction:column; align-items:center; gap:8px; min-width:78px; }
     .wf-play-btn {
-      width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center;
+      width:48px; height:48px; border-radius:12px; display:flex; align-items:center; justify-content:center;
       background: rgba(0,0,0,0.35); border: 1px solid rgba(255,255,255,0.05);
-      cursor: pointer; font-size: 18px;
+      cursor:pointer; font-size:18px;
     }
-    .wf-time { font-size: 14px; color: #d0d0d0; font-weight: 600; }
-    .wf-canvas-wrap { flex: 1; position: relative; height: 64px; display: flex; align-items: center; }
-    .wf-canvas { width: 100%; height: 64px; display: block; border-radius: 10px; background: rgba(0,0,0,0.08); }
+    .wf-time { font-size:14px; color:#d0d0d0; font-weight:600; }
+    .wf-canvas-wrap { flex:1; position:relative; height:64px; display:flex; align-items:center; }
+    .wf-canvas { width:100%; height:64px; display:block; border-radius:10px; background: rgba(0,0,0,0.08); }
   </style>
 </head>
 <body>
   <nav>
-    <a href="register.html" id="loginLink"><i class="fa-solid fa-right-to-bracket"></i><span>Sign In</span></a>
-    <a href="register.html" id="registerLink"><i class="fa-solid fa-user-plus"></i><span>Sign Up</span></a>
-    <a href="index.html" id="homeLink"><i class="fa-solid fa-house"></i><span>Home</span></a>
-    <a href="profile.html" id="profileLink"><i class="fa-solid fa-user"></i><span>Profile</span></a>
-    <a href="index.html"><i class="fa-solid fa-home"></i><span>Back to Hub</span></a>
+    <a href="register.html" id="loginLink"><i class="fa-solid fa-right-to-bracket"></i><span data-i18n="login">Giriş</span></a>
+    <a href="register.html" id="registerLink"><i class="fa-solid fa-user-plus"></i><span data-i18n="register">Kayıt Ol</span></a>
+    <a href="index.html" id="homeLink"><i class="fa-solid fa-house"></i><span data-i18n="home">Anasayfa</span></a>
+    <a href="profile.html" id="profileLink"><i class="fa-solid fa-user"></i><span data-i18n="profile">Profil</span></a>
+<a href="index.html"><i class="fa-solid fa-home"></i><span>Hub'a Dön</span></a>
     <div class="search-wrapper" id="searchWrapper">
-      <input id="searchInput" class="search-input" type="search" placeholder="Search users..." aria-label="Search users" autocomplete="off" />
-      <div id="searchResults" class="search-results" role="listbox" aria-label="Search results"></div>
+      <input id="searchInput" class="search-input" type="search" data-i18n-placeholder="search" placeholder="Kullanıcı ara..." aria-label="Kullanıcı ara" autocomplete="off" />
+      <div id="searchResults" class="search-results" role="listbox" aria-label="Arama sonuçları"></div>
     </div>
 
     <div id="settingsMenu">
-      <a href="account.html" id="accountLink">Account</a>
-      <a href="iletisim.html" id="contactLink">Contact</a>
-      <a href="about.html">About</a>
+      <a href="#" id="languageBtn" data-i18n="language">Dil</a>
+      <div id="languageList">
+        <a href="#" data-lang="tr">Türkçe</a>
+        <a href="#" data-lang="en">English</a>
+        <a href="#" data-lang="ru">Русский</a>
+      </div>
+      <a href="account.html" id="accountLink" data-i18n="account">Hesap</a>
+      <a href="iletisim.html" id="contactLink" data-i18n="contact">İletişim</a>
+      <a href="about.html" data-i18n="about">Hakkında</a>
     </div>
   </nav>
 
-  <div id="refreshIndicator" class="refresh-indicator">Pull to refresh...</div>
+  <div id="refreshIndicator" class="refresh-indicator" data-i18n="pullToRefresh">Çekerek yenile...</div>
 
   <section id="feedPage" class="container">
-    <h2 id="feedTitle">Home</h2>
+    <h2 id="feedTitle" data-i18n="feedTitle">Anasayfa</h2>
 
     <div class="tweet-box">
-      <textarea id="tweetInput" placeholder="What's happening?" rows="3"></textarea>
+      <textarea id="tweetInput" data-i18n-placeholder="whatsUp" placeholder="Ne düşünüyorsun?" rows="3"></textarea>
       <div class="tweet-actions">
-        <button id="recordBtn" class="record-btn" title="Record Voice"><i class="fa-solid fa-microphone"></i></button>
+        <button id="recordBtn" class="record-btn" title="Ses Kaydet"><i class="fa-solid fa-microphone"></i></button>
         <input type="file" id="fileInput" accept="image/*,video/*" style="display: none;">
-        <button id="fileBtn" class="file-btn" title="Add Media"><i class="fa-solid fa-image"></i></button>
+        <button id="fileBtn" class="file-btn" title="Dosya Ekle"><i class="fa-solid fa-image"></i></button>
       </div>
       <div id="quotePreview" class="quote-preview"></div>
       <div id="mediaPreview" class="media-preview"></div>
       <div id="upload-status" style="margin-top:10px; font-weight:bold; color:green;"></div>
-      <button id="tweetBtn" type="button">Concordia</button>
-      <button id="cancelQuoteBtn" type="button" style="display: none; background: var(--danger); margin-top: 4px;">Cancel Quote</button>
+      <button id="tweetBtn" type="button" data-i18n="tweet">Concordia</button>
+      <button id="cancelQuoteBtn" type="button" style="display: none; background: var(--danger); margin-top: 4px;" data-i18n="cancelQuote">Alıntıyı İptal Et</button>
     </div>
 
     <div class="divider"></div>
 
     <div id="feed" class="feed"></div>
-    <p id="loadingMore" class="center-muted" style="display:none;">Loading...</p>
-    <p id="noMore" class="center-muted" style="display:none;">No more tweets to show.</p>
+    <p id="loadingMore" class="center-muted" style="display:none;" data-i18n="loading">Yükleniyor...</p>
+    <p id="noMore" class="center-muted" style="display:none;" data-i18n="noMore">Gösterilecek başka tweet yok.</p>
   </section>
 
-  <!-- Tweet Detail Modal -->
+  <!-- Tweet Modal -->
   <div id="tweetModal" class="modal">
     <div class="modal-content">
-      <button class="close-modal" id="closeModal" aria-label="Close">&times;</button>
+      <button class="close-modal" id="closeModal" aria-label="Kapat">&times;</button>
       <div id="modalTweetContent"></div>
     </div>
   </div>
 
-  <div class="bottom-bar" role="navigation" aria-label="Bottom navigation">
-    <a href="notifications.html" id="notificationsLink" title="Notifications">
+  <div class="bottom-bar" role="navigation" aria-label="Alt menü">
+    <a href="notifications.html" id="notificationsLink" title="Bildirimler">
       <i class="fa-solid fa-bell" aria-hidden="true"></i>
-      <span>Notifications</span>
+      <span data-i18n="notifications">Bildirimler</span>
       <span id="notifCount" class="notif-badge" style="display:none">0</span>
     </a>
-    <a href="explore.html" id="exploreLink" title="Explore">
+    <a href="explore.html" id="exploreLink" title="Keşfet">
       <i class="fa-solid fa-compass" aria-hidden="true"></i>
-      <span>Explore</span>
+      <span data-i18n="explore">Keşfet</span>
     </a>
-    <a href="messages.html" id="messagesLink" title="Messages">
+    <a href="messages.html" id="messagesLink" title="Mesajlar">
       <i class="fa-solid fa-envelope" aria-hidden="true"></i>
-      <span>Messages</span>
+      <span data-i18n="messages">Mesajlar</span>
     </a>
-    <a href="#" id="settingsLink" title="Settings">
+    <a href="#" id="settingsLink" title="Ayarlar">
       <i class="fa-solid fa-gear" aria-hidden="true"></i>
-      <span>Settings</span>
+      <span data-i18n="settings">Ayarlar</span>
     </a>
   </div>
 
   <script type="module">
     import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
-    // Supabase connection config
+    // Supabase bağlantı bilgileri
     const SUPABASE_URL = 'https://shkttorkfcnvkrwnkixf.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNoa3R0b3JrZmNudmtyd25raXhmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY2NzY2ODAsImV4cCI6MjA3MjI1MjY4MH0.GgDA8tSgQoMhCt_BYZU3mCkKaErUs_SQVNeWdCGQOgI';
 
     const USE_PLACEHOLDER_KEY = !SUPABASE_ANON_KEY || SUPABASE_ANON_KEY.includes('PASTE_YOUR_ANON_KEY_HERE');
     if (USE_PLACEHOLDER_KEY) {
-      console.warn('Supabase anon key is missing or still placeholder. Please update SUPABASE_ANON_KEY.');
+      console.warn('Supabase anon key eksik veya placeholder durumda. Lütfen SUPABASE_ANON_KEY değişkenini doldurun.');
     }
 
     const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    window.supabase = supabase; // for debugging
+    window.supabase = supabase; // debug için
 
-    /* ====== GLOBAL VARIABLES ====== */
+    /* ====== GLOBALS ====== */
     let currentUser = null;
     let currentUserData = null;
     const PAGE_SIZE = 8;
@@ -809,22 +815,132 @@
     let reachedEnd = false;
     let realtimeChannel = null;
     let realtimeNotifChannel = null;
-    let quotedTweetId = null; // ID of the tweet being quoted
-    let currentLang = localStorage.getItem('appLang') || 'en';
+    let quotedTweetId = null; // Alıntı yapılan tweet ID'si
+    let currentLang = localStorage.getItem('appLang') || 'tr';
     let mediaRecorder = null;
     let recordedChunks = [];
     let isRecording = false;
-    let selectedFile = null; // currently selected file
+    let selectedFile = null; // Seçilen dosya için global
     let mediaType = null; // 'audio', 'image', 'video'
 
-    // Note: translations object can be kept if multi-language support is desired later
-    // For now we default to English and remove data-i18n attributes
+    const translations = {
+      tr: {
+        login: 'Giriş',
+        register: 'Kayıt Ol',
+        home: 'Anasayfa',
+        profile: 'Profil',
+        search: 'Kullanıcı ara...',
+        whatsUp: 'Ne düşünüyorsun?',
+        tweet: 'Concordia',
+        cancelQuote: 'Alıntıyı İptal Et',
+        feedTitle: 'Anasayfa',
+        notifications: 'Bildirimler',
+        messages: 'Mesajlar',
+        settings: 'Ayarlar',
+        explore: 'Keşfet',
+        language: 'Dil',
+        account: 'Hesap',
+        contact: 'İletişim',
+        about: 'Hakkında',
+        commentPlaceholder: 'Yorum yazın...',
+        commentSubmit: 'Yorum Yap',
+        follow: 'Takip Et',
+        unfollow: 'Takibi Bırak',
+        delete: 'Sil',
+        detail: 'Detay',
+        pullToRefresh: 'Çekerek yenile...',
+        releaseToRefresh: 'Yenilemek için bırak',
+        refreshing: 'Yenileniyor...',
+        loading: 'Yükleniyor...',
+        noMore: 'Gösterilecek başka tweet yok.',
+        noResults: 'Sonuç yok'
+      },
+      en: {
+        login: 'Sign In',
+        register: 'Sign Up',
+        home: 'Home',
+        profile: 'Profile',
+        search: 'Search users...',
+        whatsUp: "What's happening?",
+        tweet: 'Concordia',
+        cancelQuote: 'Cancel Quote',
+        feedTitle: 'Home',
+        notifications: 'Notifications',
+        messages: 'Messages',
+        settings: 'Settings',
+        explore: 'Explore',
+        language: 'Language',
+        account: 'Account',
+        contact: 'Contact',
+        about: 'About',
+        commentPlaceholder: 'Write a comment...',
+        commentSubmit: 'Comment',
+        follow: 'Follow',
+        unfollow: 'Unfollow',
+        delete: 'Delete',
+        detail: 'Detail',
+        pullToRefresh: 'Pull to refresh...',
+        releaseToRefresh: 'Release to refresh',
+        refreshing: 'Refreshing...',
+        loading: 'Loading...',
+        noMore: 'No more tweets to show.',
+        noResults: 'No results'
+      },
+      ru: {
+        login: 'Войти',
+        register: 'Регистрация',
+        home: 'Главная',
+        profile: 'Профиль',
+        search: 'Поиск пользователей...',
+        whatsUp: 'Что происходит?',
+        tweet: 'Concordia',
+        cancelQuote: 'Отменить цитату',
+        feedTitle: 'Главная',
+        notifications: 'Уведомления',
+        messages: 'Сообщения',
+        settings: 'Настройки',
+        explore: 'Исследовать',
+        language: 'Язык',
+        account: 'Аккаунт',
+        contact: 'Контакт',
+        about: 'О нас',
+        commentPlaceholder: 'Напишите комментарий...',
+        commentSubmit: 'Комментировать',
+        follow: 'Подписаться',
+        unfollow: 'Отписаться',
+        delete: 'Удалить',
+        detail: 'Детали',
+        pullToRefresh: 'Потяньте для обновления...',
+        releaseToRefresh: 'Отпустите для обновления',
+        refreshing: 'Обновление...',
+        loading: 'Загрузка...',
+        noMore: 'Нет больше твитов для показа.',
+        noResults: 'Нет результатов'
+      }
+    };
 
     function setLanguage(lang) {
       localStorage.setItem('appLang', lang);
       document.documentElement.lang = lang;
       currentLang = lang;
-      location.reload(); // simple reload for now
+      updateTexts();
+      location.reload();
+    }
+
+    function updateTexts() {
+      const t = translations[currentLang];
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        el.textContent = t[el.dataset.i18n] || el.textContent;
+      });
+      document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+        el.placeholder = t[el.dataset.i18nPlaceholder] || el.placeholder;
+      });
+      const loadingMore = document.getElementById('loadingMore');
+      if (loadingMore) loadingMore.textContent = t.loading;
+      const noMore = document.getElementById('noMore');
+      if (noMore) noMore.textContent = t.noMore;
+      const refreshIndicator = document.getElementById('refreshIndicator');
+      if (refreshIndicator) refreshIndicator.textContent = t.pullToRefresh;
     }
 
     function updateNavAuth() {
@@ -839,31 +955,17 @@
       }
     }
 
-    /* ====== HELPER FUNCTIONS ====== */
+    /* HELPERS */
     function fmtTime(ts) {
       if (!ts) return '';
       try { return new Date(ts).toLocaleString(); } catch { return String(ts); }
     }
-
     function escapeHTML(str) { 
       if (!str) return '';
       return (str || '').replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[m]); 
     }
-
-    function debounce(fn, delay = 200) { 
-      let t; 
-      return (...a) => { 
-        clearTimeout(t); 
-        t = setTimeout(() => fn(...a), delay); 
-      } 
-    }
-
-    function showError(label, err) { 
-      console.error(label, err); 
-      try { 
-        alert(label + ': ' + ((err && (err.message || err.error)) || JSON.stringify(err))); 
-      } catch (e) {} 
-    }
+    function debounce(fn, delay = 200) { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), delay); } }
+    function showError(label, err) { console.error(label, err); try { alert(label + ': ' + ((err && (err.message || err.error)) || JSON.stringify(err))); } catch (e) {} }
 
     function fallbackAvatar(username) {
       const c = (username || 'U')[0].toUpperCase();
@@ -884,17 +986,20 @@
       return null;
     }
 
-    // Generate video thumbnail (standalone function)
+    // Video thumbnail oluşturma fonksiyonu (bağımsız)
     async function generateVideoThumbnail(videoUrl, maxWidth = 300) {
       return new Promise((resolve, reject) => {
         const video = document.createElement('video');
         video.src = videoUrl;
         video.muted = true;
         video.preload = 'metadata';
-        video.crossOrigin = 'anonymous'; // for CORS
+        video.crossOrigin = 'anonymous'; // CORS için
 
         video.addEventListener('loadedmetadata', () => {
-          video.currentTime = Math.min(1, video.duration * 0.1); // take thumbnail from first ~10%        video.addEventListener('seeked', () => {
+          video.currentTime = Math.min(1, video.duration * 0.1); // İlk 10%'luk kesitten thumbnail
+        });
+
+        video.addEventListener('seeked', () => {
           const canvas = document.createElement('canvas');
           const ctx = canvas.getContext('2d');
           const thumbWidth = Math.min(maxWidth, video.videoWidth / 2);
@@ -909,14 +1014,14 @@
 
         video.addEventListener('error', (e) => {
           video.remove();
-          reject(new Error('Could not generate video thumbnail: ' + e.message));
+          reject(new Error('Video thumbnail oluşturulamadı: ' + e.message));
         });
 
         video.load();
       });
     }
 
-    // Video preview and player function (updated: always generate thumbnail)
+    // Video önizleme ve oynatıcı fonksiyonu (güncellenmiş: thumbnail her zaman oluştur)
     async function createVideoPreview(container, srcObj, isPlayable = true) {
       const wrapper = document.createElement('div');
       wrapper.className = 'video-wrapper media-preview';
@@ -937,7 +1042,7 @@
       video.style.display = 'none';
       wrapper.appendChild(video);
 
-      // Always generate thumbnail
+      // Thumbnail oluştur (her zaman)
       try {
         const thumbnailUrl = await generateVideoThumbnail(videoSrc);
         const img = document.createElement('img');
@@ -953,8 +1058,8 @@
           URL.revokeObjectURL(videoSrc);
         }
       } catch (err) {
-        console.error('Thumbnail generation error:', err);
-        // Fallback placeholder image
+        console.error('Thumbnail oluşturma hatası:', err);
+        // Fallback: placeholder
         const img = document.createElement('img');
         img.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjE2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjMjIyIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxOCIgZmlsbD0iI2ZmZiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSI+VmlkZW8gUHJldmlldzwvdGV4dD48L3N2Zz4=';
         img.style.width = '100%';
@@ -969,7 +1074,7 @@
       });
 
       if (isPlayable) {
-        // Overlay with play button
+        // Overlay ve play butonu
         const overlay = document.createElement('div');
         overlay.className = 'video-overlay';
         const playBtn = document.createElement('button');
@@ -987,17 +1092,17 @@
         progress.style.display = 'none';
         wrapper.appendChild(progress);
 
-        // Play function
+        // Oynatma fonksiyonu
         function playVideo() {
           const img = wrapper.querySelector('img');
           if (img) img.style.display = 'none';
           overlay.classList.add('playing');
           video.style.display = 'block';
           progress.style.display = 'block';
-          video.play().catch(e => console.warn('Video playback error:', e));
+          video.play().catch(e => console.warn('Video oynatma hatası:', e));
         }
 
-        // Pause function
+        // Duraklatma
         function pauseVideo() {
           const img = wrapper.querySelector('img');
           if (img) img.style.display = 'block';
@@ -1034,7 +1139,7 @@
           }
         });
 
-        // Seek on progress bar
+        // Progress seek
         progress.addEventListener('input', (e) => {
           const pct = e.target.value / 100;
           if (video.duration) {
@@ -1042,7 +1147,7 @@
           }
         });
 
-        // Toggle play/pause on wrapper click
+        // Wrapper tıklama ile toggle
         wrapper.addEventListener('click', (e) => {
           if (overlay.contains(e.target) && e.target !== playBtn) return;
           if (video.paused) {
@@ -1067,20 +1172,20 @@
         } else if (mediaType === 'image') {
           const img = document.createElement('img');
           img.src = URL.createObjectURL(fileOrObj);
-          img.alt = 'Preview';
+          img.alt = 'Önizleme';
           preview.appendChild(img);
         } else if (mediaType === 'video') {
-          createVideoPreview(preview, fileOrObj, false); // No playback in upload preview
+          createVideoPreview(preview, fileOrObj, false); // Yükleme önizlemesinde oynatma yok
         }
       } catch (err) {
         console.error('Media preview error:', err);
-        preview.innerHTML = '<p style="color: var(--danger);">Media preview failed</p>';
+        preview.innerHTML = '<p style="color: var(--danger);">Medya önizleme hatası</p>';
       }
     }
 
-    // Usage example: await createWaveformPlayer(container, source, { height:64, barGap:2, barCount:160, colors:['#18c3d9','#1da1f2'], barRadius:3, barMultiplier:0.9 });
+    // kullan: await createWaveformPlayer(container, source, { height:64, barGap:2, barCount:160, colors:['#18c3d9','#1da1f2'], barRadius:3, barMultiplier:0.9 });
     async function createWaveformPlayer(container, source, opts = {}) {
-      // Default options
+      // --- options defaults ---
       const options = Object.assign({
         height: 64,
         barGap: 2,
@@ -1091,40 +1196,30 @@
 
       container.innerHTML = '';
       container.classList.add('waveform-player');
-
-      const left = document.createElement('div'); 
-      left.className = 'wf-left';
-      const playBtn = document.createElement('button'); 
-      playBtn.className = 'wf-play-btn'; 
-      playBtn.type = 'button';
+      const left = document.createElement('div'); left.className = 'wf-left';
+      const playBtn = document.createElement('button'); playBtn.className = 'wf-play-btn'; playBtn.type = 'button';
       playBtn.innerHTML = '<i class="fa-solid fa-play"></i>';
-      const timeSpan = document.createElement('div'); 
-      timeSpan.className = 'wf-time'; 
-      timeSpan.textContent = '00:00';
+      const timeSpan = document.createElement('div'); timeSpan.className = 'wf-time'; timeSpan.textContent = '00:00';
       left.appendChild(playBtn);
       left.appendChild(timeSpan);
       container.appendChild(left);
 
-      const wrap = document.createElement('div'); 
-      wrap.className = 'wf-canvas-wrap';
-      const canvas = document.createElement('canvas'); 
-      canvas.className = 'wf-canvas'; 
-      canvas.setAttribute('tabindex','0');
+      const wrap = document.createElement('div'); wrap.className = 'wf-canvas-wrap';
+      const canvas = document.createElement('canvas'); canvas.className = 'wf-canvas'; canvas.setAttribute('tabindex','0');
       wrap.appendChild(canvas);
       container.appendChild(wrap);
 
       playBtn.setAttribute('aria-label','Play/Pause');
       canvas.setAttribute('role','slider');
-      canvas.setAttribute('aria-label','Audio waveform — click to seek');
+      canvas.setAttribute('aria-label','Ses dalgası — tıklayarak konuma atla');
 
       const audio = new Audio();
       audio.preload = 'auto';
       audio.crossOrigin = 'anonymous';
       let objectUrl = null;
       let audioSrc;
-
       if (typeof source === 'string') {
-        // Handle Capacitor file URIs if available
+        // Capacitor file URIs -> convert if available
         if ((source.startsWith('file://') || source.startsWith('content://')) && window.Capacitor && window.Capacitor.convertFileSrc) {
           audioSrc = await window.Capacitor.convertFileSrc(source);
         } else {
@@ -1185,6 +1280,7 @@
       function resizeCanvas() {
         const dpr = window.devicePixelRatio || 1;
         const rect = canvas.getBoundingClientRect();
+        // ensure height from options
         canvas.style.height = options.height + 'px';
         canvas.width = Math.max(300, Math.floor(rect.width * dpr));
         canvas.height = Math.max(40, Math.floor(options.height * dpr));
@@ -1239,11 +1335,11 @@
         audio.currentTime = 0; 
       });
 
-      // Build waveform peaks using Web Audio API
+      // build peaks using WebAudio
       async function buildPeaks() {
         try {
           const AudioContext = window.AudioContext || window.webkitAudioContext;
-          if (!AudioContext) throw new Error('Web Audio API not available');
+          if (!AudioContext) throw new Error('Web Audio API yok');
           const ac = new AudioContext();
 
           let arrayBuffer;
@@ -1261,27 +1357,22 @@
           drawFullWaveform();
           ac.close && ac.close();
         } catch (e) {
-          console.warn('buildPeaks failed → fallback to native audio', e);
+          console.warn('buildPeaks failed -> fallback', e);
           container.innerHTML = `<audio controls src="${audio.src}" style="width:100%"></audio>`;
         }
       }
 
-      setTimeout(resizeCanvas, 50);
+      setTimeout(resizeCanvas,50);
       await buildPeaks().catch(()=>{});
 
       function destroy(){
-        try { 
-          audio.pause(); 
-          audio.src=''; 
-          if (objectUrl) URL.revokeObjectURL(objectUrl); 
-          container.innerHTML=''; 
-        } catch(e){console.warn(e);}
+        try { audio.pause(); audio.src=''; if (objectUrl) URL.revokeObjectURL(objectUrl); container.innerHTML=''; } catch(e){console.warn(e);}
       }
 
       return { audio, destroy };
     }
 
-    /* ---------- Resolve file/blob/base64 for upload (Capacitor/web compatible) ---------- */
+    /* ---------- Capacitor / web / base64 -> File çözücü ---------- */
     async function resolveFileForUpload(file) {
       if (!file) return null;
 
@@ -1303,11 +1394,11 @@
           return new File([blob], file.name || (file.path.split('/').pop()), { type: file.mimeType || blob.type || 'audio/webm' });
         } catch (e) {
           console.error('resolveFileForUpload Capacitor error:', e);
-          throw new Error('File conversion error: ' + e.message);
+          throw new Error('Dosya dönüştürme hatası: ' + e.message);
         }
       }
 
-      // Base64 data
+      // If base64 data exists
       if (file.data && typeof file.data === 'string') {
         try {
           let b64 = file.data;
@@ -1318,17 +1409,17 @@
           const blob = new Blob([arr.buffer], { type: file.mimeType || 'audio/webm' });
           return new File([blob], file.name || 'upload.webm', { type: file.mimeType || blob.type });
         } catch (e) {
-          console.warn('resolveFileForUpload: base64 → blob failed', e);
+          console.warn('resolveFileForUpload: base64 -> blob failed', e);
         }
       }
 
-      // Generic file-like object
+      // If looks like file-like
       if (typeof file === 'object' && file.name && file.size) return file;
 
       return null;
     }
 
-    /* VOICE RECORDING */
+    /* SES KAYDI */
     function startRecording() {
       navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
         mediaRecorder = new MediaRecorder(stream);
@@ -1339,7 +1430,7 @@
         mediaRecorder.onstop = () => {
           const blob = new Blob(recordedChunks, { type: 'audio/webm' });
           const file = new File([blob], 'recording.webm', { type: 'audio/webm' });
-          selectedFile = null; // Clear any previous file
+          selectedFile = null; // Dosya varsa temizle
           mediaType = 'audio';
           renderMediaPreview(file, mediaType);
         };
@@ -1348,7 +1439,7 @@
         document.getElementById('recordBtn').classList.add('recording');
         document.getElementById('recordBtn').innerHTML = '<i class="fa-solid fa-stop"></i>';
       }).catch(err => {
-        showError('Voice recording error', err);
+        showError('Ses kaydı hatası', err);
       });
     }
 
@@ -1362,39 +1453,36 @@
       }
     }
 
-    /* FILE SELECTION */
+    /* DOSYA SEÇİMİ */
     function handleFileSelect(e) {
       const file = e.target.files[0];
       if (!file) return;
       const type = getMediaType(file);
       if (!type || (type !== 'image' && type !== 'video')) {
-        alert('Only image and video files are supported.');
+        alert('Sadece resim ve video dosyaları desteklenir.');
         return;
       }
       selectedFile = file;
-      recordedChunks = []; // Clear any voice recording
+      recordedChunks = []; // Ses varsa temizle
       mediaType = type;
       renderMediaPreview(file, type);
     }
 
-    /* POST TWEET */
+    /* TWEET ATMA */
     async function tweetAt() {
       const uploadStatus = document.getElementById('upload-status');
       uploadStatus.textContent = '';
       try {
         await loadCurrentUser();
-        if (!currentUser) { alert('You must sign in to post!'); return; }
+        if (!currentUser) { alert('Tweet atmak için giriş yap!'); return; }
         const txtEl = document.getElementById('tweetInput');
         const text = (txtEl.value || '').trim();
-        if (!text && !quotedTweetId && !selectedFile && recordedChunks.length === 0) { 
-          alert('Please enter text, quote something, or attach media.'); 
-          return; 
-        }
+        if (!text && !quotedTweetId && !selectedFile && recordedChunks.length === 0) { alert('Metin veya alıntı veya medya gir.'); return; }
 
         const btn = document.getElementById('tweetBtn');
         if (btn) { 
           btn.disabled = true; 
-          btn.textContent = 'Posting...'; 
+          btn.textContent = 'Gönderiliyor...'; 
         }
 
         const createdAt = new Date().toISOString();
@@ -1402,112 +1490,124 @@
         let mediaPath = null;
         let finalMediaType = null;
 
-        // Handle media upload (voice or selected file)
+        // Medya yükleme (ses veya dosya)
         if (recordedChunks.length > 0) {
           const blob = new Blob(recordedChunks, { type: 'audio/webm' });
           const rawFile = new File([blob], 'recording.webm', { type: 'audio/webm' });
           finalMediaType = 'audio';
 
+          // Max boyut kontrolü
           const MAX_AUDIO_MB = 50;
           if (rawFile.size > MAX_AUDIO_MB * 1024 * 1024) {
-            alert(`Audio file too large. Max: ${MAX_AUDIO_MB} MB.`);
+            alert(`Ses dosyası çok büyük. Maks: ${MAX_AUDIO_MB} MB.`);
             return;
           }
 
+          // Resolve gerçek File/Blob
           let uploadFile = await resolveFileForUpload(rawFile);
           if (!uploadFile) {
-            alert('Could not prepare audio file. Please try recording again.');
+            alert('Ses alınamadı. Lütfen tekrar kaydedin.');
             return;
           }
 
+          // build path
           const uuid = (crypto && crypto.randomUUID) ? crypto.randomUUID() : String(Date.now());
           const safeFileName = 'recording.webm';
           const path = `${currentUser}/${uuid}-${safeFileName}`;
           mediaPath = path;
 
+          // progress UI
           if (btn) {
             btn.disabled = true;
-            btn.textContent = 'Uploading...';
+            btn.textContent = 'Yükleniyor...';
           }
-          uploadStatus.textContent = 'Uploading audio...';
+          uploadStatus.textContent = 'Ses yükleniyor...';
 
+          // Supabase upload
           const { data: uploadData, error: uploadErr } = await supabase.storage.from('tweet_images').upload(path, uploadFile, {
             contentType: uploadFile.type,
             upsert: true
           });
           if (uploadErr) throw uploadErr;
           console.log('Audio upload success:', uploadData);
-
           const { data: urlData } = supabase.storage.from('tweet_images').getPublicUrl(path);
           publicMediaUrl = urlData?.publicUrl || null;
 
+          // Signed URL fallback
           if (!publicMediaUrl) {
             try {
               const { data: signedData, error: signedErr } = await supabase.storage.from('tweet_images').createSignedUrl(path, 3600);
               if (signedErr) throw signedErr;
               publicMediaUrl = signedData?.signedUrl || null;
-              console.log('Using signed URL:', publicMediaUrl);
+              console.log('Signed URL used:', publicMediaUrl);
             } catch (e) {
-              console.warn('Signed URL fallback failed', e);
+              console.warn('signedUrl fallback failed', e);
             }
           }
 
-          if (!publicMediaUrl) throw new Error('Could not get audio URL.');
+          if (!publicMediaUrl) throw new Error('Ses URL alınamadı.');
+
           console.log('Audio upload completed:', { publicMediaUrl, finalMediaType });
-          uploadStatus.textContent = 'Audio uploaded successfully!';
+          uploadStatus.textContent = 'Ses başarıyla yüklendi!';
         } else if (selectedFile) {
           finalMediaType = mediaType;
 
+          // Max boyut kontrolü
           const MAX_MEDIA_MB = 100;
           if (selectedFile.size > MAX_MEDIA_MB * 1024 * 1024) {
-            alert(`Media file too large. Max: ${MAX_MEDIA_MB} MB.`);
+            alert(`Medya dosyası çok büyük. Maks: ${MAX_MEDIA_MB} MB.`);
             return;
           }
 
+          // Resolve gerçek File/Blob
           let uploadFile = await resolveFileForUpload(selectedFile);
           if (!uploadFile) {
-            alert('Could not prepare file. Please select again.');
+            alert('Dosya alınamadı. Lütfen tekrar seçin.');
             return;
           }
 
+          // build path
           const uuid = (crypto && crypto.randomUUID) ? crypto.randomUUID() : String(Date.now());
           const safeFileName = selectedFile.name.replace(/[^a-zA-Z0-9.-]/g, '_');
           const path = `${currentUser}/${uuid}-${safeFileName}`;
           mediaPath = path;
 
+          // progress UI
           if (btn) {
             btn.disabled = true;
-            btn.textContent = 'Uploading...';
+            btn.textContent = 'Yükleniyor...';
           }
-          uploadStatus.textContent = `${finalMediaType === 'image' ? 'Uploading image' : 'Uploading video'}...`;
+          uploadStatus.textContent = `${finalMediaType === 'image' ? 'Resim' : 'Video'} yükleniyor...`;
 
+          // Supabase upload
           const { data: uploadData, error: uploadErr } = await supabase.storage.from('tweet_images').upload(path, uploadFile, {
             contentType: uploadFile.type,
             upsert: true
           });
           if (uploadErr) throw uploadErr;
           console.log('Media upload success:', uploadData);
-
           const { data: urlData } = supabase.storage.from('tweet_images').getPublicUrl(path);
           publicMediaUrl = urlData?.publicUrl || null;
 
+          // Signed URL fallback
           if (!publicMediaUrl) {
             try {
               const { data: signedData, error: signedErr } = await supabase.storage.from('tweet_images').createSignedUrl(path, 3600);
               if (signedErr) throw signedErr;
               publicMediaUrl = signedData?.signedUrl || null;
-              console.log('Using signed URL:', publicMediaUrl);
+              console.log('Signed URL used:', publicMediaUrl);
             } catch (e) {
-              console.warn('Signed URL fallback failed', e);
+              console.warn('signedUrl fallback failed', e);
             }
           }
 
-          if (!publicMediaUrl) throw new Error('Could not get media URL.');
+          if (!publicMediaUrl) throw new Error('Medya URL alınamadı.');
+
           console.log('Media upload completed:', { publicMediaUrl, finalMediaType });
-          uploadStatus.textContent = `${finalMediaType === 'image' ? 'Image' : 'Video'} uploaded successfully!`;
+          uploadStatus.textContent = `${finalMediaType === 'image' ? 'Resim' : 'Video'} başarıyla yüklendi!`;
         }
 
-        console.log('Tweet insert object:', { user_id: currentUser, text, media_url: publicMediaUrl, media_type: finalMediaType, media_path: mediaPath, quoted_tweet_id: quotedTweetId, created_at: createdAt });
+        console.log('Tweet insert objesi:', { user_id: currentUser, text, media_url: publicMediaUrl, media_type: finalMediaType, media_path: mediaPath, quoted_tweet_id: quotedTweetId, created_at: createdAt });
         const insertObj = {
           user_id: currentUser,
           text: text || null,
@@ -1526,11 +1626,11 @@
           .select('id, user_id, text, media_url, media_type, media_path, quoted_tweet_id, created_at, likes_count, comments_count, quotes_count, profiles(id, username, display_name, avatar_url, is_founder)')
           .single();
 
-        console.log('Tweet insert result:', inserted, 'Error:', insertErr);
+        console.log('Tweet insert sonucu:', inserted, 'Hata:', insertErr);
 
         if (insertErr) throw insertErr;
 
-        // Extract and insert hashtags
+        // Hashtag'leri çıkar ve insert et
         const hashtags = text.match(/#(\w+)/g) || [];
         const uniqueHashtags = [...new Set(hashtags.map(h => h.slice(1).toLowerCase()))];
         if (uniqueHashtags.length > 0) {
@@ -1539,20 +1639,20 @@
           if (hashtagErr) console.warn('Hashtag insert error', hashtagErr);
         }
 
-        // If quoting, increment quote count and send notification
+        // If quoting, increment quotes_count on the quoted tweet and send notification
         if (quotedTweetId) {
           const { data: qCount, error: qErr } = await supabase.from('tweets').select('quotes_count, user_id').eq('id', quotedTweetId).single();
           if (qErr) console.warn('quotes_count fetch error', qErr);
           else {
             await supabase.from('tweets').update({ quotes_count: (qCount.quotes_count || 0) + 1 }).eq('id', quotedTweetId);
             if (qCount.user_id !== currentUser) {
-              const senderUsername = currentUserData?.username || 'A user';
+              const senderUsername = currentUserData?.username || 'Bir kullanıcı';
               const notif = {
                 recipient_id: qCount.user_id,
                 sender_id: currentUser,
                 type: 'quote',
                 related_id: inserted.id,
-                message: `${senderUsername} quoted your tweet: "${text ? text.slice(0, 50) + (text.length > 50 ? '...' : '') : ''}"`,
+                message: `${senderUsername} tweetinizi alıntıladı: "${text ? text.slice(0, 50) + (text.length > 50 ? '...' : '') : ''}"`,
                 is_read: false,
                 created_at: new Date().toISOString()
               };
@@ -1570,22 +1670,22 @@
         selectedFile = null;
         mediaType = null;
         clearQuotePreview();
-        if (btn) btn.textContent = 'Posted!';
-        setTimeout(() => { if (btn) btn.textContent = 'Concordia'; }, 2000);
+        if (btn) btn.textContent = 'Gönderildi!';
+        setTimeout(() => { if (btn) btn.textContent = translations[currentLang].tweet; }, 2000);
       } catch (innerErr) {
-        console.error('tweetAt general error:', innerErr);
+        console.error('tweetAt genel hata:', innerErr);
         showError('tweetAt catch', innerErr);
-        uploadStatus.textContent = 'Posting failed!';
+        uploadStatus.textContent = 'Gönderme hatası!';
       } finally {
         const btn = document.getElementById('tweetBtn');
         if (btn) { 
           btn.disabled = false; 
-          btn.textContent = 'Concordia';
+          btn.textContent = translations[currentLang].tweet;
         }
       }
     }
 
-    /* FETCH TIMELINE TWEETS */
+    /* TWEETLERİ ÇEKME */
     async function fetchTimeline(offset = 0, limit = PAGE_SIZE) {
       try {
         const { data, error } = await supabase
@@ -1609,7 +1709,7 @@
       if (feed) feed.innerHTML = '';
       await loadMore();
       setupRealtime();
-      await updateNotifCount();
+      await updateNotifCount(); // Bildirim sayısını yükle
     }
 
     async function loadMore() {
@@ -1644,11 +1744,11 @@
       }
     }
 
-    /* LIKE / COMMENT / DELETE / FOLLOW / QUOTE HANDLERS */
+    /* LIKE / COMMENT / DELETE / FOLLOW / QUOTE */
     async function likeTweetHandler(tweetId, articleEl) {
       try {
         await loadCurrentUser();
-        if (!currentUser) { alert('You must sign in!'); return; }
+        if (!currentUser) { alert('Giriş yapmalısın!'); return; }
 
         const { data: tweetData, error: tweetErr } = await supabase
           .from('tweets')
@@ -1699,21 +1799,22 @@
           }
         }
 
-        // Send notification if new like and not own tweet
+        // Bildirim gönder (eğer yeni beğeni ise ve kendi tweet'in değilse)
         if (isNewLike && tweetOwner !== currentUser) {
-          const senderUsername = currentUserData?.username || 'A user';
+          const senderUsername = currentUserData?.username || 'Bir kullanıcı';
           const notif = {
             recipient_id: tweetOwner,
             sender_id: currentUser,
             type: 'like',
             related_id: tweetId,
-            message: `${senderUsername} liked your tweet.`,
+            message: `${senderUsername} tweetinizi beğendi.`,
             is_read: false,
             created_at: new Date().toISOString()
           };
           const { error: notifErr } = await supabase.from('notifications').insert([notif]);
-          if (notifErr) console.warn('Notification error', notifErr);
+          if (notifErr) console.warn('Bildirim gönderme hatası', notifErr);
           else {
+            // Bildirim sayısını güncelle
             await updateNotifCount();
           }
         }
@@ -1723,7 +1824,7 @@
     async function addCommentHandler(tweetId, textInput, commentsWrap) {
       try {
         await loadCurrentUser();
-        if (!currentUser) { alert('You must sign in!'); return; }
+        if (!currentUser) { alert('Giriş yapmalısın!'); return; }
         const text = (textInput.value || '').trim();
         if (!text) return;
 
@@ -1739,12 +1840,14 @@
         const { data: insertedComment, error } = await supabase.from('comments').insert([payload]).select('id, text, created_at, user_id, profiles(id, username, display_name)').single();
         if (error) throw error;
 
+        // Yorum sayısını güncelle
         const { count } = await supabase.from('comments').select('*', { count: 'exact', head: false }).eq('tweet_id', tweetId);
         await supabase.from('tweets').update({ comments_count: count }).eq('id', tweetId);
 
         const cnt = document.querySelector(`[data-tweet="${tweetId}"] .comment-count`);
         if (cnt) cnt.textContent = count;
 
+        // Yorumu render et
         const who = currentUserData?.username || (currentUser || '').slice(0, 6);
         const d = document.createElement('div');
         d.className = 'comment-item';
@@ -1767,20 +1870,22 @@
         commentsWrap.appendChild(d);
         textInput.value = '';
 
+        // Bildirim gönder (eğer kendi tweet'in değilse)
         if (tweetOwner !== currentUser) {
-          const senderUsername = currentUserData?.username || 'A user';
+          const senderUsername = currentUserData?.username || 'Bir kullanıcı';
           const notif = {
             recipient_id: tweetOwner,
             sender_id: currentUser,
             type: 'comment',
             related_id: tweetId,
-            message: `${senderUsername} commented on your tweet: "${text.slice(0, 50)}${text.length > 50 ? '...' : ''}"`,
+            message: `${senderUsername} tweetinize yorum yaptı: "${text.slice(0, 50)}${text.length > 50 ? '...' : ''}"`,
             is_read: false,
             created_at: new Date().toISOString()
           };
           const { error: notifErr } = await supabase.from('notifications').insert([notif]);
-          if (notifErr) console.warn('Notification error', notifErr);
+          if (notifErr) console.warn('Bildirim gönderme hatası', notifErr);
           else {
+            // Bildirim sayısını güncelle
             await updateNotifCount();
           }
         }
@@ -1790,17 +1895,18 @@
     async function deleteCommentHandler(commentId, commentEl, tweetId) {
       try {
         await loadCurrentUser();
-        if (!currentUser) { alert('You must sign in!'); return; }
+        if (!currentUser) { alert('Giriş yapmalısın!'); return; }
         const { data: c, error: cErr } = await supabase.from('comments').select('user_id').eq('id', commentId).single();
         if (cErr) throw cErr;
-        if (!c || c.user_id !== currentUser) { alert('You can only delete your own comments.'); return; }
-        if (!confirm('Are you sure you want to delete this comment?')) return;
+        if (!c || c.user_id !== currentUser) { alert('Sadece kendi yorumunu silebilirsin.'); return; }
+        if (!confirm('Bu yorumu silmek istediğine emin misin?')) return;
 
         const { error: delErr } = await supabase.from('comments').delete().eq('id', commentId);
         if (delErr) throw delErr;
 
         if (commentEl) commentEl.remove();
 
+        // Yorum sayısını güncelle
         const { count } = await supabase.from('comments').select('*', { count: 'exact', head: false }).eq('tweet_id', tweetId);
         await supabase.from('tweets').update({ comments_count: count }).eq('id', tweetId);
 
@@ -1812,11 +1918,11 @@
     async function deleteTweetHandler(id, articleEl) {
       try {
         await loadCurrentUser();
-        if (!currentUser) { alert('You must sign in!'); return; }
+        if (!currentUser) { alert('Giriş yapmalısın!'); return; }
         const { data: t, error: tErr } = await supabase.from('tweets').select('user_id, media_path').eq('id', id).single();
         if (tErr) throw tErr;
-        if (!t || t.user_id !== currentUser) { alert('You can only delete your own tweets.'); return; }
-        if (!confirm('Are you sure you want to delete this tweet?')) return;
+        if (!t || t.user_id !== currentUser) { alert('Sadece kendi tweetini silebilirsin.'); return; }
+        if (!confirm('Bu tweeti silmek istediğine emin misin?')) return;
 
         await supabase.from('likes').delete().eq('tweet_id', id);
         await supabase.from('comments').delete().eq('tweet_id', id);
@@ -1855,49 +1961,44 @@
     async function followUser(targetUserId) {
       try {
         await loadCurrentUser();
-        if (!currentUser) { alert('You must sign in!'); return false; }
-        if (currentUser === targetUserId) { alert('You cannot follow yourself!'); return false; }
+        if (!currentUser) { alert('Giriş yapmalısın!'); return false; }
+        if (currentUser === targetUserId) { alert('Kendini takip edemezsin!'); return false; }
 
+        // Check if already following
         const alreadyFollowing = await isFollowing(currentUser, targetUserId);
         if (alreadyFollowing) {
-          alert('You are already following this user!');
+          alert('Bu kullanıcıyı zaten takip ediyorsun!');
           return false;
         }
 
         const { error } = await supabase.from('follows').insert([{ follower: currentUser, following: targetUserId }]);
         if (error) {
-          if (error.code === '23505') {
-            alert('You are already following this user!');
+          if (error.code === '23505') { // Duplicate key error
+            alert('Bu kullanıcıyı zaten takip ediyorsun!');
           } else {
             showError('follow error', error);
           }
           return false;
         }
 
-        const senderUsername = currentUserData?.username || 'A user';
+        // Bildirim gönder
+        const senderUsername = currentUserData?.username || 'Bir kullanıcı';
         const notif = {
           recipient_id: targetUserId,
           sender_id: currentUser,
           type: 'follow',
           related_id: null,
-          message: `${senderUsername} started following you.`,
+          message: `${senderUsername} seni takip etti.`,
           is_read: false,
           created_at: new Date().toISOString()
         };
         const { error: notifErr } = await supabase.from('notifications').insert([notif]);
-        if (notifErr) console.warn('Notification error', notifErr);
+        if (notifErr) console.warn('Bildirim gönderme hatası', notifErr);
         else {
           await updateNotifCount();
         }
 
-        // You can update UI button text here if needed (follow → following)
         return true;
-      } catch (err) {
-        showError('followUser catch', err);
-        return false;
-      }
-    }
-            return true;
       } catch (err) {
         showError('followUser catch', err);
         return false;
@@ -1907,7 +2008,7 @@
     async function unfollowUser(targetUserId) {
       try {
         await loadCurrentUser();
-        if (!currentUser) { alert('You must sign in!'); return false; }
+        if (!currentUser) { alert('Giriş yapmalısın!'); return false; }
         const { error } = await supabase.from('follows').delete().match({ follower: currentUser, following: targetUserId });
         if (error) {
           showError('unfollow error', error);
@@ -1923,7 +2024,7 @@
     async function quoteTweetHandler(tweetId) {
       try {
         await loadCurrentUser();
-        if (!currentUser) { alert('You must sign in!'); return; }
+        if (!currentUser) { alert('Giriş yapmalısın!'); return; }
 
         const { data: quotedTweet, error } = await supabase
           .from('tweets')
@@ -1936,7 +2037,7 @@
         await renderQuotePreview(quotedTweet);
 
         const txtEl = document.getElementById('tweetInput');
-        txtEl.placeholder = 'Add a comment to the quote...';
+        txtEl.placeholder = 'Alıntıya yorum ekle...';
         txtEl.focus();
       } catch (err) {
         showError('quoteTweetHandler', err);
@@ -1968,7 +2069,7 @@
       nameSpan.className = 'name';
       let nameHTML = `${escapeHTML(display)} <span class="uname">@${escapeHTML(username)}</span>`;
       if (isFounder) {
-        nameHTML += ` <span class="founder-badge"><i class="fa-solid fa-crown"></i> Founder</span>`;
+        nameHTML += ` <span class="founder-badge"><i class="fa-solid fa-crown"></i> Kurucu</span>`;
       }
       nameSpan.innerHTML = nameHTML;
       header.appendChild(avatarImg);
@@ -1988,7 +2089,7 @@
         } else if (quotedTweet.media_type === 'image') {
           const img = document.createElement('img');
           img.src = quotedTweet.media_url;
-          img.alt = 'Media';
+          img.alt = 'Medya';
           img.style.maxWidth = '100%';
           img.style.borderRadius = '6px';
           quotedDiv.appendChild(img);
@@ -2014,7 +2115,7 @@
       const cancelBtn = document.getElementById('cancelQuoteBtn');
       if (cancelBtn) cancelBtn.style.display = 'none';
       const txtEl = document.getElementById('tweetInput');
-      txtEl.placeholder = "What's happening?";
+      txtEl.placeholder = translations[currentLang].whatsUp;
     }
 
     /* SEARCH */
@@ -2030,7 +2131,7 @@
         resWrap.innerHTML = '';
 
         if (q.startsWith('#')) {
-          // Hashtag search
+          // Hashtag arama
           const tagQuery = q.slice(1).trim();
           if (tagQuery) {
             const { data: hashtags, error } = await supabase
@@ -2057,7 +2158,7 @@
             }
           }
         } else {
-          // User search
+          // Kullanıcı arama
           const { data: users, error } = await supabase
             .from('profiles')
             .select('id, username, display_name, avatar_url, is_founder')
@@ -2073,7 +2174,7 @@
               const avatar = u.avatar_url || fallbackAvatar(u.username);
               let nameHTML = `${escapeHTML(u.display_name || u.username)}`;
               if (u.is_founder) {
-                nameHTML += ` <span class="founder-badge"><i class="fa-solid fa-crown"></i> Founder</span>`;
+                nameHTML += ` <span class="founder-badge"><i class="fa-solid fa-crown"></i> Kurucu</span>`;
               }
               item.innerHTML = `<img class="s-avatar" src="${escapeHTML(avatar)}" width="36" height="36" alt="avatar"> <div class="s-meta"><div class="s-name">${nameHTML}</div><div class="s-username">@${escapeHTML(u.username)}</div></div>`;
               item.addEventListener('mousedown', (ev) => {
@@ -2089,7 +2190,7 @@
         if (resWrap.innerHTML === '') {
           const p = document.createElement('div');
           p.className = 'search-item';
-          p.textContent = 'No results';
+          p.textContent = translations[currentLang].noResults;
           resWrap.appendChild(p);
         }
 
@@ -2116,21 +2217,21 @@
 
     async function openTweetModal(tweetId) {
       try {
-        const { data: tweet, error } = await supabase
+        const { data: tweet, error: error } = await supabase
           .from('tweets')
           .select('id, user_id, text, media_url, media_type, media_path, quoted_tweet_id, created_at, likes_count, comments_count, quotes_count, profiles(id, username, display_name, avatar_url, is_founder)')
           .eq('id', tweetId)
           .single();
 
         if (error || !tweet) {
-          showError('Could not load tweet', error);
+          showError('Tweet yüklenemedi', error);
           return;
         }
 
         await renderModalTweet(tweet);
         modal.style.display = 'block';
       } catch (err) {
-        showError('Error opening modal', err);
+        showError('Modal açılırken hata', err);
       }
     }
 
@@ -2176,7 +2277,7 @@
       nameDiv.className = 'name';
       let nameHTML = `${escapeHTML(display)} <span class="uname" style="margin-left:8px;color:#bbb;font-weight:500;font-size:13px">@${escapeHTML(username)}</span>`;
       if (isFounder) {
-        nameHTML += ` <span class="founder-badge"><i class="fa-solid fa-crown"></i> Founder</span>`;
+        nameHTML += ` <span class="founder-badge"><i class="fa-solid fa-crown"></i> Kurucu</span>`;
       }
       nameDiv.innerHTML = nameHTML;
       const timeDiv = document.createElement('div');
@@ -2207,14 +2308,14 @@
         } else if (tweet.media_type === 'image') {
           const img = document.createElement('img');
           img.src = tweet.media_url;
-          img.alt = 'Media';
+          img.alt = 'Medya';
           mediaDiv.appendChild(img);
         } else if (tweet.media_type === 'video') {
           createVideoPreview(mediaDiv, tweet.media_url, true);
         }
       }
 
-      // Quoted tweet
+      // Quoted
       let quotedDiv = null;
       if (tweet.quoted_tweet_id) {
         quotedDiv = document.createElement('div');
@@ -2244,7 +2345,7 @@
             qNameSpan.className = 'name';
             let qNameHTML = `${escapeHTML(qDisplay)} <span class="uname">@${escapeHTML(qUsername)}</span>`;
             if (qIsFounder) {
-              qNameHTML += ` <span class="founder-badge"><i class="fa-solid fa-crown"></i> Founder</span>`;
+              qNameHTML += ` <span class="founder-badge"><i class="fa-solid fa-crown"></i> Kurucu</span>`;
             }
             qNameSpan.innerHTML = qNameHTML;
             qHeader.appendChild(qAvatarImg);
@@ -2264,7 +2365,7 @@
               } else if (quotedTweet.media_type === 'image') {
                 const img = document.createElement('img');
                 img.src = quotedTweet.media_url;
-                img.alt = 'Media';
+                img.alt = 'Medya';
                 img.style.maxWidth = '100%';
                 img.style.borderRadius = '6px';
                 quotedDiv.appendChild(img);
@@ -2309,11 +2410,11 @@
         const deleteDiv = document.createElement('div');
         deleteDiv.className = 'action delete-btn';
         deleteDiv.dataset.id = tweet.id;
-        deleteDiv.innerHTML = `<i class="fa-solid fa-trash"></i><span style="margin-left:6px">Delete</span>`;
+        deleteDiv.innerHTML = `<i class="fa-solid fa-trash"></i><span style="margin-left:6px">${translations[currentLang].delete}</span>`;
         actions.appendChild(deleteDiv);
       }
 
-      // Comments section
+      // Comments
       const commentsWrap = document.createElement('div');
       commentsWrap.className = 'modal-comments';
       const { data: comments } = await supabase
@@ -2344,19 +2445,19 @@
         commentsWrap.appendChild(d);
       });
 
-      // Comment form
+      // Comment Form
       const commentForm = document.createElement('div');
       commentForm.className = 'modal-comment-form';
       commentForm.style.display = 'none';
       const commentInput = document.createElement('input');
       commentInput.type = 'text';
-      commentInput.placeholder = 'Write a comment...';
+      commentInput.placeholder = translations[currentLang].commentPlaceholder;
       const commentSubmit = document.createElement('button');
-      commentSubmit.textContent = 'Comment';
+      commentSubmit.textContent = translations[currentLang].commentSubmit;
       commentForm.appendChild(commentInput);
       commentForm.appendChild(commentSubmit);
 
-      // Append everything
+      // Append all
       const modalTweet = document.createElement('div');
       modalTweet.className = 'modal-tweet';
       modalTweet.appendChild(header);
@@ -2369,7 +2470,7 @@
       modalContent.appendChild(commentsWrap);
       modalContent.appendChild(commentForm);
 
-      // Event listeners for modal actions
+      // Event Listeners for Modal
       const modalLikeEl = modalContent.querySelector('.action.like');
       if (modalLikeEl) {
         modalLikeEl.addEventListener('click', async (e) => {
@@ -2426,7 +2527,7 @@
       }
     }
 
-    /* RENDER SINGLE TWEET */
+    /* RENDER TEK TWEET */
     async function renderSingleTweet(tweet, { prepend = true, isTemp = false } = {}) {
       const feed = document.getElementById('feed');
       if (!feed) return;
@@ -2446,6 +2547,7 @@
       const display = profile.display_name || username;
       const avatar = profile.avatar_url || fallbackAvatar(username);
 
+      // Check if the current user is following this tweet's user
       const isFollowingUser = await isFollowing(currentUser, tweet.user_id);
 
       let likeIconClass = 'fa-regular fa-star';
@@ -2483,7 +2585,7 @@
       nameDiv.className = 'name';
       let nameHTML = `${escapeHTML(display)} <span class="uname" style="margin-left:8px;color:#bbb;font-weight:500;font-size:13px">@${escapeHTML(username)}</span>`;
       if (isFounder) {
-        nameHTML += ` <span class="founder-badge"><i class="fa-solid fa-crown"></i> Founder</span>`;
+        nameHTML += ` <span class="founder-badge"><i class="fa-solid fa-crown"></i> Kurucu</span>`;
       }
       nameDiv.innerHTML = nameHTML;
       const timeDiv = document.createElement('div');
@@ -2502,7 +2604,7 @@
         const followBtn = document.createElement('button');
         followBtn.className = 'follow-btn';
         followBtn.dataset.user = tweet.user_id;
-        followBtn.textContent = isFollowingUser ? 'Unfollow' : 'Follow';
+        followBtn.textContent = isFollowingUser ? translations[currentLang].unfollow : translations[currentLang].follow;
         followDiv.appendChild(followBtn);
         header.appendChild(followDiv);
       }
@@ -2511,6 +2613,7 @@
       textP.style.margin = '10px 0 0 0';
       textP.innerHTML = linkHashtags(tweet.text || '');
 
+      // Media
       let mediaDiv = null;
       if (tweet.media_url && tweet.media_type) {
         mediaDiv = document.createElement('div');
@@ -2522,13 +2625,15 @@
         } else if (tweet.media_type === 'image') {
           const img = document.createElement('img');
           img.src = tweet.media_url;
-          img.alt = 'Media';
+          img.alt = 'Medya';
           mediaDiv.appendChild(img);
         } else if (tweet.media_type === 'video') {
+          // Video için thumbnail ile render et
           createVideoPreview(mediaDiv, tweet.media_url, true);
         }
       }
 
+      // Alıntı tweet varsa render et
       let quotedDiv = null;
       if (tweet.quoted_tweet_id) {
         quotedDiv = document.createElement('div');
@@ -2558,7 +2663,7 @@
             qNameSpan.className = 'name';
             let qNameHTML = `${escapeHTML(qDisplay)} <span class="uname">@${escapeHTML(qUsername)}</span>`;
             if (qIsFounder) {
-              qNameHTML += ` <span class="founder-badge"><i class="fa-solid fa-crown"></i> Founder</span>`;
+              qNameHTML += ` <span class="founder-badge"><i class="fa-solid fa-crown"></i> Kurucu</span>`;
             }
             qNameSpan.innerHTML = qNameHTML;
             qHeader.appendChild(qAvatarImg);
@@ -2578,7 +2683,7 @@
               } else if (quotedTweet.media_type === 'image') {
                 const img = document.createElement('img');
                 img.src = quotedTweet.media_url;
-                img.alt = 'Media';
+                img.alt = 'Medya';
                 img.style.maxWidth = '100%';
                 img.style.borderRadius = '6px';
                 quotedDiv.appendChild(img);
@@ -2614,10 +2719,11 @@
       quoteBtnDiv.dataset.id = tweet.id;
       quoteBtnDiv.innerHTML = '<i class="fa-solid fa-quote-left"></i><span class="quote-count" style="margin-left:6px">' + (tweet.quotes_count || 0) + '</span>';
 
+      // Detay butonu ekle
       const detailDiv = document.createElement('div');
       detailDiv.className = 'action detail-btn';
       detailDiv.dataset.id = tweet.id;
-      detailDiv.innerHTML = '<i class="fa-solid fa-eye"></i><span style="margin-left:6px">Detail</span>';
+      detailDiv.innerHTML = '<i class="fa-solid fa-eye"></i><span style="margin-left:6px">' + translations[currentLang].detail + '</span>';
 
       actions.appendChild(likeDiv);
       actions.appendChild(commentBtnDiv);
@@ -2628,7 +2734,7 @@
         const deleteDiv = document.createElement('div');
         deleteDiv.className = 'action delete-btn';
         deleteDiv.dataset.id = tweet.id;
-        deleteDiv.innerHTML = `<i class="fa-solid fa-trash"></i><span style="margin-left:6px">Delete</span>`;
+        deleteDiv.innerHTML = `<i class="fa-solid fa-trash"></i><span style="margin-left:6px">${translations[currentLang].delete}</span>`;
         actions.appendChild(deleteDiv);
       }
 
@@ -2672,9 +2778,9 @@
       commentForm.style.marginTop = '8px';
       const commentInput = document.createElement('input');
       commentInput.type = 'text';
-      commentInput.placeholder = 'Write a comment...';
+      commentInput.placeholder = translations[currentLang].commentPlaceholder;
       const commentSubmit = document.createElement('button');
-      commentSubmit.textContent = 'Comment';
+      commentSubmit.textContent = translations[currentLang].commentSubmit;
       commentForm.appendChild(commentInput);
       commentForm.appendChild(commentSubmit);
 
@@ -2686,23 +2792,24 @@
       article.appendChild(commentsWrap);
       article.appendChild(commentForm);
 
-      // Follow button listener
+      // Follow butonu
       const followBtn = article.querySelector('.follow-btn');
       if (followBtn) {
         followBtn.addEventListener('click', async (e) => {
-          e.stopPropagation();
+          e.stopPropagation(); // Header click'i tetiklemesin
           const targetId = e.currentTarget.getAttribute('data-user');
-          if (!currentUser) { alert('Sign in to follow'); return; }
-          if (e.currentTarget.textContent.trim() === 'Follow') {
+          if (!currentUser) { alert('Takip etmek için giriş yapın'); return; }
+          if (e.currentTarget.textContent.trim() === translations[currentLang].follow) {
             const success = await followUser(targetId);
-            if (success) e.currentTarget.textContent = 'Unfollow';
+            if (success) e.currentTarget.textContent = translations[currentLang].unfollow;
           } else {
             const success = await unfollowUser(targetId);
-            if (success) e.currentTarget.textContent = 'Follow';
+            if (success) e.currentTarget.textContent = translations[currentLang].follow;
           }
         });
       }
 
+      // Like
       const likeEl = article.querySelector('.action.like');
       if (likeEl) {
         likeEl.addEventListener('click', async (e) => {
@@ -2710,6 +2817,7 @@
         });
       }
 
+      // Yorum toggle
       const commentBtn = article.querySelector('.comment-btn');
       if (commentBtn) {
         commentBtn.addEventListener('click', async function () {
@@ -2717,10 +2825,12 @@
         });
       }
 
+      // Yorum gönder
       commentSubmit.addEventListener('click', async function () {
         await addCommentHandler(tweet.id, commentInput, commentsWrap);
       });
 
+      // Alıntı
       const quoteBtn = article.querySelector('.quote-btn');
       if (quoteBtn) {
         quoteBtn.addEventListener('click', async function () {
@@ -2728,6 +2838,7 @@
         });
       }
 
+      // Detay butonu
       const detailBtn = article.querySelector('.detail-btn');
       if (detailBtn) {
         detailBtn.addEventListener('click', (e) => {
@@ -2736,6 +2847,7 @@
         });
       }
 
+      // Sil
       const delBtn = article.querySelector('.delete-btn');
       if (delBtn) {
         delBtn.addEventListener('click', function () { deleteTweetHandler(tweet.id, article); });
@@ -2744,7 +2856,7 @@
       if (prepend) feed.prepend(article); else feed.appendChild(article);
     }
 
-    /* REALTIME SUBSCRIPTIONS */
+    /* REALTIME */
     function setupRealtime() {
       try {
         if (realtimeChannel) return;
@@ -2783,6 +2895,7 @@
           })
           .subscribe();
 
+        // Yorumlar için realtime
         supabase.channel('public:comments')
           .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'comments' }, async payload => {
             const newComment = payload.new;
@@ -2838,6 +2951,7 @@
           })
           .subscribe();
 
+        // Bildirimler için realtime
         realtimeNotifChannel = supabase.channel('public:notifications')
           .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'notifications' }, async payload => {
             if (payload.new.recipient_id === currentUser) {
@@ -2848,7 +2962,7 @@
       } catch (err) { console.warn('realtime setup error', err); }
     }
 
-    /* NOTIFICATIONS COUNT */
+    /* NOTIFICATIONS */
     async function updateNotifCount() {
       try {
         await loadCurrentUser();
@@ -2879,9 +2993,10 @@
       await loadMore();
     }
 
-    const ALLOW_START_ZONE = 40;
-    const MIN_DRAG_TO_ACTIVATE = 12;
-    const THRESHOLD = 80;
+    /* ---------- Daha katı Pull-to-Refresh handlers (replace existing handlers) ---------- */
+    const ALLOW_START_ZONE = 40; // dokunma yukarıdan en fazla bu px içinde başlamalı
+    const MIN_DRAG_TO_ACTIVATE = 12; // küçük sarsıntıları görmezden gel
+    const THRESHOLD = 80; // tetikleme mesafesi (px)
 
     function getScrollableAncestor(el) {
       while (el && el !== document.body) {
@@ -2895,10 +3010,13 @@
 
     function shouldStartPTR(target) {
       if (!target) return false;
+      // Eğer element veya yakın ebeveyn ise no-ptr ise engelle
       if (target.closest && target.closest('.no-ptr')) return false;
+      // kesinlikle engellemek istediklik (buton, input, nav vs.)
       if (target.closest && target.closest('nav, .bottom-bar, button, input, textarea, select, a, .actions, .action, .modal, .search-wrapper')) {
         return false;
       }
+      // eğer feed içinden başlandıysa izin vermezsek default false; (biz yukarıdaki zone kısıtlaması ile birlikte kullanacağız)
       return true;
     }
 
@@ -2920,36 +3038,48 @@
 
     wrap.classList.add('ptr-wrap');
 
+    /* touchstart */
     function onTouchStart(e) {
       if (isRefreshing) return;
-      if (window.scrollY !== 0) return;
+      if (window.scrollY !== 0) return; // kesin: sadece en üstte
       if (!e.touches || e.touches.length !== 1) return;
 
       const startTarget = e.target;
       if (!shouldStartPTR(startTarget)) return;
 
       const y = e.touches[0].clientY;
+      // parmak ekranın çok üstünden başlamalı
       if (y > ALLOW_START_ZONE) return;
 
+      // kontrol et: hedefin en yakın scrollable ancestor'su 0 ise izin ver
       const sc = getScrollableAncestor(startTarget);
       if (sc && sc.scrollTop !== 0) return;
 
+      // hepsi tamam, başla (ama hareketleri henüz işleyecek değiliz, min drag bekleyeceğiz)
       startY = y;
       pulling = true;
       pullDistance = 0;
+      // geçici: çıkış animasyonu kapat
       wrap.style.transition = 'none';
     }
 
+    /* touchmove */
     function onTouchMove(e) {
       if (!pulling || isRefreshing) return;
       if (!e.touches || e.touches.length !== 1) return;
       const currentY = e.touches[0].clientY;
       const delta = currentY - startY;
-      if (delta <= 0) return;
+      if (delta <= 0) {
+        // yukarı çekme ya da sabit, hiç bir şey yapma
+        return;
+      }
+      // küçük sarsıntıları görmezden gel
       if (delta < MIN_DRAG_TO_ACTIVATE) return;
 
+      // artık kullanıcının gerçekten çektiğini kabul edip default kaydırmayı engelle
       e.preventDefault();
 
+      // daha yumuşak damping
       const damp = Math.min(MAX_PULL, Math.round((1 - Math.pow(0.8, delta / 12)) * delta));
       pullDistance = damp;
       wrap.style.transform = `translateY(${damp}px)`;
@@ -2963,6 +3093,7 @@
       }
     }
 
+    /* touchend */
     function onTouchEnd(/*e*/) {
       if (!pulling) return;
       pulling = false;
@@ -2974,6 +3105,7 @@
       }
     }
 
+    /* pointer (desktop) fallback: aynı katı kuralları uygula */
     function onPointerDown(e) {
       if (isRefreshing) return;
       if (window.scrollY !== 0) return;
@@ -3020,7 +3152,7 @@
     function triggerRefresh() {
       isRefreshing = true;
       spinner.style.display = 'block';
-      document.getElementById('refreshIndicator').textContent = 'Refreshing...';
+      document.getElementById('refreshIndicator').textContent = translations[currentLang].refreshing;
       refreshFeed().finally(() => {
         resetPull(false);
         isRefreshing = false;
@@ -3040,6 +3172,7 @@
       }
     }
 
+    /* replace the event listener hookups to ensure pointer/touch use these */
     window.removeEventListener('touchstart', onTouchStart);
     window.removeEventListener('touchmove', onTouchMove);
     window.removeEventListener('touchend', onTouchEnd);
@@ -3056,7 +3189,7 @@
     window.addEventListener('pointerup', onPointerUp);
     window.addEventListener('pointercancel', onPointerUp);
 
-    /* INFINITE SCROLL */
+    /* SCROLL infinite */
     const onScroll = debounce(() => {
       if (reachedEnd || isLoading) return;
       if (window.scrollY + window.innerHeight >= document.documentElement.scrollHeight * 0.85) loadMore();
@@ -3066,7 +3199,7 @@
 
     window.app = { tweetAt, followUser, unfollowUser, likeTweetHandler, addCommentHandler, deleteTweetHandler, doSearch };
 
-    /* SEARCH UI HELPERS */
+    /* SEARCH UI helpers */
     function attachSearchUI() {
       const wrapper = document.getElementById('searchWrapper');
       const input = document.getElementById('searchInput');
@@ -3094,18 +3227,18 @@
       }
     }
 
-    /* INITIALIZATION */
+    /* INIT */
     async function tryInit() {
       try {
         updateTexts();
         await loadCurrentUser();
         updateNavAuth();
-        await updateNotifCount();
+        await updateNotifCount(); // Sayfa yüklendiğinde bildirim sayısını güncelle
         if (!USE_PLACEHOLDER_KEY) {
           supabase.auth.onAuthStateChange(async (event, session) => {
             await loadCurrentUser();
             updateNavAuth();
-            await updateNotifCount();
+            await updateNotifCount(); // Auth değişikliğinde güncelle
           });
         }
         const settingsLink = document.getElementById('settingsLink');
@@ -3198,7 +3331,7 @@
       } catch (err) { console.error('tryInit error', err); }
     }
 
-    /* AUTH HELPERS */
+    /* AUTH & PROFILE helpers */
     async function loadCurrentUser() {
       try {
         if (USE_PLACEHOLDER_KEY) {
@@ -3225,7 +3358,7 @@
     async function signIn(email, password) {
       try {
         const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-        if (error) { showError('Sign in error', error); return null; }
+        if (error) { showError('Giriş hatası', error); return null; }
         await loadCurrentUser();
         return data;
       } catch (err) { showError('signIn catch', err); return null; }
