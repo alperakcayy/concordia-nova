@@ -1,495 +1,3441 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Concordia Nova — AI Hub</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#080d19">
+<title>Concordia AI — Cognitive Core 0.5</title>
 
-  <!-- Google Font -->
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #080d19;
+  --panel: #101a2b;
+  --panel2: #152239;
+  --panel3: #1b2b45;
+  --border: rgba(255,255,255,.09);
+  --text: #edf4ff;
+  --muted: #93a6c3;
+  --cyan: #35d9ff;
+  --purple: #9b78ff;
+  --green: #5be0a0;
+  --red: #ff657a;
+  --yellow: #ffd166;
+}
 
-  <meta name="description" content="Concordia Nova AI Hub: Text, image and idea generators." />
+* {
+  box-sizing: border-box;
+}
 
-  <style>
-    :root {
-      --bg-1: #04050a;
-      --bg-2: #071023;
-      --glass: rgba(255,255,255,0.03);
-      --muted: #9aa6b2;
-      --accent: #00f0ff;
-      --accent-2: #7b2fff;
-      --neon: #00f0ff;
-      --card: rgba(255,255,255,0.035);
-      --glass-2: rgba(255,255,255,0.02);
-      --glass-3: rgba(255,255,255,0.015);
-      --white: #ffffff;
-      --radius: 14px;
-      --shadow: 0 8px 30px rgba(2,6,23,0.6);
-      --glass-border: rgba(255,255,255,0.04);
-      --focus: 0 0 18px rgba(0,240,255,0.12);
-      --btn-gap: 16px;
-      --max-width: 1200px;
-      --transition: 280ms cubic-bezier(.2,.9,.2,1);
-      --ai-accent: #7b2fff;
-      --hover-glow: rgba(123,47,255,0.18);
-    }
+html {
+  scroll-behavior: smooth;
+}
 
-    * { box-sizing: border-box; }
-    html, body { height: 100%; margin: 0; }
-    body {
-      font-family: 'Poppins', system-ui, sans-serif;
-      background: linear-gradient(180deg, var(--bg-1) 0%, var(--bg-2) 100%);
-      color: var(--white);
-      overflow-x: hidden;
-    }
+body {
+  margin: 0;
+  width: 100%;
+  height: 100dvh;
+  min-height: 0;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 12% 5%, #142b4a 0, transparent 35%),
+    radial-gradient(circle at 90% 90%, #241944 0, transparent 35%),
+    var(--bg);
+  color: var(--text);
+  font-family: Inter, system-ui, Arial, sans-serif;
+}
 
-    .container {
-      max-width: var(--max-width);
-      margin: 36px auto;
-      padding: 28px;
-      position: relative;
-      z-index: 20;
-      display: grid;
-      gap: 20px;
-    }
+button,
+textarea,
+input {
+  font: inherit;
+}
 
-    header.hub {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      padding: 12px 14px;
-      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-      border-radius: 12px;
-      border: 1px solid var(--glass-border);
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(6px);
-    }
+button {
+  cursor: pointer;
+}
 
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
+button:disabled {
+  cursor: not-allowed;
+  opacity: .5;
+}
 
-    .brand .logo {
-      width: 52px;
-      height: 52px;
-      border-radius: 12px;
-      background: linear-gradient(135deg, var(--accent-2), var(--accent));
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 800;
-      font-size: 18px;
-      color: #020a0f;
-      box-shadow: 0 6px 20px rgba(123,47,255,0.14), 0 2px 10px rgba(0,240,255,0.06) inset;
-    }
+.app {
+  width: min(1300px, 100%);
+  height: 100dvh;
+  min-height: 0;
+  margin: auto;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
 
-    .brand h1 {
-      margin: 0;
-      font-size: 18px;
-      font-weight: 700;
-      letter-spacing: 0.2px;
-    }
+/* ===============================
+   HEADER
+================================ */
 
-    .brand p {
-      margin: 0;
-      font-size: 12px;
-      color: var(--muted);
-      margin-top: 2px;
-    }
+.topbar {
+  flex: 0 0 auto;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 12px 16px;
+  background: rgba(16,26,43,.92);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  backdrop-filter: blur(16px);
+}
 
-    .header-actions {
-      margin-left: auto;
-      display: flex;
-      gap: 10px;
-      align-items: center;
-    }
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
 
-    /* Mini Profile Box */
-    .mini-profile {
-      background: rgba(0,0,0,0.6);
-      padding: 16px;
-      border-radius: 12px;
-      margin: 20px auto;
-      max-width: 500px;
-      border: 1px solid rgba(123,47,255,0.2);
-      box-shadow: 0 8px 30px rgba(123,47,255,0.12);
-      display: none;
-    }
+.logo {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border-radius: 14px;
+  font-weight: 900;
+  font-size: 19px;
+  color: #07111d;
+  background: linear-gradient(135deg,var(--cyan),var(--purple));
+  box-shadow: 0 0 25px #35d9ff35;
+}
 
-    .mini-profile .top {
-      display: flex;
-      gap: 16px;
-      align-items: center;
-    }
+.brand h1 {
+  margin: 0;
+  font-size: 17px;
+  letter-spacing: .6px;
+}
 
-    .mini-profile img {
-      width: 64px;
-      height: 64px;
-      border-radius: 50%;
-      border: 2px solid var(--ai-accent);
-      object-fit: cover;
-    }
+.brand small {
+  color: var(--muted);
+  font-size: 11px;
+}
 
-    .mini-profile .info strong {
-      font-size: 18px;
-      color: var(--white);
-    }
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex-wrap: wrap;
+}
 
-    .mini-profile .info .username {
-      color: var(--muted);
-      font-size: 14px;
-    }
+.status {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--green);
+  font-size: 11px;
+  margin-right: 5px;
+}
 
-    .mini-profile .bio {
-      color: var(--muted);
-      font-size: 13px;
-      margin-top: 6px;
-      line-height: 1.4;
-    }
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--green);
+  box-shadow: 0 0 10px var(--green);
+}
 
-    .mini-profile .stats {
-      margin-top: 12px;
-      display: flex;
-      gap: 24px;
-      justify-content: center;
-      font-size: 13px;
-      color: var(--muted);
-    }
+.status-dot.busy {
+  background: var(--yellow);
+  box-shadow: 0 0 10px var(--yellow);
+}
 
-    .mini-profile .stats strong {
-      color: var(--white);
-    }
+.tool-btn {
+  border: 1px solid var(--border);
+  background: var(--panel2);
+  color: var(--text);
+  padding: 9px 11px;
+  border-radius: 10px;
+  font-size: 11px;
+  transition: .2s;
+}
 
-    .mini-profile a {
-      margin-top: 12px;
-      display: inline-block;
-      background: var(--ai-accent);
-      color: white;
-      padding: 8px 16px;
-      border-radius: 8px;
-      text-decoration: none;
-      font-weight: 600;
-      transition: all 0.3s;
-    }
+.tool-btn:hover {
+  border-color: var(--cyan);
+  color: var(--cyan);
+}
 
-    .mini-profile a:hover {
-      background: #5e1fff;
-      transform: translateY(-2px);
-    }
+/* ===============================
+   MAIN LAYOUT
+================================ */
 
-    /* AI Sections */
-    .ai-section {
-      padding: 20px;
-      border-radius: var(--radius);
-      background: var(--glass);
-      border: 1px solid var(--glass-border);
-      box-shadow: var(--shadow);
-    }
+.main {
+  flex: 1 1 auto;
+  min-height: 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  margin-top: 14px;
+  background: rgba(12,20,35,.88);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  overflow: hidden;
+  position: relative;
+}
 
-    .ai-input {
-      width: 100%;
-      padding: 12px;
-      border-radius: 10px;
-      border: 1px solid var(--glass-border);
-      background: var(--glass-2);
-      color: var(--white);
-      font-size: 14px;
-      margin-bottom: 12px;
-      resize: vertical;
-      min-height: 80px;
-    }
+.welcome {
+  flex: 0 0 auto;
+  padding: 30px 20px 22px;
+  text-align: center;
+}
 
-    .ai-input::placeholder { color: var(--muted); }
+.welcome h2 {
+  margin: 0 0 10px;
+  font-size: clamp(25px,4vw,36px);
+  background: linear-gradient(90deg,var(--cyan),#fff,var(--purple));
+  color: transparent;
+  background-clip: text;
+  -webkit-background-clip: text;
+}
 
-    .ai-btn {
-      padding: 12px 20px;
-      border-radius: 10px;
-      background: linear-gradient(90deg, var(--ai-accent), var(--accent));
-      color: #020a0f;
-      font-weight: 700;
-      border: none;
-      cursor: pointer;
-      transition: transform 0.3s;
-    }
+.welcome p {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.7;
+  max-width: 650px;
+  margin: auto;
+}
 
-    .ai-btn:hover { transform: scale(1.03); }
+.welcome-meta {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
 
-    .ai-output {
-      margin-top: 20px;
-      padding: 16px;
-      border-radius: 10px;
-      background: var(--glass-3);
-      border: 1px solid var(--glass-border);
-      white-space: pre-wrap;
-      min-height: 80px;
-    }
+.meta-pill {
+  background: #152239;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 6px 10px;
+  color: var(--muted);
+  font-size: 10px;
+}
 
-    .ai-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 20px;
-      margin-top: 24px;
-    }
+.suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 19px;
+}
 
-    /* Hero */
-    .hero {
-      display: flex;
-      gap: 20px;
-      align-items: center;
-      padding: 26px;
-      border-radius: 14px;
-      background: linear-gradient(120deg, rgba(255,255,255,0.012), rgba(255,255,255,0.008));
-      border: 1px solid rgba(255,255,255,0.03);
-      box-shadow: 0 20px 50px rgba(2,6,23,0.6);
-    }
+.suggestion {
+  background: var(--panel2);
+  color: var(--text);
+  border: 1px solid var(--border);
+  padding: 10px 13px;
+  border-radius: 12px;
+  font-size: 12px;
+  transition: .2s;
+}
 
-    .hero-left { flex: 1; min-width: 300px; }
-    .hero-right { width: 360px; display: flex; justify-content: center; align-items: center; }
+.suggestion:hover {
+  border-color: var(--cyan);
+  color: var(--cyan);
+  transform: translateY(-2px);
+}
 
-    .hero h2 { margin: 0; font-size: 28px; line-height: 1.02; }
-    .hero p { margin: 12px 0 0 0; color: var(--muted); font-size: 14px; }
+/* ===============================
+   CHAT
+================================ */
 
-    /* Background */
-    #bgCanvas {
-      position: fixed;
-      left: 0; top: 0;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-      z-index: 1;
-      mix-blend-mode: screen;
-    }
+.chat {
+  flex: 1 1 auto;
+  min-height: 0;
+  min-width: 0;
+  overflow-y: auto;
+  padding: 20px clamp(12px,4vw,45px);
+  scroll-behavior: smooth;
+}
 
-    .floating-planet {
-      position: absolute;
-      width: 140px;
-      height: 140px;
-      border-radius: 50%;
-      filter: blur(12px);
-      opacity: 0.12;
-      z-index: 2;
-      pointer-events: none;
-    }
+.message {
+  display: flex;
+  gap: 11px;
+  margin: 18px 0;
+  animation: appear .2s ease;
+}
 
-    .planet-1 { right: 8%; top: 12%; background: radial-gradient(circle at 30% 30%, rgba(123,47,255,0.95), rgba(0,240,255,0.6)); transform: rotate(12deg); }
-    .planet-2 { left: 6%; bottom: 8%; background: radial-gradient(circle at 70% 70%, rgba(255,80,120,0.9), rgba(255,200,80,0.6)); transform: rotate(-14deg); }
+@keyframes appear {
+  from {
+    opacity: 0;
+    transform: translateY(7px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 
-    .animated-lines {
-      position: absolute; inset: 0; z-index: 1; pointer-events: none;
-      background-image:
-        linear-gradient(transparent 30%, rgba(255,255,255,0.006) 31%, transparent 32%),
-        linear-gradient(90deg, transparent 40%, rgba(255,255,255,0.006) 41%, transparent 42%);
-      background-size: 100% 80px, 80px 100%;
-      opacity: 0.9;
-      mix-blend-mode: overlay;
-      animation: linesMove 18s linear infinite;
-    }
+.message.user {
+  flex-direction: row-reverse;
+}
 
-    @keyframes linesMove { from { background-position: 0 0, 0 0; } to { background-position: 0 -720px, -720px 0; } }
+.avatar {
+  flex: 0 0 35px;
+  width: 35px;
+  height: 35px;
+  display: grid;
+  place-items: center;
+  border-radius: 11px;
+  background: var(--panel2);
+  border: 1px solid var(--border);
+  font-size: 14px;
+}
 
-    .top-glow {
-      position: fixed; left: 0; right: 0; top: 0; height: 120px;
-      pointer-events: none; z-index: 2;
-      background: radial-gradient(ellipse at center, rgba(123,47,255,0.06), transparent 40%);
-      mix-blend-mode: screen;
-    }
+.message.assistant .avatar {
+  color: var(--cyan);
+  border-color: #35d9ff55;
+}
 
-    footer.hub-note {
-      margin-top: 18px;
-      text-align: center;
-      color: var(--muted);
-      font-size: 13px;
-      opacity: 0.95;
-    }
+.message.user .avatar {
+  color: var(--purple);
+  border-color: #9b78ff55;
+}
 
-    /* Responsive */
-    @media (max-width: 900px) {
-      .hero { flex-direction: column; align-items: flex-start; gap: 14px; }
-      .hero-right { width: 100%; }
-      .ai-grid { grid-template-columns: 1fr; }
-    }
+.bubble-wrap {
+  max-width: min(800px,85%);
+}
 
-    @media (max-width: 600px) {
-      .container { padding: 16px; }
-      .mini-profile { padding: 12px; max-width: 90%; }
-      .mini-profile img { width: 56px; height: 56px; }
-    }
-  </style>
+.message.user .bubble-wrap {
+  text-align: right;
+}
+
+.sender {
+  font-size: 11px;
+  color: var(--muted);
+  margin: 0 5px 6px;
+}
+
+.bubble {
+  display: inline-block;
+  text-align: left;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 5px 15px 15px 15px;
+  padding: 13px 16px;
+  font-size: 14px;
+  line-height: 1.75;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+
+.message.user .bubble {
+  background: #222044;
+  border-color: #9b78ff44;
+  border-radius: 15px 5px 15px 15px;
+}
+
+.bubble pre {
+  background: #070c15;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 13px;
+  overflow-x: auto;
+  max-width: 100%;
+  white-space: pre;
+  font-size: 12px;
+  color: #9fe8ff;
+}
+
+.bubble code {
+  color: #8de7ff;
+  background: #0a1725;
+  padding: 2px 5px;
+  border-radius: 4px;
+}
+
+.bubble strong {
+  color: #fff;
+}
+
+.message-actions {
+  display: flex;
+  gap: 6px;
+  margin: 7px 2px 0;
+}
+
+.message.user .message-actions {
+  justify-content: flex-end;
+}
+
+.mini-action {
+  background: transparent;
+  border: 1px solid transparent;
+  color: #788aa6;
+  font-size: 10px;
+  border-radius: 6px;
+  padding: 4px 7px;
+}
+
+.mini-action:hover {
+  color: var(--cyan);
+  border-color: var(--border);
+}
+
+/* ===============================
+   TYPING
+================================ */
+
+.typing {
+  display: inline-flex;
+  gap: 5px;
+  padding: 10px;
+}
+
+.typing span {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--cyan);
+  animation: pulse .8s infinite alternate;
+}
+
+.typing span:nth-child(2) {
+  animation-delay: .2s;
+}
+
+.typing span:nth-child(3) {
+  animation-delay: .4s;
+}
+
+@keyframes pulse {
+  to {
+    opacity: .25;
+    transform: translateY(-4px);
+  }
+}
+
+/* ===============================
+   COMPOSER
+================================ */
+
+.input-area {
+  flex: 0 0 auto;
+  min-width: 0;
+  padding: 14px clamp(12px,4vw,45px) 17px;
+  background: rgba(8,13,25,.95);
+  border-top: 1px solid var(--border);
+}
+
+.input-box {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 17px;
+  padding: 9px;
+}
+
+.input-box:focus-within {
+  border-color: var(--cyan);
+  box-shadow: 0 0 0 3px #35d9ff13;
+}
+
+#prompt {
+  flex: 1;
+  min-width: 0;
+  min-height: 44px;
+  max-height: 160px;
+  resize: none;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--text);
+  padding: 11px 9px;
+  font-size: 14px;
+}
+
+#prompt::placeholder {
+  color: #7588a6;
+}
+
+.send {
+  flex: 0 0 46px;
+  width: 46px;
+  height: 46px;
+  border: 0;
+  border-radius: 13px;
+  background: linear-gradient(135deg,var(--cyan),var(--purple));
+  color: #07111d;
+  font-size: 21px;
+  font-weight: 900;
+  transition: .2s;
+}
+
+.send:hover {
+  filter: brightness(1.15);
+  transform: translateY(-1px);
+}
+
+.send:disabled {
+  opacity: .45;
+  cursor: not-allowed;
+}
+
+.hint {
+  text-align: center;
+  color: #72839c;
+  font-size: 10px;
+  margin-top: 10px;
+}
+
+/* ===============================
+   MODAL
+================================ */
+
+.modal-backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 15px;
+  background: rgba(0,0,0,.68);
+  backdrop-filter: blur(7px);
+}
+
+.modal-backdrop.open {
+  display: flex;
+}
+
+.modal {
+  width: min(500px,100%);
+  max-height: 80%;
+  overflow-y: auto;
+  padding: 20px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  box-shadow: 0 20px 80px #0008;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.modal-header h3 {
+  margin: 0;
+  font-size: 17px;
+}
+
+.modal-close {
+  background: var(--panel2);
+  border: 1px solid var(--border);
+  color: var(--text);
+  width: 32px;
+  height: 32px;
+  border-radius: 9px;
+}
+
+.memory-section {
+  margin: 15px 0;
+  padding: 13px;
+  background: #0b1423;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+
+.memory-section h4 {
+  margin: 0 0 10px;
+  color: var(--cyan);
+  font-size: 12px;
+}
+
+.memory-section p,
+.memory-section li {
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.memory-section ul {
+  margin: 0;
+  padding-left: 18px;
+}
+
+.modal-note {
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+/* ===============================
+   TOAST
+================================ */
+
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 25px;
+  z-index: 30;
+  transform: translate(-50%,15px);
+  opacity: 0;
+  pointer-events: none;
+  background: #172a42;
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 11px 16px;
+  font-size: 12px;
+  transition: .25s;
+  box-shadow: 0 8px 30px #0005;
+}
+
+.toast.visible {
+  opacity: 1;
+  transform: translate(-50%,0);
+}
+
+/* ===============================
+   MOBILE
+================================ */
+
+@media(max-width:650px) {
+  .app {
+    width: 100%;
+    height: 100dvh;
+    padding: 7px;
+    min-height: 0;
+  }
+
+  .topbar {
+    padding: 10px;
+  }
+
+  .brand h1 {
+    font-size: 14px;
+  }
+
+  .toolbar {
+    gap: 4px;
+  }
+
+  .tool-btn {
+    padding: 7px 8px;
+    font-size: 10px;
+  }
+
+  .status {
+    font-size: 0;
+    margin: 0 3px;
+  }
+
+  .welcome {
+    padding: 22px 12px 12px;
+  }
+
+  .bubble-wrap {
+    max-width: 89%;
+  }
+
+  .chat {
+    padding: 12px;
+  }
+}
+
+@media(prefers-reduced-motion:reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: .01ms !important;
+    transition-duration: .01ms !important;
+  }
+}
+</style>
 </head>
+
 <body>
-  <!-- Background -->
-  <canvas id="bgCanvas" aria-hidden="true"></canvas>
-  <div class="floating-planet planet-1" aria-hidden="true"></div>
-  <div class="floating-planet planet-2" aria-hidden="true"></div>
-  <div class="animated-lines" aria-hidden="true"></div>
-  <div class="top-glow" aria-hidden="true"></div>
 
-  <main class="container" role="main" aria-labelledby="aiTitle">
+<div class="app">
 
-    <header class="hub" role="banner">
-      <div class="brand" aria-hidden="false">
-        <div class="logo" aria-hidden="true">CN</div>
-        <div>
-          <h1 id="aiTitle">Concordia Nova AI Hub</h1>
-          <p>Text, image and idea generators.</p>
-        </div>
-      </div>
+<header class="topbar">
 
-      <div class="header-actions" role="navigation" aria-label="Quick actions">
-        <button id="darkToggle" title="Change theme" aria-pressed="false" class="neon-badge" style="background:transparent;border:none;cursor:pointer;">Theme</button>
-        <a href="index.html" class="neon-badge" style="text-decoration:none;">Back to Hub</a>
-      </div>
-    </header>
+  <div class="brand">
+    <div class="logo">C</div>
+    <div>
+      <h1>CONCORDIA AI</h1>
+      <small>English Core · Cognitive Core 0.5</small>
+    </div>
+  </div>
 
-    <!-- Mini Profile Box (Common across all pages) -->
-    <div class="mini-profile" id="miniProfile">
-      <div class="top">
-        <img id="miniAvatar" src="https://via.placeholder.com/64" alt="Profile Picture">
-        <div class="info">
-          <strong id="miniName">Loading...</strong><br>
-          <span id="miniUsername" class="username"></span><br>
-          <small id="miniBio" class="bio">Loading bio...</small>
-        </div>
-        <a href="profile.html">Edit Profile</a>
-      </div>
-      <div class="stats">
-        <span><strong id="miniFollowing">0</strong> Following</span>
-        <span><strong id="miniFollowers">0</strong> Followers</span>
-      </div>
+  <div class="toolbar">
+
+    <div class="status">
+      <span class="status-dot" id="statusDot"></span>
+      <span id="statusText">Local Engine Ready</span>
     </div>
 
-    <section class="hero" aria-labelledby="heroHeading" role="region">
-      <div class="hero-left">
-        <h2 id="heroHeading">Artificial Intelligence Tools</h2>
-        <p>Mini AI model for text, image and idea generation. Enter prompt and generate.</p>
+    <button type="button" class="tool-btn" id="newChatBtn">
+      New Chat
+    </button>
+
+    <button type="button" class="tool-btn" id="memoryBtn">
+      Memory
+    </button>
+
+    <button type="button" class="tool-btn" id="exportBtn">
+      Export
+    </button>
+
+  </div>
+
+</header>
+
+<main class="main">
+
+  <section class="welcome" id="welcome">
+
+    <h2>Think. Create. Discover.</h2>
+
+    <p>
+      Concordia AI is an experimental local assistant.
+      Explore technology, solve mathematical problems,
+      learn programming, develop ideas and organize your thoughts.
+    </p>
+
+    <div class="welcome-meta">
+      <span class="meta-pill">Local Processing</span>
+      <span class="meta-pill">Personal Memory</span>
+      <span class="meta-pill">Knowledge Engine</span>
+      <span class="meta-pill">No External AI API</span>
+    </div>
+
+    <div class="suggestions">
+
+      <button type="button" class="suggestion"
+        data-prompt="Introduce yourself and explain your capabilities.">
+        Introduce yourself
+      </button>
+
+      <button type="button" class="suggestion"
+        data-prompt="Explain how Transformers work.">
+        Explain AI
+      </button>
+
+      <button type="button" class="suggestion"
+        data-prompt="Write a JavaScript todo list with localStorage.">
+        Write code
+      </button>
+
+      <button type="button" class="suggestion"
+        data-prompt="Show me the complete Concordia development roadmap.">
+        Roadmap
+      </button>
+
+      <button type="button" class="suggestion"
+        data-prompt="Help me create an online business plan.">
+        Business plan
+      </button>
+
+    </div>
+
+  </section>
+
+  <section class="chat" id="chat" aria-live="polite"></section>
+
+  <section class="input-area">
+
+    <form class="input-box" id="composer" autocomplete="off">
+
+      <textarea
+        id="prompt"
+        placeholder="Message Concordia AI..."
+        rows="1"
+        aria-label="Your message"
+      ></textarea>
+
+      <button
+        class="send"
+        type="submit"
+        id="sendBtn"
+        aria-label="Send message"
+      >↑</button>
+
+    </form>
+
+    <div class="hint">
+      Enter to send · Shift + Enter for a new line · Local engine
+    </div>
+
+  </section>
+
+  <div class="modal-backdrop" id="memoryModal">
+
+    <div class="modal">
+
+      <div class="modal-header">
+        <h3>Concordia Memory</h3>
+        <button class="modal-close" id="closeMemory">×</button>
       </div>
-      <div class="hero-right" aria-hidden="true">
-        <div style="width:280px; height:280px; border-radius:16px; display:flex;align-items:center;justify-content:center; background: linear-gradient(135deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border:1px solid rgba(255,255,255,0.03); box-shadow: 0 18px 50px rgba(2,6,23,0.6);">
-          <div style="text-align:center; padding:18px;">
-            <div style="font-size:42px; font-weight:800; letter-spacing:0.6px; color:transparent; -webkit-text-stroke: 0.8px rgba(255,255,255,0.06);">AI</div>
-            <div style="color:var(--muted); margin-top:8px; font-size:13px;">AI Hub</div>
+
+      <div id="memoryContent"></div>
+
+      <p class="modal-note">
+        Memory is stored in this browser using localStorage.
+        It is not synchronized with other devices.
+      </p>
+
+      <button type="button" class="tool-btn" id="forgetAllBtn">
+        Delete Personal Memory
+      </button>
+
+    </div>
+
+  </div>
+
+</main>
+
+</div>
+
+<div class="toast" id="toast"></div>
+<script>
+"use strict";
+
+/*
+=========================================================
+CONCORDIA AI — COGNITIVE CORE 0.5
+=========================================================
+
+SYSTEM TYPE:
+Local rule-based conversational prototype.
+
+CORE MODULES:
+1. Conversation controller
+2. Message rendering
+3. Local storage
+4. Personal memory
+5. Tokenization
+6. Knowledge retrieval
+7. Intent classification
+8. Context handling
+9. Mathematical parser
+10. Unit conversion
+11. Programming examples
+12. Structured problem solving
+13. Learning assistant
+14. Business planning assistant
+15. Export and reset
+
+IMPORTANT:
+This software does not contain a trained large language model.
+It does not use an external AI API.
+Its answers come from its own programmed rules and knowledge data.
+
+=========================================================
+*/
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", initializeConcordia, { once: true });
+} else {
+  initializeConcordia();
+}
+
+function initializeConcordia() {
+
+  /* =====================================================
+     01 — APPLICATION CONFIGURATION
+  ===================================================== */
+
+  const CONFIG = {
+    name: "Concordia AI",
+    version: "0.5",
+    historyKey: "concordia_cognitive_history_05",
+    memoryKey: "concordia_cognitive_memory_05",
+    maxHistory: 300,
+    maxNotes: 60,
+    maxProjects: 30,
+    maxPreferences: 30,
+    responseDelay: 180
+  };
+
+  /* =====================================================
+     02 — DOM REFERENCES
+  ===================================================== */
+
+  const DOM = {
+    chat: document.getElementById("chat"),
+    composer: document.getElementById("composer"),
+    prompt: document.getElementById("prompt"),
+    send: document.getElementById("sendBtn"),
+    welcome: document.getElementById("welcome"),
+    status: document.getElementById("statusText"),
+    statusDot: document.getElementById("statusDot"),
+    newChat: document.getElementById("newChatBtn"),
+    memory: document.getElementById("memoryBtn"),
+    export: document.getElementById("exportBtn"),
+    modal: document.getElementById("memoryModal"),
+    memoryContent: document.getElementById("memoryContent"),
+    closeMemory: document.getElementById("closeMemory"),
+    forgetAll: document.getElementById("forgetAllBtn"),
+    toast: document.getElementById("toast")
+  };
+
+  for (const [name, element] of Object.entries(DOM)) {
+    if (!element) {
+      console.error("Missing interface element:", name);
+      return;
+    }
+  }
+
+  /* =====================================================
+     03 — APPLICATION STATE
+  ===================================================== */
+
+  let state = {
+    busy: false,
+    lastTopic: null,
+    lastAnswer: "",
+    lastUserMessage: "",
+    lastIntent: null,
+    activeConversation: [],
+    toastTimeout: null
+  };
+
+  /* =====================================================
+     04 — DEFAULT MEMORY
+  ===================================================== */
+
+  function emptyMemory() {
+    return {
+      userName: null,
+      notes: [],
+      preferences: [],
+      projects: [],
+      facts: [],
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+  }
+
+  /* =====================================================
+     05 — STORAGE LAYER
+  ===================================================== */
+
+  function readStorage(key, fallback) {
+    try {
+      const raw = localStorage.getItem(key);
+
+      if (!raw) return fallback;
+
+      const parsed = JSON.parse(raw);
+
+      return parsed === null ? fallback : parsed;
+
+    } catch (error) {
+      console.warn("Concordia storage read error:", error);
+      return fallback;
+    }
+  }
+
+  function writeStorage(key, value) {
+    try {
+      localStorage.setItem(key, JSON.stringify(value));
+      return true;
+
+    } catch (error) {
+      console.warn("Concordia storage write error:", error);
+      showToast("Browser storage unavailable.");
+      return false;
+    }
+  }
+
+  function normalizeMemory(value) {
+    const result = emptyMemory();
+
+    if (!value || typeof value !== "object") {
+      return result;
+    }
+
+    result.userName =
+      typeof value.userName === "string"
+        ? value.userName
+        : null;
+
+    result.notes =
+      Array.isArray(value.notes)
+        ? value.notes.filter(item => typeof item === "string")
+        : [];
+
+    result.preferences =
+      Array.isArray(value.preferences)
+        ? value.preferences.filter(item => typeof item === "string")
+        : [];
+
+    result.projects =
+      Array.isArray(value.projects)
+        ? value.projects.filter(item => typeof item === "string")
+        : [];
+
+    result.facts =
+      Array.isArray(value.facts)
+        ? value.facts.filter(item => typeof item === "string")
+        : [];
+
+    result.createdAt = value.createdAt || result.createdAt;
+    result.updatedAt = value.updatedAt || result.updatedAt;
+
+    return result;
+  }
+
+  let history = readStorage(CONFIG.historyKey, []);
+
+  if (!Array.isArray(history)) {
+    history = [];
+  }
+
+  let memory = normalizeMemory(
+    readStorage(CONFIG.memoryKey, emptyMemory())
+  );
+
+  function saveHistory() {
+    history = history.slice(-CONFIG.maxHistory);
+    writeStorage(CONFIG.historyKey, history);
+  }
+
+  function saveMemory() {
+    memory.updatedAt = new Date().toISOString();
+    writeStorage(CONFIG.memoryKey, memory);
+  }
+
+  /* =====================================================
+     06 — BASIC UTILITIES
+  ===================================================== */
+
+  function normalize(text) {
+    return String(text)
+      .toLocaleLowerCase("en-US")
+      .replace(/[’']/g, " ")
+      .replace(/[^a-z0-9\s.+\-*/%=?!(),]/g, " ")
+      .replace(/\s+/g, " ")
+      .trim();
+  }
+
+  function escapeHTML(value) {
+    return String(value).replace(/[&<>"']/g, character => ({
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#039;"
+    })[character]);
+  }
+
+  function pick(array) {
+    if (!array || !array.length) return "";
+    return array[Math.floor(Math.random() * array.length)];
+  }
+
+  function uniquePush(array, value) {
+    const clean = String(value).trim();
+
+    if (!clean) return false;
+
+    const exists = array.some(
+      item => item.toLowerCase() === clean.toLowerCase()
+    );
+
+    if (exists) return false;
+
+    array.push(clean);
+
+    return true;
+  }
+
+  function formatDate(date = new Date()) {
+    return date.toLocaleString("en-US", {
+      dateStyle: "full",
+      timeStyle: "short"
+    });
+  }
+
+  function hasPhrase(text, phrase) {
+    const safe = phrase.toLowerCase();
+
+    return text.includes(safe);
+  }
+
+  function hasAny(text, phrases) {
+    return phrases.some(phrase => hasPhrase(text, phrase));
+  }
+
+  function delay(milliseconds) {
+    return new Promise(resolve => setTimeout(resolve, milliseconds));
+  }
+
+  /* =====================================================
+     07 — TOKENIZER
+  ===================================================== */
+
+  const STOP_WORDS = new Set([
+    "a","an","the","and","or","but","is","are","was","were",
+    "be","been","being","to","of","in","on","at","for","from",
+    "with","by","as","it","its","this","that","these","those",
+    "i","you","he","she","we","they","me","my","your","our",
+    "his","her","their","what","which","who","when","where",
+    "why","how","do","does","did","can","could","would","should",
+    "will","shall","may","might","must","have","has","had",
+    "about","into","over","under","than","then","there","here",
+    "also","very","just","really","please","tell","show","give"
+  ]);
+
+  function tokenize(text) {
+    return normalize(text)
+      .split(/\s+/)
+      .filter(token => token.length > 1);
+  }
+
+  function contentTokens(text) {
+    return tokenize(text).filter(token => !STOP_WORDS.has(token));
+  }
+
+  /* =====================================================
+     08 — SYNONYM EXPANSION
+  ===================================================== */
+
+  const SYNONYMS = {
+    ai: ["artificial intelligence", "intelligent system", "machine intelligence"],
+    model: ["network", "system", "architecture"],
+    learn: ["training", "education", "study"],
+    code: ["programming", "software", "development"],
+    web: ["website", "browser", "internet"],
+    data: ["information", "dataset", "records"],
+    memory: ["storage", "remember", "notes"],
+    transformer: ["attention", "self attention", "language model"],
+    computer: ["machine", "device", "hardware"],
+    business: ["startup", "company", "commerce"],
+    money: ["revenue", "income", "profit"],
+    create: ["build", "develop", "make"],
+    explain: ["describe", "define", "understand"],
+    improve: ["optimize", "enhance", "upgrade"],
+    problem: ["issue", "challenge", "difficulty"]
+  };
+
+  function expandTokens(tokens) {
+    const result = new Set(tokens);
+
+    for (const token of tokens) {
+      const related = SYNONYMS[token];
+
+      if (!related) continue;
+
+      for (const synonym of related) {
+        for (const part of tokenize(synonym)) {
+          result.add(part);
+        }
+      }
+    }
+
+    return [...result];
+  }
+
+  /* =====================================================
+     09 — SIMILARITY SCORING
+  ===================================================== */
+
+  function calculateSimilarity(query, document) {
+    const queryTokens = expandTokens(contentTokens(query));
+    const documentTokens = contentTokens(document);
+
+    if (!queryTokens.length || !documentTokens.length) {
+      return 0;
+    }
+
+    const documentSet = new Set(documentTokens);
+
+    let matches = 0;
+
+    for (const token of queryTokens) {
+      if (documentSet.has(token)) {
+        matches++;
+      }
+    }
+
+    const queryCoverage = matches / queryTokens.length;
+
+    const documentCoverage =
+      matches / Math.max(documentSet.size, 1);
+
+    const phraseBonus =
+      document.toLowerCase().includes(query.toLowerCase())
+        ? 0.5
+        : 0;
+
+    return queryCoverage * 0.65 +
+      documentCoverage * 0.2 +
+      phraseBonus;
+  }
+
+  /* =====================================================
+     10 — MESSAGE HISTORY
+  ===================================================== */
+
+  function addHistory(role, text) {
+    const message = {
+      id: Date.now() + Math.random(),
+      role,
+      text,
+      timestamp: new Date().toISOString()
+    };
+
+    history.push(message);
+    state.activeConversation.push(message);
+
+    saveHistory();
+
+    return message;
+  }
+
+  function getRecentMessages(count = 8) {
+    return history.slice(-count);
+  }
+
+  function getRecentUserMessages(count = 4) {
+    return history
+      .filter(message => message.role === "user")
+      .slice(-count);
+  }
+
+  function getRecentConversationText() {
+    return getRecentMessages(8)
+      .map(message => message.role + ": " + message.text)
+      .join("\n");
+  }
+
+  function restoreConversation() {
+    for (const item of history) {
+      if (
+        item &&
+        ["user", "assistant"].includes(item.role) &&
+        typeof item.text === "string"
+      ) {
+        renderMessage(item.role, item.text, false);
+      }
+    }
+
+    for (let i = history.length - 1; i >= 0; i--) {
+      const item = history[i];
+
+      if (item.role === "assistant" && !state.lastAnswer) {
+        state.lastAnswer = item.text;
+      }
+
+      if (
+        item.role === "user" &&
+        !state.lastUserMessage
+      ) {
+        state.lastUserMessage = item.text;
+      }
+
+      if (state.lastAnswer && state.lastUserMessage) {
+        break;
+      }
+    }
+
+    const previousUser = getRecentUserMessages(1)[0];
+
+    if (previousUser) {
+      const matched = searchKnowledge(previousUser.text);
+
+      if (matched) {
+        state.lastTopic = matched.topic;
+      }
+    }
+  }
+
+  /* =====================================================
+     11 — MARKDOWN-LIKE FORMATTING
+  ===================================================== */
+
+  function formatMessage(text) {
+    let safe = escapeHTML(text);
+
+    const codeBlocks = [];
+
+    safe = safe.replace(
+      /```([a-zA-Z0-9_-]*)\n?([\s\S]*?)```/g,
+      (_, language, code) => {
+        const index = codeBlocks.length;
+
+        codeBlocks.push(
+          "<pre><code>" + code + "</code></pre>"
+        );
+
+        return "%%BLOCK_" + index + "%%";
+      }
+    );
+
+    safe = safe.replace(
+      /`([^`]+)`/g,
+      "<code>$1</code>"
+    );
+
+    safe = safe.replace(
+      /\*\*(.*?)\*\*/g,
+      "<strong>$1</strong>"
+    );
+
+    safe = safe.replace(
+      /\*(.*?)\*/g,
+      "<em>$1</em>"
+    );
+
+    safe = safe.replace(
+      /%%BLOCK_(\d+)%%/g,
+      (_, index) => codeBlocks[Number(index)] || ""
+    );
+
+    return safe;
+  }
+
+  /* =====================================================
+     12 — MESSAGE RENDERING
+  ===================================================== */
+
+  function renderMessage(role, text, scroll = true) {
+    DOM.welcome.style.display = "none";
+
+    const row = document.createElement("div");
+    row.className = "message " + role;
+
+    const avatar = document.createElement("div");
+    avatar.className = "avatar";
+    avatar.textContent = role === "user" ? "U" : "C";
+
+    const wrap = document.createElement("div");
+    wrap.className = "bubble-wrap";
+
+    const sender = document.createElement("div");
+    sender.className = "sender";
+    sender.textContent = role === "user" ? "You" : CONFIG.name;
+
+    const bubble = document.createElement("div");
+    bubble.className = "bubble";
+    bubble.innerHTML = formatMessage(text);
+
+    wrap.append(sender, bubble);
+    row.append(avatar, wrap);
+
+    if (role === "assistant") {
+      const actions = document.createElement("div");
+      actions.className = "message-actions";
+
+      const copyButton = document.createElement("button");
+      copyButton.type = "button";
+      copyButton.className = "mini-action";
+      copyButton.textContent = "Copy";
+
+      copyButton.addEventListener("click", () => {
+        copyText(text);
+      });
+
+      actions.appendChild(copyButton);
+      wrap.appendChild(actions);
+    }
+
+    DOM.chat.appendChild(row);
+
+    if (scroll) {
+      DOM.chat.scrollTop = DOM.chat.scrollHeight;
+    }
+  }
+
+  /* =====================================================
+     13 — CLIPBOARD
+  ===================================================== */
+
+  async function copyText(text) {
+    try {
+      await navigator.clipboard.writeText(text);
+      showToast("Copied to clipboard.");
+
+    } catch {
+      showToast("Clipboard permission unavailable.");
+    }
+  }
+
+  /* =====================================================
+     14 — TYPING INDICATOR
+  ===================================================== */
+
+  function showTyping() {
+    removeTyping();
+
+    const row = document.createElement("div");
+    row.className = "message assistant";
+    row.id = "typingIndicator";
+
+    row.innerHTML = `
+      <div class="avatar">C</div>
+      <div class="bubble-wrap">
+        <div class="sender">Concordia is processing</div>
+        <div class="bubble">
+          <div class="typing">
+            <span></span>
+            <span></span>
+            <span></span>
           </div>
         </div>
       </div>
-    </section>
+    `;
 
-    <div class="decor-line"></div>
+    DOM.chat.appendChild(row);
+    DOM.chat.scrollTop = DOM.chat.scrollHeight;
+  }
 
-    <section class="ai-grid" aria-label="AI Generators">
-      <!-- Text Generator -->
-      <div class="ai-section ai-text">
-        <h3>Text Generator</h3>
-        <textarea class="ai-input" placeholder="Enter prompt (e.g., Write a story)" aria-label="Text prompt"></textarea>
-        <button class="ai-btn" onclick="generateText()">Generate</button>
-        <div class="ai-output" id="textOutput"></div>
-      </div>
+  function removeTyping() {
+    document.getElementById("typingIndicator")?.remove();
+  }
 
-      <!-- Image Generator -->
-      <div class="ai-section ai-image">
-        <h3>Image Generator</h3>
-        <textarea class="ai-input" placeholder="Enter prompt (e.g., A landscape picture)" aria-label="Image prompt"></textarea>
-        <button class="ai-btn" onclick="generateImage()">Generate</button>
-        <div class="ai-output" id="imageOutput"></div>
-      </div>
+  /* =====================================================
+     15 — STATUS
+  ===================================================== */
 
-      <!-- Idea Generator -->
-      <div class="ai-section ai-idea">
-        <h3>Idea Generator</h3>
-        <textarea class="ai-input" placeholder="Enter prompt (e.g., Generate business ideas)" aria-label="Idea prompt"></textarea>
-        <button class="ai-btn" onclick="generateIdea()">Generate</button>
-        <div class="ai-output" id="ideaOutput"></div>
-      </div>
+  function setStatus(value, busy = false) {
+    DOM.status.textContent = value;
+    DOM.statusDot.classList.toggle("busy", busy);
+  }
 
-      <!-- Other AI tools can be added here -->
-    </section>
+  /* =====================================================
+     16 — TOAST
+  ===================================================== */
 
-    <div class="rich-ornament" aria-hidden="true"></div>
+  function showToast(message) {
+    DOM.toast.textContent = message;
+    DOM.toast.classList.add("visible");
 
-    <footer class="hub-note" role="contentinfo">
-      AI generation is simulated, no real model is used. © Concordia Nova AI
-    </footer>
+    clearTimeout(state.toastTimeout);
 
-  </main>
+    state.toastTimeout = setTimeout(() => {
+      DOM.toast.classList.remove("visible");
+    }, 2400);
+  }
 
-  <script type="module">
-    // Supabase connection
-    import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+  /* =====================================================
+     17 — PERSONAL MEMORY EXTRACTION
+  ===================================================== */
 
-    const SUPABASE_URL = 'https://shkttorkfcnvkrwnkixf.supabase.co';
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNoa3R0b3JrZmNudmtyd25raXhmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY2NzY2ODAsImV4cCI6MjA3MjI1MjY4MH0.GgDA8tSgQoMhCt_BYZU3mCkKaErUs_SQVNeWdCGQOgI';
+  function extractMemory(text) {
+    let match;
 
-    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const namePattern =
+      /^(?:my name is|call me|i am called)\s+([a-zA-Z][a-zA-Z '-]{1,35})[.!?]*$/i;
 
-    // Load mini profile
-    async function loadMiniProfile() {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        window.location.href = 'register.html';
-        return;
-      }
+    match = text.match(namePattern);
 
-      const { data: profile, error } = await supabase
-        .from('profiles')
-        .select('avatar_url, display_name, username, bio')
-        .eq('id', user.id)
-        .single();
+    if (match) {
+      const name = match[1].trim();
 
-      if (error || !profile) {
-        console.error('Profile could not be loaded:', error);
-        return;
-      }
+      memory.userName = name;
+      saveMemory();
 
-      document.getElementById('miniAvatar').src = profile.avatar_url || 'https://via.placeholder.com/64';
-      document.getElementById('miniName').textContent = profile.display_name || profile.username || 'User';
-      document.getElementById('miniUsername').textContent = '@' + (profile.username || 'none');
-      document.getElementById('miniBio').textContent = profile.bio || 'Bio not added';
-
-      // Following/followers counts (optional, keep simple)
-      const { count: following } = await supabase
-        .from('follows')
-        .select('*', { count: 'exact', head: true })
-        .eq('follower', user.id);
-
-      const { count: followers } = await supabase
-        .from('follows')
-        .select('*', { count: 'exact', head: true })
-        .eq('following', user.id);
-
-      document.getElementById('miniFollowing').textContent = following || 0;
-      document.getElementById('miniFollowers').textContent = followers || 0;
-
-      document.getElementById('miniProfile').style.display = 'block';
+      return {
+        handled: true,
+        answer: "Nice to meet you, **" + name +
+          "**. I saved your name in this browser."
+      };
     }
 
-    // Run on page load
-    loadMiniProfile();
+    const notePattern =
+      /^(?:remember that|remember this|note that|remember my)\s+(.+?)[.!?]*$/i;
 
-    // Simple AI simulation (taken from previous code)
-    const miniAI = {
-      generate: function(prompt, type) {
-        if (type === 'text') return "Generated text: A story about " + prompt + ".";
-        if (type === 'image') return "Generated image: [Simulated URL]";
-        if (type === 'idea') return "Generated idea: A new idea for " + prompt + ".";
-        return "Generated content.";
+    match = text.match(notePattern);
+
+    if (match) {
+      const note = match[1].trim();
+
+      const inserted = uniquePush(memory.notes, note);
+
+      memory.notes = memory.notes.slice(-CONFIG.maxNotes);
+      saveMemory();
+
+      return {
+        handled: true,
+        answer: inserted
+          ? "I saved this note:\n\n• " + note
+          : "That note is already in your memory."
+      };
+    }
+
+    const preferencePattern =
+      /^(?:i prefer|i like|i love|my favorite is)\s+(.+?)[.!?]*$/i;
+
+    match = text.match(preferencePattern);
+
+    if (match) {
+      const preference = match[0].trim();
+
+      uniquePush(memory.preferences, preference);
+      memory.preferences = memory.preferences.slice(-CONFIG.maxPreferences);
+      saveMemory();
+
+      return {
+        handled: true,
+        answer: "I saved your preference:\n\n• " + preference
+      };
+    }
+
+    const projectPattern =
+      /^(?:my project is|i am building|i'm building|i am working on)\s+(.+?)[.!?]*$/i;
+
+    match = text.match(projectPattern);
+
+    if (match) {
+      const project = match[1].trim();
+
+      uniquePush(memory.projects, project);
+      memory.projects = memory.projects.slice(-CONFIG.maxProjects);
+      saveMemory();
+
+      return {
+        handled: true,
+        answer: "Project saved to local memory:\n\n**" + project + "**"
+      };
+    }
+
+    return {
+      handled: false,
+      answer: null
+    };
+  }
+
+  /* =====================================================
+     18 — MEMORY COMMANDS
+  ===================================================== */
+
+  function getMemoryReport() {
+    let output = "**CONCORDIA PERSONAL MEMORY**\n\n";
+
+    output += "**Name:** " +
+      (memory.userName || "Not set") + "\n\n";
+
+    output += "**Saved notes:**\n";
+
+    output += memory.notes.length
+      ? memory.notes.map(item => "• " + item).join("\n")
+      : "No notes saved.";
+
+    output += "\n\n**Preferences:**\n";
+
+    output += memory.preferences.length
+      ? memory.preferences.map(item => "• " + item).join("\n")
+      : "No preferences saved.";
+
+    output += "\n\n**Projects:**\n";
+
+    output += memory.projects.length
+      ? memory.projects.map(item => "• " + item).join("\n")
+      : "No projects saved.";
+
+    return output;
+  }
+
+  function handleMemoryCommand(text) {
+    if (hasAny(text, [
+      "what do you remember",
+      "show my memory",
+      "what do you know about me",
+      "show saved information"
+    ])) {
+      return getMemoryReport();
+    }
+
+    if (hasAny(text, [
+      "what is my name",
+      "do you know my name",
+      "what s my name"
+    ])) {
+      return memory.userName
+        ? "Your name is **" + memory.userName + "**."
+        : "I do not know your name yet. You can say: My name is Alex.";
+    }
+
+    if (hasAny(text, [
+      "forget my memory",
+      "clear my memory",
+      "delete my memory"
+    ])) {
+      if (!confirm("Delete all personal memory?")) {
+        return "Memory deletion was cancelled.";
       }
+
+      memory = emptyMemory();
+      saveMemory();
+
+      return "Your personal memory has been cleared. Conversation history remains.";
+    }
+
+    return null;
+  }
+
+  /* =====================================================
+     19 — MEMORY MODAL
+  ===================================================== */
+
+  function safeList(items) {
+    if (!items.length) return "<p>Nothing saved yet.</p>";
+
+    return "<ul>" + items
+      .map(item => "<li>" + escapeHTML(item) + "</li>")
+      .join("") + "</ul>";
+  }
+
+  function openMemoryModal() {
+    const name = memory.userName
+      ? escapeHTML(memory.userName)
+      : "Not set";
+
+    DOM.memoryContent.innerHTML = `
+      <div class="memory-section">
+        <h4>Personal Information</h4>
+        <p>Name: ${name}</p>
+      </div>
+
+      <div class="memory-section">
+        <h4>Notes</h4>
+        ${safeList(memory.notes)}
+      </div>
+
+      <div class="memory-section">
+        <h4>Preferences</h4>
+        ${safeList(memory.preferences)}
+      </div>
+
+      <div class="memory-section">
+        <h4>Projects</h4>
+        ${safeList(memory.projects)}
+      </div>
+    `;
+
+    DOM.modal.classList.add("open");
+  }
+
+  function closeMemoryModal() {
+    DOM.modal.classList.remove("open");
+  }
+    /* =====================================================
+     20 — KNOWLEDGE DATABASE
+  ===================================================== */
+
+  const KNOWLEDGE = [
+
+    {
+      topic: "artificial intelligence",
+      keywords: [
+        "artificial intelligence",
+        "what is ai",
+        "explain ai",
+        "define ai",
+        "intelligent systems"
+      ],
+      answer:
+        "Artificial Intelligence is a field of computer science focused on building systems that perform tasks commonly associated with human intelligence.\n\n" +
+        "Examples include language processing, pattern recognition, planning, prediction, reasoning and decision support.",
+      details:
+        "AI is a broad field rather than one single algorithm. It includes symbolic reasoning, search, planning, expert systems, machine learning, neural networks, computer vision and language processing.\n\n" +
+        "Some AI systems use explicitly written rules. Others learn statistical patterns from data. Modern large language models belong to the latter family.",
+      example:
+        "A spam filter is a simple AI application. It analyzes patterns in incoming messages and estimates whether each message is spam or legitimate.",
+      summary:
+        "AI is the broad field of creating computer systems that perform tasks associated with intelligence.",
+      tags: ["technology", "computers", "intelligence"]
+    },
+
+    {
+      topic: "machine learning",
+      keywords: [
+        "machine learning",
+        "what is ml",
+        "explain machine learning",
+        "learn from data"
+      ],
+      answer:
+        "Machine Learning is a branch of AI in which systems learn patterns from examples rather than relying only on manually written rules.\n\n" +
+        "Three common categories are supervised learning, unsupervised learning and reinforcement learning.",
+      details:
+        "During training, a model adjusts its internal parameters based on examples and an optimization objective.\n\n" +
+        "After training, the model should be evaluated on separate examples. A model that memorizes its training data may perform poorly on unfamiliar inputs. This is called overfitting.",
+      example:
+        "A house-price model can learn from examples containing location, size, number of rooms and historical sale prices. It then uses learned patterns to estimate a new house's value.",
+      summary:
+        "Machine learning allows computer systems to learn patterns from data.",
+      tags: ["data", "models", "statistics"]
+    },
+
+    {
+      topic: "transformer",
+      keywords: [
+        "transformer",
+        "self attention",
+        "attention mechanism",
+        "how transformers work",
+        "transformer architecture"
+      ],
+      answer:
+        "A Transformer is a neural network architecture widely used in modern language models.\n\n" +
+        "Its main mechanism is attention. Attention allows token representations to combine information from other relevant positions in a sequence.\n\n" +
+        "A typical Transformer contains embeddings, attention layers, feed-forward layers and output layers.",
+      details:
+        "In self-attention, each token representation is projected into query, key and value vectors.\n\n" +
+        "The model compares queries with keys to calculate attention weights. These weights determine how information from value vectors is combined.\n\n" +
+        "Multiple attention heads can represent different relationships. Position information helps the model distinguish token order.",
+      example:
+        "Consider: 'The animal did not cross the road because it was tired.' A language model needs to use context to interpret what 'it' refers to. Attention mechanisms help represent these relationships.",
+      summary:
+        "A Transformer processes token representations using attention and neural network layers.",
+      tags: ["deep learning", "llm", "architecture"]
+    },
+
+    {
+      topic: "neural network",
+      keywords: [
+        "neural network",
+        "what is a neural network",
+        "deep learning",
+        "artificial neuron"
+      ],
+      answer:
+        "A neural network is a computational model made of connected mathematical units.\n\n" +
+        "The connections have adjustable numerical weights. During training, an optimization process changes those weights to reduce prediction errors.",
+      details:
+        "A network commonly contains input representations, hidden layers and output layers.\n\n" +
+        "A training process calculates a loss, computes gradients using backpropagation and updates parameters with an optimizer.\n\n" +
+        "Deep learning uses neural networks with multiple layers.",
+      example:
+        "An image classifier can receive pixel values and produce scores for categories such as cat, dog, car or tree.",
+      summary:
+        "A neural network learns patterns by adjusting numerical weights.",
+      tags: ["deep learning", "mathematics", "training"]
+    },
+
+    {
+      topic: "tokenizer",
+      keywords: [
+        "tokenizer",
+        "tokenization",
+        "what are tokens",
+        "token ids",
+        "vocabulary"
+      ],
+      answer:
+        "A tokenizer converts text into smaller units called tokens.\n\n" +
+        "A token can represent a complete word, part of a word, punctuation or another text unit, depending on the tokenizer design.",
+      details:
+        "Language models generally process token IDs rather than raw text.\n\n" +
+        "A tokenizer maps text to IDs, while a vocabulary maps those IDs to known token representations.\n\n" +
+        "Tokenization influences sequence length, vocabulary size, language coverage and how unusual words are represented.",
+      example:
+        "The word 'unbelievable' might be treated as one token or split into smaller parts, depending on the tokenizer vocabulary.",
+      summary:
+        "A tokenizer converts text into token IDs that a language model can process.",
+      tags: ["language models", "text", "nlp"]
+    },
+
+    {
+      topic: "language model",
+      keywords: [
+        "large language model",
+        "llm",
+        "language model",
+        "what is an llm"
+      ],
+      answer:
+        "A Large Language Model is a neural network trained to process and generate language.\n\n" +
+        "Many modern language models use Transformer architectures and learn from large collections of text.",
+      details:
+        "A common training objective is next-token prediction. The model receives an existing token sequence and learns to estimate a probability distribution over possible next tokens.\n\n" +
+        "Additional training methods can improve instruction following, conversation behavior and task performance.",
+      example:
+        "Given the phrase 'The capital of France is', a language model may assign a high probability to 'Paris'.",
+      summary:
+        "An LLM is a neural network trained to process and generate language.",
+      tags: ["transformer", "nlp", "generative ai"]
+    },
+
+    {
+      topic: "model training",
+      keywords: [
+        "model training",
+        "train an ai",
+        "training a model",
+        "how to train ai",
+        "training neural network"
+      ],
+      answer:
+        "Training a neural network means adjusting its parameters using data and an optimization process.\n\n" +
+        "A basic workflow includes preparing data, creating a model, defining a loss function, computing gradients, updating weights and evaluating performance.",
+      details:
+        "Training quality depends on the dataset, architecture, batch size, optimizer, learning rate, sequence length, compute resources and evaluation method.\n\n" +
+        "A model can overfit if it memorizes examples instead of learning patterns that generalize.",
+      example:
+        "A tiny language model can be trained to predict the next token in an English sentence. It receives earlier tokens and learns to estimate what comes next.",
+      summary:
+        "Training adjusts a model's parameters to improve its predictions.",
+      tags: ["machine learning", "optimization", "pytorch"]
+    },
+
+    {
+      topic: "python",
+      keywords: [
+        "what is python",
+        "python language",
+        "learn python",
+        "python programming"
+      ],
+      answer:
+        "Python is a general-purpose programming language known for readable syntax.\n\n" +
+        "It is widely used in automation, data analysis, backend development, scientific computing and machine learning.",
+      details:
+        "Python has a large software ecosystem. Libraries provide tools for web applications, data processing, numerical computing, visualization and machine learning.\n\n" +
+        "For neural networks, PyTorch is one widely used development framework.",
+      example:
+        "A Python function for addition:\n\n```python\ndef add(a, b):\n    return a + b\n\nprint(add(5, 3))\n```",
+      summary:
+        "Python is a readable general-purpose language used in many technical fields.",
+      tags: ["programming", "coding", "development"]
+    },
+
+    {
+      topic: "javascript",
+      keywords: [
+        "what is javascript",
+        "javascript language",
+        "what is js",
+        "learn javascript"
+      ],
+      answer:
+        "JavaScript is a programming language commonly used to make websites interactive.\n\n" +
+        "It can respond to user input, update page content, validate forms, communicate with servers and power applications.",
+      details:
+        "JavaScript runs inside browsers and in server environments such as Node.js.\n\n" +
+        "Its asynchronous features, promises and async/await are useful for applications that interact with external services.",
+      example:
+        "A button can run a function when clicked:\n\n```javascript\ndocument.querySelector('button')\n  .addEventListener('click', () => {\n    alert('Hello!');\n  });\n```",
+      summary:
+        "JavaScript is widely used to create interactive web applications.",
+      tags: ["web", "frontend", "programming"]
+    },
+
+    {
+      topic: "html",
+      keywords: [
+        "what is html",
+        "html language",
+        "web page structure"
+      ],
+      answer:
+        "HTML stands for HyperText Markup Language.\n\n" +
+        "It defines the structure and meaning of content on web pages using elements such as headings, paragraphs, links, images and forms.",
+      details:
+        "HTML provides semantic structure. CSS controls presentation, while JavaScript adds interactive behavior.\n\n" +
+        "Semantic elements such as main, nav, article and section can make documents easier to understand and maintain.",
+      example:
+        "A simple HTML document contains a document declaration, a head section for metadata and a body section for visible page content.",
+      summary:
+        "HTML provides the structure of web pages.",
+      tags: ["web development", "frontend", "markup"]
+    },
+
+    {
+      topic: "css",
+      keywords: [
+        "what is css",
+        "css language",
+        "stylesheets",
+        "web design"
+      ],
+      answer:
+        "CSS stands for Cascading Style Sheets.\n\n" +
+        "It controls how HTML content looks, including colors, typography, spacing, layouts, transitions and animations.",
+      details:
+        "Modern CSS provides Flexbox, Grid, custom properties, responsive media queries and many layout tools.\n\n" +
+        "Well-organized CSS makes interfaces easier to maintain and adapt to different screen sizes.",
+      example:
+        "A card can use padding, border-radius, background color and box-shadow to create a distinct visual component.",
+      summary:
+        "CSS controls the visual presentation of web pages.",
+      tags: ["web", "frontend", "design"]
+    },
+
+    {
+      topic: "database",
+      keywords: [
+        "database",
+        "what is a database",
+        "sql",
+        "database system"
+      ],
+      answer:
+        "A database is an organized system for storing and retrieving information.\n\n" +
+        "Applications use databases to manage users, products, messages, payments and many other types of records.",
+      details:
+        "Relational databases organize information into tables with relationships. Document databases store flexible document records.\n\n" +
+        "Database design should consider consistency, security, indexing, transactions and query patterns.",
+      example:
+        "A messaging application may store users, conversations and messages in separate tables. Each message can reference its sender and conversation.",
+      summary:
+        "A database stores application information in an organized and retrievable form.",
+      tags: ["sql", "backend", "storage"]
+    },
+
+    {
+      topic: "algorithm",
+      keywords: [
+        "algorithm",
+        "what is an algorithm",
+        "algorithm complexity",
+        "big o"
+      ],
+      answer:
+        "An algorithm is a defined sequence of steps for solving a problem or performing a computation.\n\n" +
+        "Algorithms can be evaluated by correctness, efficiency, memory usage and suitability for a problem.",
+      details:
+        "Time complexity describes how an algorithm's running time grows with input size. Space complexity describes how its memory requirements grow.\n\n" +
+        "Big O notation is commonly used to express upper-bound growth rates.",
+      example:
+        "A linear search checks items one by one. Its worst-case time complexity is O(n), because the number of checks can grow with the list length.",
+      summary:
+        "An algorithm is a structured procedure for solving a problem.",
+      tags: ["computer science", "logic", "programming"]
+    },
+
+    {
+      topic: "internet",
+      keywords: [
+        "what is internet",
+        "how internet works",
+        "web protocol",
+        "http"
+      ],
+      answer:
+        "The Internet is a global network of interconnected computer networks.\n\n" +
+        "Devices communicate using standardized networking protocols. The World Wide Web is one service that operates on top of the Internet.",
+      details:
+        "When a browser requests a web page, it may use DNS to resolve a domain name, establish a connection and send an HTTP request to a server.\n\n" +
+        "The server returns a response, which the browser processes.",
+      example:
+        "When you open a website, your browser sends a request to a server. The server may return HTML, CSS, JavaScript and data.",
+      summary:
+        "The Internet connects networks and devices so they can exchange information.",
+      tags: ["network", "web", "technology"]
+    },
+
+    {
+      topic: "cybersecurity",
+      keywords: [
+        "cybersecurity",
+        "computer security",
+        "online security",
+        "protect data"
+      ],
+      answer:
+        "Cybersecurity focuses on protecting computer systems, networks, applications and information from unauthorized access, disruption and misuse.",
+      details:
+        "Important areas include authentication, authorization, encryption, secure software development, backups, monitoring and vulnerability management.\n\n" +
+        "Security should be considered throughout the design and maintenance of a system.",
+      example:
+        "A website can protect user accounts by using secure password hashing, multifactor authentication, session protection and server-side authorization.",
+      summary:
+        "Cybersecurity protects systems and data from digital threats.",
+      tags: ["security", "privacy", "computers"]
+    },
+
+    {
+      topic: "api",
+      keywords: [
+        "what is an api",
+        "application programming interface",
+        "api integration",
+        "rest api"
+      ],
+      answer:
+        "An API is an interface that allows software components to communicate through defined rules and operations.\n\n" +
+        "Web APIs commonly allow applications to request or exchange information over HTTP.",
+      details:
+        "An API defines endpoints, accepted inputs, outputs, authentication rules and error behavior.\n\n" +
+        "A REST-style API commonly uses HTTP methods such as GET, POST, PUT, PATCH and DELETE.",
+      example:
+        "A weather application might request forecast information from a server API and display the returned data.",
+      summary:
+        "An API defines how software systems communicate.",
+      tags: ["web development", "integration", "backend"]
+    },
+
+    {
+      topic: "business",
+      keywords: [
+        "business idea",
+        "online business",
+        "startup idea",
+        "business model",
+        "make money online"
+      ],
+      answer:
+        "A practical business begins with a clearly defined customer and a problem worth solving.\n\n" +
+        "A useful process is:\n\n1. Choose a specific audience.\n2. Identify a real problem.\n3. Speak with potential customers.\n4. Create a small offer.\n5. Test willingness to pay.\n6. Improve based on feedback.",
+      details:
+        "A product is not validated simply because it has been built. Stronger evidence includes customer interviews, repeat usage, referrals and actual purchases.\n\n" +
+        "A small test can provide useful evidence before a business invests heavily in development.",
+      example:
+        "Instead of building a massive marketplace immediately, you could create one focused template for a specific customer group and test whether that group buys it.",
+      summary:
+        "Start with a specific customer problem and validate demand before investing heavily.",
+      tags: ["entrepreneurship", "sales", "marketing"]
+    },
+
+    {
+      topic: "productivity",
+      keywords: [
+        "productivity",
+        "time management",
+        "focus",
+        "how to be productive"
+      ],
+      answer:
+        "Productivity is the ability to make useful progress toward important objectives.\n\n" +
+        "A practical system includes choosing priorities, reducing distractions, setting realistic work blocks and reviewing progress.",
+      details:
+        "Motivation changes over time, so repeatable routines can make work more consistent.\n\n" +
+        "Breaking a large task into small actions makes it easier to start, measure and complete.",
+      example:
+        "Instead of planning to build an entire application in one evening, define one feature, implement it and test it.",
+      summary:
+        "Productivity improves when important work is divided into clear and repeatable actions.",
+      tags: ["work", "planning", "habits"]
+    },
+
+    {
+      topic: "operating system",
+      keywords: [
+        "operating system",
+        "what is an os",
+        "windows linux",
+        "computer operating system"
+      ],
+      answer:
+        "An operating system manages computer hardware and provides services to applications.\n\n" +
+        "It manages processes, memory, storage, devices, files and user access.",
+      details:
+        "The operating system acts as an interface between applications and hardware. It schedules processes, allocates resources and provides common system services.",
+      example:
+        "When you open an application, the operating system allocates memory and CPU time so the application can run.",
+      summary:
+        "An operating system manages hardware resources and supports applications.",
+      tags: ["computer science", "hardware", "software"]
+    },
+
+    {
+      topic: "concordia",
+      keywords: [
+        "concordia ai",
+        "concordia project",
+        "concordia roadmap",
+        "your development"
+      ],
+      answer:
+        "Concordia AI is an experimental local assistant project.\n\n" +
+        "The current version uses a rule-based response engine, a knowledge collection, basic text matching and browser memory.",
+      details:
+        "The long-term roadmap includes tokenizer development, vocabulary preparation, embeddings, a small Transformer, dataset preparation, model training and local inference integration.\n\n" +
+        "Each stage should be tested independently rather than treating a working interface as evidence of a trained model.",
+      example:
+        "A first neural experiment could be a tiny next-token prediction model trained on a small English text dataset. It would not initially have general conversational abilities.",
+      summary:
+        "Concordia AI is a local prototype with a planned path toward its own trained neural model.",
+      tags: ["project", "development", "ai"]
+    }
+
+  ];
+
+  /* =====================================================
+     21 — KNOWLEDGE RETRIEVAL
+  ===================================================== */
+
+  function searchKnowledge(query) {
+    let best = null;
+    let bestScore = 0;
+
+    for (const item of KNOWLEDGE) {
+      const keywordScore = item.keywords.reduce((sum, keyword) => {
+        return sum + (
+          query.includes(keyword)
+            ? keyword.length * 0.12 + 0.3
+            : 0
+        );
+      }, 0);
+
+      const answerText =
+        item.topic + " " +
+        item.keywords.join(" ") + " " +
+        item.tags.join(" ") + " " +
+        item.answer;
+
+      const semanticScore = calculateSimilarity(query, answerText);
+
+      const score =
+        keywordScore * 0.7 +
+        semanticScore * 2;
+
+      if (score > bestScore) {
+        bestScore = score;
+        best = item;
+      }
+    }
+
+    return bestScore >= 0.7 ? best : null;
+  }
+
+  /* =====================================================
+     22 — INTENT CLASSIFICATION
+  ===================================================== */
+
+  function classifyIntent(text) {
+    if (hasAny(text, ["hello", "hi", "hey", "good morning"])) {
+      return "greeting";
+    }
+
+    if (hasAny(text, ["who are you", "introduce yourself"])) {
+      return "identity";
+    }
+
+    if (hasAny(text, ["what can you do", "your capabilities"])) {
+      return "capabilities";
+    }
+
+    if (hasAny(text, ["what do you remember", "show my memory"])) {
+      return "memory";
+    }
+
+    if (hasAny(text, ["give me an example", "show an example"])) {
+      return "example";
+    }
+
+    if (hasAny(text, ["summarize", "in short", "short version"])) {
+      return "summary";
+    }
+
+    if (hasAny(text, ["tell me more", "explain more", "go deeper"])) {
+      return "details";
+    }
+
+    if (hasAny(text, ["compare", "difference between", "versus"])) {
+      return "comparison";
+    }
+
+    if (hasAny(text, ["plan", "roadmap", "step by step"])) {
+      return "planning";
+    }
+
+    if (hasAny(text, ["write code", "create code", "generate code"])) {
+      return "code";
+    }
+
+    if (hasAny(text, ["calculate", "what is"])) {
+      return "question";
+    }
+
+    return "general";
+  }
+
+  /* =====================================================
+     23 — FOLLOW-UP ENGINE
+  ===================================================== */
+
+  function handleFollowUp(text) {
+    if (!state.lastTopic) return null;
+
+    const topic = KNOWLEDGE.find(
+      item => item.topic === state.lastTopic
+    );
+
+    if (!topic) return null;
+
+    if (hasAny(text, [
+      "tell me more",
+      "explain more",
+      "more details",
+      "go deeper",
+      "elaborate"
+    ])) {
+      return topic.details;
+    }
+
+    if (hasAny(text, [
+      "give me an example",
+      "show an example",
+      "example please",
+      "practical example"
+    ])) {
+      return topic.example;
+    }
+
+    if (hasAny(text, [
+      "summarize",
+      "summarize it",
+      "short version",
+      "in short"
+    ])) {
+      return topic.summary;
+    }
+
+    if (hasAny(text, [
+      "why",
+      "why does it matter",
+      "why is this important"
+    ])) {
+      return "This is important because it explains how **" +
+        topic.topic +
+        "** works and where it can be useful.\n\n" +
+        topic.details;
+    }
+
+    return null;
+  }
+    /* =====================================================
+     24 — MATHEMATICS TOKENIZER
+  ===================================================== */
+
+  function tokenizeMath(expression) {
+    const compact = expression.replace(/\s+/g, "");
+
+    const tokens = compact.match(
+      /\d+(?:\.\d+)?|[()+\-*/%^]/g
+    );
+
+    if (!tokens || tokens.join("") !== compact) {
+      throw new Error("Invalid mathematical expression.");
+    }
+
+    return tokens;
+  }
+
+  /* =====================================================
+     25 — MATHEMATICS PARSER
+  ===================================================== */
+
+  function calculate(expression) {
+    const tokens = tokenizeMath(expression);
+    let position = 0;
+
+    function primary() {
+      const token = tokens[position];
+
+      if (token === "+") {
+        position++;
+        return primary();
+      }
+
+      if (token === "-") {
+        position++;
+        return -primary();
+      }
+
+      if (token === "(") {
+        position++;
+
+        const result = parseExpression();
+
+        if (tokens[position] !== ")") {
+          throw new Error("Missing closing parenthesis.");
+        }
+
+        position++;
+
+        return result;
+      }
+
+      if (
+        token === undefined ||
+        !/^\d+(?:\.\d+)?$/.test(token)
+      ) {
+        throw new Error("Number expected.");
+      }
+
+      position++;
+
+      return Number(token);
+    }
+
+    function power() {
+      const left = primary();
+
+      if (tokens[position] === "^") {
+        position++;
+        return Math.pow(left, power());
+      }
+
+      return left;
+    }
+
+    function term() {
+      let value = power();
+
+      while (
+        ["*", "/", "%"].includes(tokens[position])
+      ) {
+        const operator = tokens[position++];
+        const right = power();
+
+        if (operator === "*") {
+          value *= right;
+        } else if (operator === "/") {
+          if (right === 0) {
+            throw new Error("Division by zero.");
+          }
+
+          value /= right;
+        } else {
+          if (right === 0) {
+            throw new Error("Division by zero.");
+          }
+
+          value %= right;
+        }
+      }
+
+      return value;
+    }
+
+    function parseExpression() {
+      let value = term();
+
+      while (
+        tokens[position] === "+" ||
+        tokens[position] === "-"
+      ) {
+        const operator = tokens[position++];
+        const right = term();
+
+        value = operator === "+"
+          ? value + right
+          : value - right;
+      }
+
+      return value;
+    }
+
+    const result = parseExpression();
+
+    if (position !== tokens.length) {
+      throw new Error("Unexpected mathematical token.");
+    }
+
+    if (!Number.isFinite(result)) {
+      throw new Error("Invalid calculation result.");
+    }
+
+    return result;
+  }
+
+  /* =====================================================
+     26 — MATH REQUEST DETECTION
+  ===================================================== */
+
+  function detectMath(text) {
+    let expression = String(text).trim();
+
+    expression = expression.replace(
+      /^(what is|calculate|compute|solve|how much is)\s+/i,
+      ""
+    );
+
+    expression = expression.replace(/[?!]\s*$/, "").trim();
+
+    if (!expression) return null;
+
+    if (!/^[0-9\s.+\-*/%^()]+$/.test(expression)) {
+      return null;
+    }
+
+    if (!/[+\-*/%^]/.test(expression)) {
+      return null;
+    }
+
+    return expression;
+  }
+
+  /* =====================================================
+     27 — UNIT CONVERSION
+  ===================================================== */
+
+  function convertUnits(text) {
+    const value = text.toLowerCase();
+
+    const match = value.match(
+      /(-?\d+(?:\.\d+)?)\s*(km|kilometers?|mi|miles?|kg|kilograms?|lb|pounds?|cm|centimeters?|inches?|celsius|fahrenheit|°c|°f)\b/
+    );
+
+    if (!match) return null;
+
+    const number = Number(match[1]);
+    const unit = match[2];
+
+    let result;
+    let label;
+
+    if (["km","kilometer","kilometers"].includes(unit)) {
+      result = number * 0.621371;
+      label = "miles";
+    } else if (["mi","mile","miles"].includes(unit)) {
+      result = number / 0.621371;
+      label = "kilometers";
+    } else if (["kg","kilogram","kilograms"].includes(unit)) {
+      result = number * 2.20462262;
+      label = "pounds";
+    } else if (["lb","pound","pounds"].includes(unit)) {
+      result = number / 2.20462262;
+      label = "kilograms";
+    } else if (["cm","centimeter","centimeters"].includes(unit)) {
+      result = number / 2.54;
+      label = "inches";
+    } else if (["inch","inches"].includes(unit)) {
+      result = number * 2.54;
+      label = "centimeters";
+    } else if (["celsius","°c"].includes(unit)) {
+      result = number * 9 / 5 + 32;
+      label = "°F";
+    } else {
+      result = (number - 32) * 5 / 9;
+      label = "°C";
+    }
+
+    return "**Unit conversion**\n\n" +
+      number + " " + unit + " = **" +
+      Number(result.toFixed(4)) + " " + label + "**";
+  }
+
+  /* =====================================================
+     28 — CODE EXAMPLES
+  ===================================================== */
+
+  const CODE_LIBRARY = {
+
+    javascript: {
+      title: "JavaScript Todo Manager",
+      code: `const STORAGE_KEY = "concordia_todos";
+
+function loadTodos() {
+  try {
+    return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+  } catch {
+    return [];
+  }
+}
+
+function saveTodos() {
+  localStorage.setItem(
+    STORAGE_KEY,
+    JSON.stringify(todos)
+  );
+}
+
+let todos = loadTodos();
+
+function addTodo(text) {
+  if (!text.trim()) return;
+
+  todos.push({
+    id: Date.now(),
+    title: text.trim(),
+    completed: false
+  });
+
+  saveTodos();
+}
+
+function toggleTodo(id) {
+  const item = todos.find(todo => todo.id === id);
+
+  if (!item) return;
+
+  item.completed = !item.completed;
+  saveTodos();
+}
+
+function deleteTodo(id) {
+  todos = todos.filter(todo => todo.id !== id);
+  saveTodos();
+}
+
+function getStatistics() {
+  return {
+    total: todos.length,
+    completed: todos.filter(t => t.completed).length,
+    pending: todos.filter(t => !t.completed).length
+  };
+}
+
+addTodo("Learn JavaScript");
+addTodo("Build Concordia AI");
+
+console.log(getStatistics());`
+    },
+
+    python: {
+      title: "Python Utility",
+      code: `def greet(name):
+    return f"Hello, {name}!"
+
+def calculate(a, b, operation):
+
+    if operation == "add":
+        return a + b
+
+    if operation == "subtract":
+        return a - b
+
+    if operation == "multiply":
+        return a * b
+
+    if operation == "divide":
+        if b == 0:
+            raise ZeroDivisionError(
+                "Cannot divide by zero"
+            )
+        return a / b
+
+    raise ValueError("Unknown operation")
+
+print(greet("Concordia"))
+print(calculate(20, 5, "multiply"))`
+    },
+
+    html: {
+      title: "HTML Starter",
+      code: `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0">
+  <title>Concordia Starter</title>
+<\/head>
+<body>
+  <main>
+    <h1>Hello from Concordia</h1>
+    <p>My first web application.</p>
+    <button id="action">Click me</button>
+  </main>
+<\/body>
+<\/html>`
+    },
+
+    css: {
+      title: "Modern CSS Card",
+      code: `.card {
+  background: #101a2b;
+  color: #edf4ff;
+  padding: 24px;
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,.09);
+  box-shadow: 0 12px 30px rgba(0,0,0,.25);
+  transition: transform .2s ease;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+}`
+    },
+
+    pythonAI: {
+      title: "Simple Python Rule Engine",
+      code: `class Concordia:
+    def __init__(self):
+        self.name = "Concordia"
+        self.memory = []
+
+    def remember(self, note):
+        self.memory.append(note)
+
+    def respond(self, message):
+
+        text = message.lower()
+
+        if "hello" in text:
+            return "Hello! How can I help?"
+
+        if "your name" in text:
+            return f"I am {self.name}."
+
+        if "ai" in text:
+            return (
+                "AI is a field of computer science "
+                "focused on intelligent systems."
+            )
+
+        return (
+            "I do not have a built-in answer yet."
+        )
+
+
+assistant = Concordia()
+
+assistant.remember("Learn Python")
+
+print(assistant.respond("Hello"))
+print(assistant.memory)`
+    }
+
+  };
+
+  function generateCode(text) {
+    const query = normalize(text);
+
+    let selected = null;
+
+    if (
+      query.includes("python") &&
+      (query.includes("ai") || query.includes("assistant"))
+    ) {
+      selected = CODE_LIBRARY.pythonAI;
+    } else if (query.includes("javascript") || query.includes("todo")) {
+      selected = CODE_LIBRARY.javascript;
+    } else if (query.includes("python")) {
+      selected = CODE_LIBRARY.python;
+    } else if (query.includes("html")) {
+      selected = CODE_LIBRARY.html;
+    } else if (query.includes("css")) {
+      selected = CODE_LIBRARY.css;
+    }
+
+    if (!selected) return null;
+
+    const language =
+      selected === CODE_LIBRARY.javascript ? "javascript" :
+      selected === CODE_LIBRARY.python ? "python" :
+      selected === CODE_LIBRARY.html ? "html" :
+      selected === CODE_LIBRARY.css ? "css" :
+      "python";
+
+    return "**" + selected.title + "**\n\n" +
+      "```" + language + "\n" +
+      selected.code + "\n```";
+  }
+    /* =====================================================
+     29 — ROADMAP
+  ===================================================== */
+
+  function getRoadmap() {
+    return `**CONCORDIA AI — TECHNICAL DEVELOPMENT ROADMAP**
+
+**PHASE 1 — Local Cognitive Prototype**
+• Chat interface
+• Conversation history
+• Personal memory
+• Rule-based response engine
+• Topic retrieval
+• Basic arithmetic
+• Code examples
+
+**PHASE 2 — Language Processing**
+• Own tokenizer
+• Vocabulary creation
+• Token IDs
+• Text normalization
+• Dataset preparation
+• Sentence segmentation
+
+**PHASE 3 — Neural Foundations**
+• Embedding layer
+• Positional information
+• Attention mechanism
+• Feed-forward layers
+• Small Transformer architecture
+
+**PHASE 4 — Model Training**
+• English training corpus
+• Next-token prediction
+• Loss function
+• Backpropagation
+• Optimizer
+• Validation dataset
+• Model checkpoints
+
+**PHASE 5 — Local Inference**
+• Load model weights
+• Generate tokens
+• Sampling strategies
+• Context window
+• Response control
+
+**PHASE 6 — Application Integration**
+• Local inference service
+• Connect interface to model
+• Conversation context
+• Memory integration
+• Performance monitoring
+
+**PHASE 7 — Long-Term Research**
+• Better datasets
+• More model capacity
+• Evaluation benchmarks
+• Instruction tuning experiments
+• Improved reliability
+
+This is a development plan. It does not mean that the neural model or training pipeline already exists.`;
+  }
+
+  /* =====================================================
+     30 — STRUCTURED PROBLEM SOLVING
+  ===================================================== */
+
+  function solveStructure(text) {
+    return "**Let's break the problem down.**\n\n" +
+      "**1. Define the objective**\n" +
+      "What exact result are we trying to achieve?\n\n" +
+      "**2. Identify constraints**\n" +
+      "What limitations exist in time, budget, tools or technical resources?\n\n" +
+      "**3. List possible approaches**\n" +
+      "Compare at least two realistic ways to proceed.\n\n" +
+      "**4. Evaluate the trade-offs**\n" +
+      "Consider cost, complexity, reliability and maintenance.\n\n" +
+      "**5. Choose a testable first step**\n" +
+      "Build the smallest experiment that can show whether the approach works.\n\n" +
+      "**Your problem:** " + text;
+  }
+
+  /* =====================================================
+     31 — BUSINESS PLANNING
+  ===================================================== */
+
+  function businessPlan(text) {
+    return `**BUSINESS DEVELOPMENT FRAMEWORK**
+
+**1. Target customer**
+Define exactly who is expected to buy.
+
+**2. Customer problem**
+Identify a painful problem that customers already recognize.
+
+**3. Product or service**
+Describe the smallest useful offer.
+
+**4. Market validation**
+Talk to potential buyers and test willingness to pay.
+
+**5. Pricing**
+Estimate costs, competitor alternatives and acceptable customer value.
+
+**6. Distribution**
+Decide how customers will discover and purchase the product.
+
+**7. Feedback**
+Measure conversion, refunds, retention and repeat purchases.
+
+**8. Improvement**
+Improve the offer based on actual customer behavior.
+
+**Your starting idea:** ${text}
+
+This is a planning framework, not a sales forecast.`;
+  }
+
+  /* =====================================================
+     32 — LEARNING PLAN
+  ===================================================== */
+
+  function learningPlan(text) {
+    return `**LEARNING FRAMEWORK**
+
+**Step 1 — Fundamentals**
+Understand definitions and essential terminology.
+
+**Step 2 — Mechanisms**
+Learn how the main parts work together.
+
+**Step 3 — Small examples**
+Test each concept with a practical exercise.
+
+**Step 4 — Independent practice**
+Try to solve a problem without copying a solution.
+
+**Step 5 — Review**
+Identify mistakes and revisit weak areas.
+
+**Step 6 — Build**
+Create a small project using what you learned.
+
+**Learning topic:** ${text}`;
+  }
+
+  /* =====================================================
+     33 — COMPARISON ENGINE
+  ===================================================== */
+
+  function compareTopics(text) {
+    const matches = KNOWLEDGE.filter(item => {
+      return text.includes(item.topic);
+    });
+
+    if (matches.length < 2) return null;
+
+    const a = matches[0];
+    const b = matches[1];
+
+    return "**Comparison: " + a.topic + " vs " + b.topic + "**\n\n" +
+      "**" + a.topic + "**\n" + a.summary +
+      "\n\n**" + b.topic + "**\n" + b.summary +
+      "\n\n**Main difference:**\n" +
+      a.topic + " and " + b.topic +
+      " describe different concepts. Their purposes and applications depend on the problem being solved.";
+  }
+
+  /* =====================================================
+     34 — RESPONSE VARIATIONS
+  ===================================================== */
+
+  const RESPONSE_VARIATIONS = {
+    uncertain: [
+      "I do not have enough reliable built-in information to answer that confidently.",
+      "That topic is outside my current knowledge base. I would rather acknowledge the limitation than invent details.",
+      "I need more context to produce a useful response."
+    ],
+
+    greeting: [
+      "Hello! What would you like to explore today?",
+      "Welcome back! What are we building?",
+      "Hi! Tell me what is on your mind.",
+      "Good to see you again. What problem shall we solve?"
+    ],
+
+    thanks: [
+      "You're welcome. Let's keep making progress.",
+      "Happy to help!",
+      "Anytime. What should we work on next?"
+    ]
+  };
+
+  /* =====================================================
+     35 — MAIN RESPONSE ENGINE
+  ===================================================== */
+
+  function generateResponse(originalText) {
+    const text = normalize(originalText);
+
+    if (!text) {
+      return "Please write a message.";
+    }
+
+    /* Memory input */
+
+    const extracted = extractMemory(originalText);
+
+    if (extracted.handled) {
+      return extracted.answer;
+    }
+
+    /* Memory commands */
+
+    const memoryCommand = handleMemoryCommand(text);
+
+    if (memoryCommand) {
+      return memoryCommand;
+    }
+
+    /* Identity */
+
+    if (hasAny(text, [
+      "who are you",
+      "introduce yourself",
+      "what are you"
+    ])) {
+      state.lastTopic = "concordia";
+
+      return "I am **Concordia AI**, an experimental local assistant being developed as an independent software project.\n\n" +
+        "**Version:** Cognitive Core 0.5\n\n" +
+        "My current architecture includes local storage, a small knowledge database, topic matching, memory extraction and structured response rules.\n\n" +
+        "I am not a trained neural language model yet. My purpose is to become the interface for a future model trained with our own architecture and data.";
+    }
+
+    /* Capabilities */
+
+    if (hasAny(text, [
+      "what can you do",
+      "your capabilities",
+      "what are your features"
+    ])) {
+      return "My current capabilities include:\n\n" +
+        "• Topic explanations from a built-in knowledge collection.\n" +
+        "• Basic semantic-style text matching.\n" +
+        "• Mathematical calculations.\n" +
+        "• Unit conversions.\n" +
+        "• Programming examples.\n" +
+        "• Local personal memory.\n" +
+        "• Conversation history.\n" +
+        "• Structured planning.\n" +
+        "• Basic follow-up handling.\n\n" +
+        "My knowledge is limited to what is programmed into this prototype.";
+    }
+
+    /* Roadmap */
+
+    if (hasAny(text, [
+      "roadmap",
+      "development plan",
+      "future of concordia",
+      "next development phase"
+    ])) {
+      state.lastTopic = "concordia";
+      return getRoadmap();
+    }
+
+    /* Greeting */
+
+    if (hasAny(text, [
+      "hello",
+      "hi",
+      "hey",
+      "good morning",
+      "good afternoon",
+      "good evening"
+    ])) {
+      const name = memory.userName
+        ? ", " + memory.userName
+        : "";
+
+      return pick(RESPONSE_VARIATIONS.greeting) + name;
+    }
+
+    /* Memory name */
+
+    if (hasAny(text, [
+      "what is my name",
+      "do you know my name"
+    ])) {
+      return memory.userName
+        ? "Your name is **" + memory.userName + "**."
+        : "I do not know your name yet.";
+    }
+
+    /* Memory report */
+
+    if (hasAny(text, [
+      "my memory",
+      "what do you remember",
+      "show my notes"
+    ])) {
+      return getMemoryReport();
+    }
+
+    /* Date and time */
+
+    if (hasAny(text, [
+      "what time is it",
+      "current time",
+      "what is today's date",
+      "what day is it"
+    ])) {
+      return "According to your device clock:\n\n**" +
+        formatDate() + "**";
+    }
+
+    /* Thanks */
+
+    if (hasAny(text, [
+      "thank you",
+      "thanks",
+      "thx",
+      "appreciate it"
+    ])) {
+      return pick(RESPONSE_VARIATIONS.thanks);
+    }
+
+    /* Goodbye */
+
+    if (hasAny(text, ["goodbye", "bye", "see you"])) {
+      return "Goodbye! Your conversation remains saved in this browser.";
+    }
+
+    /* Emotions */
+
+    if (hasAny(text, [
+      "i feel sad",
+      "i am sad",
+      "i feel anxious",
+      "i am stressed",
+      "overwhelmed",
+      "i feel lonely"
+    ])) {
+      return "I'm sorry this moment feels difficult.\n\n" +
+        "We can take it one step at a time. You can explain what is happening, or we can focus on one small practical action.\n\n" +
+        "What would be most useful right now?";
+    }
+
+    /* Unit conversion */
+
+    const conversion = convertUnits(originalText);
+
+    if (conversion) {
+      state.lastTopic = "conversion";
+      return conversion;
+    }
+
+    /* Mathematics */
+
+    const expression = detectMath(originalText);
+
+    if (expression) {
+      try {
+        const result = calculate(expression);
+
+        state.lastTopic = "mathematics";
+
+        return "**Mathematical result**\n\n" +
+          "Expression: `" + expression + "`\n\n" +
+          "Result: **" + result + "**";
+      } catch (error) {
+        return "I detected a mathematical expression but could not calculate it.\n\n" +
+          "Check the operators and parentheses.\n\n" +
+          "Example: `12 * (5 + 3)`";
+      }
+    }
+
+    /* Code generation */
+
+    if (hasAny(text, [
+      "write code",
+      "create code",
+      "generate code",
+      "write a program",
+      "show me code",
+      "coding example",
+      "programming example"
+    ])) {
+      const code = generateCode(text);
+
+      if (code) {
+        state.lastTopic = "programming";
+        return code;
+      }
+
+      return "Which programming language should I use?\n\n" +
+        "• JavaScript\n" +
+        "• Python\n" +
+        "• HTML\n" +
+        "• CSS\n\n" +
+        "Also describe what you want the program to do.";
+    }
+
+    /* Unit conversion request with language */
+
+    if (
+      hasAny(text, ["convert"]) &&
+      hasAny(text, ["kilometer", "miles", "pounds", "kilograms", "celsius", "fahrenheit"])
+    ) {
+      return "Please provide a value and its unit. For example: **Convert 20 km**.";
+    }
+
+    /* Follow-up questions */
+
+    if (hasAny(text, [
+      "tell me more",
+      "explain more",
+      "more details",
+      "give me an example",
+      "show an example",
+      "summarize that",
+      "summarize it",
+      "why is that",
+      "why does it matter",
+      "go deeper"
+    ])) {
+      const answer = handleFollowUp(text);
+
+      if (answer) return answer;
+    }
+
+    /* Comparison */
+
+    if (hasAny(text, [
+      "compare",
+      "difference between",
+      "versus"
+    ])) {
+      const result = compareTopics(text);
+
+      if (result) return result;
+
+      return "To make a useful comparison, I need the two subjects and the criteria that matter to you.\n\n" +
+        "For example: **Compare Python and JavaScript for building web applications.**";
+    }
+
+    /* Knowledge retrieval */
+
+    const knowledge = searchKnowledge(text);
+
+    if (knowledge) {
+      state.lastTopic = knowledge.topic;
+      state.lastIntent = "knowledge";
+
+      return "**" + knowledge.topic.toUpperCase() + "**\n\n" +
+        knowledge.answer +
+        "\n\nYou can ask me to **explain more**, **give an example**, or **summarize this**.";
+    }
+
+    /* Problem solving */
+
+    if (hasAny(text, [
+      "solve this problem",
+      "analyze this problem",
+      "break this down",
+      "help me solve"
+    ])) {
+      state.lastTopic = "problem solving";
+      return solveStructure(originalText);
+    }
+
+    /* Business planning */
+
+    if (hasAny(text, [
+      "business plan",
+      "start a business",
+      "online business plan",
+      "business strategy"
+    ])) {
+      state.lastTopic = "business";
+      return businessPlan(originalText);
+    }
+
+    /* Learning plan */
+
+    if (hasAny(text, [
+      "learning plan",
+      "teach me",
+      "how should i learn",
+      "study plan"
+    ])) {
+      state.lastTopic = "learning";
+      return learningPlan(originalText);
+    }
+
+    /* Project-related questions */
+
+    if (hasAny(text, [
+      "project",
+      "application",
+      "website",
+      "software",
+      "developer",
+      "backend",
+      "frontend",
+      "database"
+    ])) {
+      state.lastTopic = "programming";
+
+      return pick([
+        "Let's approach this as a software engineering problem.\n\nFirst, define the goal, the expected behavior and the available technology. What part are you developing?",
+        "We can break this project into requirements, architecture, implementation and testing. Which part needs attention first?",
+        "A reliable application needs clear data structures, sensible error handling and testing. Tell me what you want the application to accomplish."
+      ]);
+    }
+
+    /* Learning requests */
+
+    if (hasAny(text, ["learn", "study", "explain", "how does"])) {
+      state.lastTopic = "learning";
+      return learningPlan(originalText);
+    }
+
+    /* Business questions */
+
+    if (hasAny(text, [
+      "business",
+      "sell",
+      "product",
+      "startup",
+      "freelance",
+      "client"
+    ])) {
+      state.lastTopic = "business";
+      return businessPlan(originalText);
+    }
+
+    /* Unknown question */
+
+    const uncertainResponses = [
+      "I cannot answer this accurately with my current knowledge base. I would rather acknowledge that than invent information.\n\nCould you give me more context?",
+      "This subject is not covered sufficiently by my current local knowledge collection.\n\nTell me which field it belongs to and what you are trying to understand.",
+      "I need more information to approach this properly.\n\nCould you describe the situation or provide a concrete example?"
+    ];
+
+    return pick(uncertainResponses);
+  }
+    /* =====================================================
+     36 — SEND CONTROLLER
+  ===================================================== */
+
+  async function sendMessage(event) {
+    if (event) {
+      event.preventDefault();
+    }
+
+    if (state.busy) return;
+
+    const text = DOM.prompt.value.trim();
+
+    if (!text) {
+      DOM.prompt.focus();
+      return;
+    }
+
+    state.busy = true;
+
+    DOM.send.disabled = true;
+    DOM.send.textContent = "…";
+
+    setStatus("Processing", true);
+
+    DOM.prompt.value = "";
+    DOM.prompt.style.height = "44px";
+
+    renderMessage("user", text);
+
+    addHistory("user", text);
+
+    state.lastUserMessage = text;
+
+    showTyping();
+
+    try {
+      await delay(
+        CONFIG.responseDelay +
+        Math.min(text.length * 2, 400)
+      );
+
+      const answer = generateResponse(text);
+
+      if (typeof answer !== "string" || !answer.trim()) {
+        throw new Error("Response engine returned an empty answer.");
+      }
+
+      removeTyping();
+
+      state.lastAnswer = answer;
+
+      renderMessage("assistant", answer);
+
+      addHistory("assistant", answer);
+
+    } catch (error) {
+      console.error("Concordia response error:", error);
+
+      removeTyping();
+
+      const errorText =
+        "An internal processing error occurred.\n\n" +
+        "Your message was received, but the response could not be generated. Please try again.";
+
+      renderMessage("assistant", errorText);
+      addHistory("assistant", errorText);
+
+    } finally {
+      state.busy = false;
+
+      DOM.send.disabled = false;
+      DOM.send.textContent = "↑";
+
+      setStatus("Local Engine Ready", false);
+
+      DOM.prompt.focus();
+    }
+  }
+
+  /* =====================================================
+     37 — MESSAGE INPUT
+  ===================================================== */
+
+  DOM.composer.addEventListener("submit", sendMessage);
+
+  DOM.prompt.addEventListener("keydown", event => {
+    if (event.key === "Enter" && !event.shiftKey) {
+      event.preventDefault();
+
+      if (typeof DOM.composer.requestSubmit === "function") {
+        DOM.composer.requestSubmit();
+      } else {
+        sendMessage(event);
+      }
+    }
+  });
+
+  DOM.prompt.addEventListener("input", () => {
+    DOM.prompt.style.height = "44px";
+
+    DOM.prompt.style.height =
+      Math.min(DOM.prompt.scrollHeight, 160) + "px";
+  });
+
+  /* =====================================================
+     38 — SUGGESTION BUTTONS
+  ===================================================== */
+
+  document.querySelectorAll(".suggestion").forEach(button => {
+    button.addEventListener("click", () => {
+      if (state.busy) return;
+
+      DOM.prompt.value = button.dataset.prompt || "";
+      DOM.composer.requestSubmit();
+    });
+  });
+
+  /* =====================================================
+     39 — NEW CHAT
+  ===================================================== */
+
+  DOM.newChat.addEventListener("click", () => {
+    if (state.busy) return;
+
+    if (!confirm("Start a new conversation? Previous history will remain saved.")) {
+      return;
+    }
+
+    history = [];
+    saveHistory();
+
+    state.activeConversation = [];
+    state.lastTopic = null;
+    state.lastAnswer = "";
+    state.lastUserMessage = "";
+    state.lastIntent = null;
+
+    DOM.chat.innerHTML = "";
+    DOM.welcome.style.display = "block";
+
+    showToast("New conversation started.");
+  });
+
+  /* =====================================================
+     40 — MEMORY BUTTON
+  ===================================================== */
+
+  DOM.memory.addEventListener("click", openMemoryModal);
+
+  DOM.closeMemory.addEventListener("click", closeMemoryModal);
+
+  DOM.modal.addEventListener("click", event => {
+    if (event.target === DOM.modal) {
+      closeMemoryModal();
+    }
+  });
+
+  DOM.forgetAll.addEventListener("click", () => {
+    if (!confirm("Permanently delete your saved personal memory?")) {
+      return;
+    }
+
+    memory = emptyMemory();
+    saveMemory();
+
+    openMemoryModal();
+
+    showToast("Personal memory deleted.");
+  });
+
+  /* =====================================================
+     41 — EXPORT
+  ===================================================== */
+
+  DOM.export.addEventListener("click", () => {
+    const exportData = {
+      application: CONFIG.name,
+      version: CONFIG.version,
+      exportedAt: new Date().toISOString(),
+      conversation: history,
+      personalMemory: memory
     };
 
-    function generateText() {
-      const prompt = document.querySelector('.ai-text .ai-input').value;
-      document.getElementById('textOutput').innerText = miniAI.generate(prompt, 'text');
-    }
+    try {
+      const blob = new Blob(
+        [JSON.stringify(exportData, null, 2)],
+        { type: "application/json" }
+      );
 
-    function generateImage() {
-      const prompt = document.querySelector('.ai-image .ai-input').value;
-      document.getElementById('imageOutput').innerHTML = `<img src="https://via.placeholder.com/300?text=${encodeURIComponent(prompt)}" alt="Generated image">`;
-    }
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
 
-    function generateIdea() {
-      const prompt = document.querySelector('.ai-idea .ai-input').value;
-      document.getElementById('ideaOutput').innerText = miniAI.generate(prompt, 'idea');
+      link.href = url;
+      link.download = "concordia-ai-cognitive-core-05.json";
+
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+
+      showToast("Conversation exported.");
+
+    } catch (error) {
+      console.error("Export error:", error);
+      showToast("Export failed.");
     }
-  </script>
+  });
+
+  /* =====================================================
+     42 — GLOBAL ERROR HANDLING
+  ===================================================== */
+
+  window.addEventListener("error", event => {
+    console.error(
+      "Concordia JavaScript error:",
+      event.message,
+      event.filename,
+      event.lineno
+    );
+
+    setStatus("Application error", false);
+  });
+
+  window.addEventListener("unhandledrejection", event => {
+    console.error("Concordia async error:", event.reason);
+  });
+
+  /* =====================================================
+     43 — INITIALIZATION
+  ===================================================== */
+
+  restoreConversation();
+
+  if (history.length === 0) {
+    const greeting =
+      "Hello! Welcome to **Concordia AI — Cognitive Core 0.5**.\n\n" +
+      "I have a local knowledge collection, personal memory, mathematical tools and basic programming examples.\n\n" +
+      "I am still a rule-based experimental assistant, not a trained neural language model.\n\n" +
+      "What would you like to explore today?";
+
+    renderMessage("assistant", greeting);
+
+    addHistory("assistant", greeting);
+
+    state.lastAnswer = greeting;
+  }
+
+  setStatus("Local Engine Ready", false);
+
+  console.log(
+    CONFIG.name +
+    " " +
+    CONFIG.version +
+    " initialized successfully."
+  );
+
+}
+</script>
+
 </body>
 </html>
